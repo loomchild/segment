@@ -1,4 +1,4 @@
-<project name="srxsplit" default="jardist" basedir=".">
+<project name="segment" default="jardist" basedir=".">
 
 	<description>Program dzielący tekst na segmenty</description>
 
