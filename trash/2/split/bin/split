@@ -1,3 +1,0 @@
-#!/bin/bash
-SCRIPT_DIR=`dirname $0`
-exec java -cp "$CLASSPATH:$SCRIPT_DIR/../lib/split.jar" ui.console.Split $*
