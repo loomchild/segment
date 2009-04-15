@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<srx version="2.0" xmlns="http://www.lisa.org/srx20" xsi:schemaLocation="http://www.lisa.org/srx20 srx20.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <header segmentsubflows="yes" cascade="yes">
+        <formathandle type="start" include="no"/>
+        <formathandle type="end" include="yes"/>
+        <formathandle type="isolated" include="yes"/>
+    </header>
+
+    <body>
+
+        <languagerules>
+
+			<languagerule languagerulename="Default">
+				<rule break="yes">
+					<beforebreak>[\.\?!]+</beforebreak>
+					<afterbreak>\s+\p{Lu}</afterbreak>
+				</rule>
+				<rule break="yes">
+					<afterbreak>\n</afterbreak>
+				</rule>
+			</languagerule>
+
+        </languagerules>
+
+        <maprules>
+            <languagemap languagepattern=".*" languagerulename="Default"/>
+        </maprules>
+
+    </body>
+
+</srx>

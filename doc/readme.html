@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"><html><head><title>Readme</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>
+
+
+<h1>Segment</h1>
+
+<h3>Version 1.1, Date 2009-04-15</h3>
+<hr>
+
+<h2>Table of Contents</h2>
+<ul>
+	<li><a href="#introduction">Introduction</a></li>
+	<li><a href="#requirements">Requirements</a></li>
+	<li><a href="#running">Running</a></li>
+	<li><a href="#performance">Performance</a></li>
+	<li><a href="#testing">Testing</a></li>
+	<li><a href="#formats">Data formats</a>
+		<ul>
+			<li><a href="#input">Input</a></li>
+			<li><a href="#output">Output</a></li>
+			<li><a href="#srxformat">SRX file</a></li>
+		</ul>
+	</li>
+	<li><a href="#algorithm">Algorithm</a></li>
+	<li><a href="#resources">Resources</a></li>
+</ul>
+
+<hr>
+
+<h2><a name="introduction">Introduction</a></h2>
+<p>
+Segment program is used to split text into segments, for example sentences.
+Splitting rules are read from SRX file, which is standard format for this task
+(see <a href="#resources">Resources</a>). 
+</p>
+
+<h2><a name="requirements">Requirements</a></h2>
+<p>
+To run the project Java Runtime Environment (JRE) 1.6 is required.
+To build the project from source Java Software Development Kit (JDK) 1.6 and Ant tool are required. 
+Program should run on any operating system supported by Java. 
+The helper startup scripts were written for Unix and Windows.
+</p>
+
+<h2><a name="running">Running</a></h2>
+<p>
+To run the program bin/segment script is used. 
+For example on Linux, from main project directory, execute:<br/>
+<code>bin/segment</code><br/>
+On windows, from main directory, it looks like this:<br/>
+<code>bin\segment</code><br/>
+When the script does not work on Your operating system program can be run 
+directly using Java, look inside bin/split script for the clues how to do it.
+</p>
+<p>
+Source text is read from standard input and resulting segments are written
+on standard output, one per line. 
+Without parameters text is split using simple, built-in rules.
+To get help on command line parameters run:<br/>
+<code>bin/segment -h</code><br/>
+The most popular command line is probably:<br/>
+<code>bin/segment -s rules.srx -l language &lt; in.txt &gt; out.txt</code><br/>
+Where rules.srx is a file containing splitting rules, language is input file
+language, in.txt is a input file and out.txt is a output file.
+To control output format useful parameters are -b and -e which define 
+string that will be written before and after the segment (this replaces the 
+standard end of line character).
+</p>
+
+<h2><a name="performance">Performance</a></h2>
+<p>
+To evaluate performance the script bin/performance can be used.
+It generates random text with given length in characters (-t option) and random
+SRX language rules (-r option controls language rules count, 
+-l controls number of non-breaking rules in individual language rule).   
+As a result split time is displayed.
+</p>
+
+<h2><a name="testing">Testing</a></h2>
+<p>
+The program has integrated unit tests. To run them execute bin/test.
+</p>
+
+<h2><a name="formats">Data formats</a></h2>
+
+<h3><a name="input">Input</a></h3>
+<p>
+Plain text, UTF-8 encoded.
+</p>
+
+<h3><a name="output">Output</a></h3>
+<p>
+Plain text, UTF-8 encoded. Some operating system consoles, Windows 
+command prompt for example, have different encoding and special characters 
+will not be displayed correctly. Output files can be opened in text editors
+because most of them handle UTF-8 encoded files correctly.
+Each segment is prefixed with string set with -b option (empty by default), 
+and suffixed with string set with -e option (new line character by default).
+</p>
+
+<h3><a name="srxformat">SRX file</a></h3>
+<p>
+Valid SRX document as defined in SRX specification 
+(see <a href="#resources">Resources</a>). 
+Both version 1.0 and 2.0 are supported, although version 2.0 is preferred. 
+Currently input is treated as plain text, formatting is not handled specially 
+(contrary to specification). Example SRX files can be found in example/ directory.
+</p>
+<p>
+To convert between old SRX version and current SRX version there is a tool, 
+bin/transform. It reads SRX from standard input and writes 
+transformed SRX to standard output. Usage example:<br/>
+<code>bin/transform &lt; old.srx &gt; new.srx</code><br/>
+The tool accepts some command line parameters, use bin/transform -h for details.
+The tool uses XSLT stylesheet, it can be found in resources directory and used 
+separately with any XSLT processor.
+</p>
+<p>
+Document contains header and body. 
+</p>
+<p>
+Header is mostly currently mostly ignored, only "cascade" attribute is
+read. It determines if only the first matching language rule is 
+applied (cascade="no"), or all language rules that match language code 
+are applied (in the same order as they occur in SRX file cascade="yes").
+</p>
+<p>
+Body contains language rules and map rules. Language rules contain 
+break (break="yes") and exception (break="no") rules. Each of those rules
+can consist of two regular expression elements, &lt;beforebreak&gt; and 
+&lt;afterbreak&gt;, which must match before and after break character respectively, 
+for the rule to be applied.  
+Map rules specify which language rules will be used to segment the text, 
+according to the text language.
+</p>
+
+<h2><a name="algorithm">Algorithm</a></h2>
+<p>
+TODO
+</p>
+
+<h2><a name="resources">Resources</a></h2>
+<p>
+<ul>
+	<li>
+		<a href="http://www.lisa.org">LISA (The Localization Industry Standards Association)</a>. 
+		Full SRX specification can be found on this page.
+	</li>
+</ul>
+</p>
+
+<hr>
+
+<p>
+This project was written for Poleng company, but now is distributed as Free / Open Source Software. 
+Results were used to write my Master's Thesis. Happy using:)
+</p>
+<p>&nbsp;&nbsp; -- Jarek Lipski</p>
+
+
+</body></html>

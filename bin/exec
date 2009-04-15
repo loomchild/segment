@@ -1,0 +1,7 @@
+#!/bin/bash
+
+SCRIPT_DIR=`dirname $0`
+PROJECT_HOME=$SCRIPT_DIR/..
+JARS=$PROJECT_HOME/lib/*
+
+exec java $JAVA_OPTS -cp "$CLASSPATH:$PROJECT_HOME/build/classes:$JARS" $*

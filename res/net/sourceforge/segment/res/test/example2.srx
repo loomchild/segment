@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<srx version="2.0" xmlns="http://www.lisa.org/srx20" 
+		xsi:schemaLocation="http://www.lisa.org/srx20 srx20.xsd"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <header segmentsubflows="yes" cascade="no">
+        <formathandle type="start" include="no"/>
+        <formathandle type="end" include="yes"/>
+        <formathandle type="isolated" include="yes"/>
+    </header>
+	<body>
+		<languagerules>
+			<languagerule languagerulename="Default">
+				<rule break="no">
+					<beforebreak>^\s*[0-9]+\.</beforebreak>
+					<afterbreak>\s</afterbreak>
+				</rule>
+				<rule break="no">
+					<beforebreak>[Ee][Tt][Cc]\.</beforebreak>
+					<afterbreak>\s[a-z]</afterbreak>
+				</rule>
+				<rule break="no">
+					<beforebreak>\sMr\.</beforebreak>
+					<afterbreak>\s</afterbreak>
+				</rule>
+				<rule break="yes">
+					<beforebreak>[\.\?!]+</beforebreak>
+					<afterbreak>\s</afterbreak>
+				</rule>
+				<rule break="yes">
+					<afterbreak>\n</afterbreak>
+				</rule>
+			</languagerule>
+			<languagerule languagerulename="Japanese">
+				<rule break="no">
+					<beforebreak>^\s*[0-9]+\.</beforebreak>
+					<afterbreak>\s</afterbreak>
+				</rule>
+				<rule break="no">
+					<beforebreak>[Ee][Tt][Cc]\.</beforebreak>
+				</rule>
+				<rule break="yes">
+					<beforebreak>[\.\?!]+</beforebreak>
+					<afterbreak>\s</afterbreak>
+				</rule>
+				<rule break="yes">
+					<beforebreak>[\xff61\x3002\xff0e\xff1f\xff01]+</beforebreak>
+				</rule>
+				<rule break="yes">
+					<afterbreak>\n</afterbreak>
+				</rule>
+			</languagerule>
+		</languagerules>
+		<maprules>
+			<languagemap languagepattern="JA.*" languagerulename="Japanese"/>
+			<languagemap languagepattern=".*" languagerulename="Default"/>
+		</maprules>
+	</body>
+</srx>

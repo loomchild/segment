@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"><html><head><title>Readme</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>
+
+
+<h1>Split</h1>
+
+<h3>Wersja 0.9, Data 2006-03-28</h3>
+<hr>
+
+<h2>Spis treści</h2>
+<ul>
+	<li><a href="#wstep">Wstęp</a></li>
+	<li><a href="#wymagania">Wymagania</a></li>
+	<li><a href="#instalacja">Instalacja</a></li>
+	<li><a href="#uruchamianie">Uruchamianie</a></li>
+	<li><a href="#wydajnosc">Badanie wydajności</a></li>
+	<li><a href="#testowanie">Testowanie</a></li>
+	<li><a href="#budowanie">Budowanie</a>
+	</li>
+	<li><a href="#formaty">Formaty danych</a>
+		<ul>
+			<li><a href="#wejscie">Wejście</a></li>
+			<li><a href="#wyjscie">Wyjście</a></li>
+			<li><a href="#srx">Pliki SRX</a></li>
+		</ul>
+	</li>
+	<li><a href="#sposob">Sposób Działania</a>
+		<ul>
+			<li><a href="#simple">Splitter simple</a></li>
+			<li><a href="#srx">Splitter SRX</a></li>
+		</ul>
+	</li>
+	<li><a href="#zrodla">Źródła</a>
+		<ul>
+			<li><a href="#linki">Linki</a></li>
+			<li><a href="#narzedzia">Narzędzia</a></li>	
+		</ul>
+	</li>
+</ul>
+
+<hr>
+
+<h2><a name="wstep">Wstęp</a></h2>
+<p>
+Program Split służy do dzielenia tekstu na zdania. Można to robić przy pomocy prostych wbudowanych reguł jak i za pomocą zewnętrznego pliku SRX zawierającego reguły podziału.
+</p>
+
+<h2><a name="wymagania">Wymagania</a></h2>
+<p>
+Do uruchomienia programu potrzebna jest Java Runtime Environment w wersji 1.5. Do zbudowania potrzeba Java Software Development Kit w wersji 1.5 oraz narzędzia Ant. Do testowania konieczna jest biblioteka JUnit 3.8 w ścieżce CLASSPATH. System operacyjny w zasadzie dowolny, testowano w systemach Linux i Windows.
+</p>
+
+<h2><a name="instalacja">Instalacja</a></h2>
+<p>
+Programu nie trzeba instalować, wystarczy go rozpakować.
+</p>
+
+<h2><a name="uruchamianie">Uruchamianie</a></h2>
+<p>
+Do uruchomienia programu służy skrypt split w katalogu bin. Np. będąc w głównym katalogu projektu w systemie Linux uruchamia się go następująco:<br/>
+<code>bin/split</code><br/>
+w systemie Windows natomiast w wierszu poleceń wydaj polecenie:<br/>
+<code>bin\split</code><br/>
+Program można też uruchomić bezpośrednio za pomocą Javy. W systemie typu Unix wygląda to tak:<br/>
+<code>java -cp "$CLASSPATH:$&lt;katalog-projektu&gt;/lib/split.jar" Split</code><br/>
+a w Windows tak:<br/>
+<code>java -cp "%CLASSPATH%;$&lt;katalog-projektu&gt;/lib/split.jar" Split</code><br/>
+Program przyjmuje kilka argumentów o których informacje można uzyskać uruchamiając go z opcją -h:<br/>
+<code>split -h</code><br/>
+Bez argumentów program czyta tekst ze standardowego wyjścia i dzieli go na segmenty za pomocą wbudowanych reguł, a wynik wypisuje na standardowe wyjście, po 1 segmencie na linię. Najczęściej używanym wywołaniem jest zapewne:<br/>
+<code>split -s plik-srx &lt; plik-wejsciowy  &gt;  plik-wyjściowy</code><br/>
+które dzieli zadany plik wejściowy za pomocą domyślnej reguły z pliku SRX i wynik zapisuje w danym pliku wyjściowym. Do ustalenia języka tekstu (i przez to zastosowanie odpowiedniej reguły SRX) służy opcja -l. Żeby wybrać inną niż domyślna regułę mapującą język na regułę podziału trzeba użyć opcji -m. Można też bezpośrednio wymusić stosowanie konkretnej reguły podziału opcją -r. Do kontrolowania wyjścia służą opcje -b i -e ustawiające odpowiednio napis wypisywany przed segmentem i po segmencie.
+</p>
+
+<h2><a name="wydajnosc">Badanie wydajności</a></h2>
+<p>
+Do badania wydajności służy skrypt performance w katalogu bin. Aby uzyskać pomoc trzeba użyć opcji -h. Działanie tego skryptu polega na wygenerowaniu losowego tekstu o zadanej (za pomocą opcji -t) długości w znakach i podzieleniu go za pomocą wygenerowanych reguł SRX (ilość reguł ustawia się opcją -r, a ilość wyjątków w pojedynczej regule - jej długość - opcją -l). Jako wynik wyświetlany jest czas działania programu.<br/>
+</p>
+
+<h2><a name="testowanie">Testowanie</a></h2>
+<p>
+Żeby uruchomić testy modułowe zawarte w kodzie uruchom skrypt test z katalogu bin (w podobny sposób jak skrypt split). Do jego uruchomienia potrzeba biblioteki JUnit w zmiennej CLASSPATH.
+</p>
+
+<h2><a name="budowanie">Budowanie</a></h2>
+<p>
+Jeśli posiadasz wersje binarną tego programu to jest on już skompilowany. W przeciwnym wypadku możesz użyć narzędzia Ant. Aby skompilować projekt, w głównym katalogu projektu wydaj polecenie:<br/>
+<code>ant</code><br/>
+Istnieje więcej celów służących do generowania dystrybucji binarnej (bindist), źródłowej (srcdist), dokumentacji (javadoc). Aby uzyskać pełną listę celów Ant-a w głównym katalogu projektu wydaj polecenie:<br/>
+<code>ant -p</code> 
+</p>
+
+<h2><a name="formaty">Formaty danych</a></h2>
+
+<h3><a name="wejscie">Wejście</a></h3>
+<p>
+Tekst zakodowany w kodowaniu systemowym.
+</p>
+
+<h3><a name="wyjscie">Wyjście</a></h3>
+<p>
+Każdy segment rozpoczyna się napisem ustalonym opcją -b (domyślnie &lt;s&gt;), a kończy napisem ustalonym opcją -e (domyślnie &lt;/s&gt;) i znakiem nowego wiersza. Tekst będzie zakodowany kodowaniem systemowym. Uwaga w Windows-ach kodowanie w konsoli jest różne od systemowego, dlaetego w konsoli wyskakują 'krzaczki', ale w innych programach znaki powinny być poprawne.
+</p>
+
+<h3><a name="srx">Pliki SRX</a></h3>
+<p>
+Dokument XML. posiada nagłówek &lt;header&gt; (na razie ignorowany) i ciało &lt;body&gt;. W ciele znajdują się reguły języka i reguły mapowania. Reguły języka zawierają reguły podziału (break="yes") i wyjątki (break="no") składające się z dwóch wyrażeń regularnych - przed i po znaku podziału. Reguły mapujące określają jak kody języka (zapisane jako wyrażenie regularne) przekładają się na reguły języka. Pełna specyfikacja znajduje się na stronie <a href="http://www.lisa.org">www.lisa.org</a>. Przykładowe pliki znajdują się w katalogu examples.
+</p>
+
+<h2><a name="sposob">Sposób Działania</a></h2>
+
+<h3><a name="simple">Splitter simple</a></h3>
+<p>
+Dzieli on zdanie po znakach .!? po których następuje spacja i duża litera oraz przed znakami końca wiersza.
+</p>
+
+<h3><a name="srx">Splitter SRX</a></h3>
+<p>
+TODO
+</p>
+
+<h2><a name="zrodla">Źródła</a></h2>
+
+<h3><a name="linki">Linki</a></h3>
+<p>
+<ul>
+	<li><a href="http://www.lisa.org">www.lisa.org</a> - Organizacja zajmująca sie standardami w dziedzinie tłumacznenia, twórcy standardu SRX. Można tam znaleźć pełną specyfikacje.</li>
+</ul>
+
+<h3><a name="narzedzia">Narzędzia</a></h3>
+<p>
+<ul>
+	<li>
+		Do testowania program używa biblioteki Junit 3.8. 
+	</li>
+	<li>
+		Do obsługi parametrów wejściowych program używa biblioteki CommonsCli 1.0 dołączonej do programu w katalogu lib rozprowadzanej na licencji Apache License 2.0 (<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>). 
+	</li>
+	<li>
+		Program używa mojej biblioteki loomchild.jar dostarczanej razem z nim w katalogu lib rozprowadzanej na licencji MIT (<a href="http://www.opensource.org/licenses/mit-license.php">Mit License</a>). 
+	</li>
+	<li>
+		Do napisania programu użyto środowiska Eclipse. 
+	</li>
+	<li>
+		Do zautomatyzowania kompilacji użyto narzędzia Ant. 
+	</li>
+</ul>
+
+<hr>
+
+<p>Ten projekt został napisany na zlecenie firmy Poleng jako część pakietu Align. Jego wyniki zostaną wykorzystane w mojej pracy magisterskiej. Miłego używania:)</p>
+<p>&nbsp;&nbsp; -- Jarek Lipski</p>
+
+
+</body></html>

@@ -1,0 +1,133 @@
+<project name="split" default="compile" basedir=".">
+
+	<description>
+		Program dzielący tekst na segmenty za pomocą reguł w formacie SRX
+	</description>
+
+	<property name="project" value="split"/>
+	<property name="src" value="src"/>
+	<property name="obj" value="obj"/>
+	<property name="bin" value="bin"/>
+	<property name="doc" value="doc"/>
+	<property name="techdoc" value="${doc}/tech"/>
+	<property name="javadoc" value="${techdoc}/javadoc"/>
+	<property name="dist" value="dist"/>
+	<property name="test" value="test"/>
+	<property name="lib" value="lib"/>
+	<property name="data" value="data"/>
+	<property name="trash" value="trash"/>
+	<property name="author" value="Jarek Lipski"/>
+
+	<path id="project.class.path">
+		<pathelement location="${obj}"/>
+		<fileset dir="${lib}" includes="*.jar"/>
+		<pathelement path="${java.class.path}"/>
+	</path>
+
+	<target name="init">
+		<tstamp/>
+	</target>
+
+	<target name="compile" depends="init" description="compile the source">
+		<mkdir dir="${obj}"/>
+		<javac 
+			srcdir="${src}" 
+			destdir="${obj}" 
+			encoding="utf-8"
+			classpathref="project.class.path"
+			source="1.5"
+			target="1.5"
+			optimize="on"/>
+	</target>
+
+	<target name="jardist" depends="compile" description="generate binary jar archive">
+		<mkdir dir="${dist}"/>
+		<delete file="${dist}/${project}.jar"/>
+		<jar jarfile="${dist}/${project}.jar" basedir="${obj}">
+			<exclude name="**/*Test.class"/>
+			<exclude name="**/*Test$*.class"/>
+			<manifest>
+				<attribute name="Main-Class" value="split.Main"/>
+				<attribute name="Class-Path" value="../${lib}/loomchild.jar"/>
+				<attribute name="Built-By" value="${user.name}"/>
+			</manifest>
+		</jar>
+		<copy file="${dist}/${project}.jar" todir="${lib}"/>
+	</target>
+
+	<target name="srcdist" depends="init" description="generate source archive">
+		<mkdir dir="${dist}"/>
+		<delete file="${dist}/${project}-src.zip"/>
+		<zip destfile="${dist}/${project}-src.zip" basedir="..">
+			<include name="${project}/**"/>
+			<exclude name="${project}/${obj}/**"/>
+			<exclude name="${project}/${dist}/**"/>
+			<exclude name="${project}/${lib}/?**"/>
+			<exclude name="${project}/${javadoc}/**"/>
+			<exclude name="${project}/${bin}/split"/>
+			<zipfileset dir=".." filemode="755">
+				<include name="${project}/${bin}/split"/>
+			</zipfileset>
+		</zip>
+	</target>
+
+	<target name="bindist" depends="jardist, javadoc" description="generate full binary distribution">
+		<mkdir dir="${dist}"/>
+		<delete file="${dist}/${project}-bin.zip"/>
+		<zip destfile="${dist}/${project}-bin.zip" basedir="..">
+			<include name="${project}/**"/>
+			<exclude name="${project}/${src}/**"/>
+			<exclude name="${project}/${obj}/**"/>
+			<exclude name="${project}/${dist}/**"/>
+			<exclude name="${project}/${trash}/**"/>
+			<exclude name="${project}/${techdoc}/**"/>
+			<exclude name="${project}/.settings/**"/>
+			<exclude name="${project}/.project"/>
+			<exclude name="${project}/.classpath"/>
+			<exclude name="${project}/build.xml"/>
+			<exclude name="${project}/${bin}/split"/>
+			<zipfileset dir=".." filemode="755">
+				<include name="${project}/${bin}/split"/>
+			</zipfileset>
+		</zip>
+	</target>
+
+	<target name="javadoc" depends="init" description="generate javadoc">
+		<delete dir="${javadoc}"/>
+		<mkdir dir="${javadoc}"/>
+		<javadoc 
+			destdir="${javadoc}" 
+			encoding="utf-8"
+			classpathref="project.class.path"
+			source="1.5"
+			author="true"
+			version="true"
+			use="true"
+			windowtitle="Split">
+			<fileset dir="${src}">
+				<exclude name="Main.java"/>
+				<exclude name="Performance.java"/>
+				<exclude name="Test.java"/>
+				<include name="**/*.java"/>
+				<exclude name="**/*Test.java"/>
+			</fileset>
+		</javadoc>
+	</target>
+	
+	<target name="test" depends="compile" description="execute unit tests">
+		<junit>
+			<classpath refid="project.class.path">
+			</classpath>
+			<formatter type="brief" usefile="false"/>
+			<test name="Test"/>
+		</junit>
+	</target>
+
+	<target name="clean" description="clean up">
+		<delete dir="${obj}"/>
+		<delete dir="${dist}"/>
+		<delete dir="${javadoc}"/>
+		<delete file="${lib}/${project}.jar"/>
+	</target>
+
+</project>

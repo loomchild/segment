@@ -1,0 +1,43 @@
+	public List<String> split(CharSequence text, Settings settings) {
+		// TODO osbługiwać settings
+	
+		List<String> segmentList = new LinkedList<String>();
+		List<RuleMatcher> list = new LinkedList<RuleMatcher>();
+		for (Rule rule : ruleList) {
+			RuleMatcher matcher = new RuleMatcher(rule, text);
+			matcher.find();
+			if (!matcher.hitEnd()) {
+				list.add(matcher);
+			}
+		}
+
+		int start = 0;
+		while (list.size() > 0) {
+			int minPosition = text.length();
+			RuleMatcher minMatcher = null;
+			for (RuleMatcher matcher : list) {
+				if (matcher.getBreakPosition() < minPosition) {
+					minPosition = matcher.getBreakPosition();
+					minMatcher = matcher;
+				}
+			}
+			if (minMatcher.getRule().isBreaking()) {
+				String segment = text.subSequence(start, minPosition).toString();
+				segmentList.add(segment);
+				start = minPosition;
+			}
+			for (Iterator<RuleMatcher> i = list.iterator(); i.hasNext();) {
+				RuleMatcher matcher = i.next();
+				if (matcher.getBreakPosition() <= minPosition) {
+					matcher.find(minPosition + 1);
+					if (matcher.hitEnd()) {
+						i.remove();
+					}
+				}
+			}
+		}
+		String segment = text.subSequence(start, text.length()).toString();
+		segmentList.add(segment);		
+		return segmentList;
+		
+	}

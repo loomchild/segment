@@ -1,0 +1,142 @@
+<project name="srxsplit" default="jardist" basedir=".">
+
+	<description>Program dzielący tekst na segmenty</description>
+
+	<property name="project.name" value="${ant.project.name}"/>
+	<property name="project.version" value="1.1"/>
+	<property name="project.authors" value="Jarek Lipski"/>
+
+	<property name="project.fullname" value="${project.name}-${project.version}"/>
+
+	<property name="generate.schema" value="res/net/sourceforge/segment/res/xml/srx20.xsd"/>
+	<property name="generate.package" value="net.sourceforge.segment.srx.io.bind"/>
+	<property name="generate.dir" value="net/sourceforge/segment/srx/io/bind"/>
+	<property name="test.class" value="net.sourceforge.segment.ui.console.Test"/>
+
+	
+	<path id="project.class.path">
+		<pathelement path="${java.class.path}"/>
+		<pathelement location="build/classes"/>
+		<pathelement location="res"/>
+		<fileset dir="lib" includes="**/*.jar" />
+	</path>
+
+	
+	<target name="init">
+		<tstamp/>
+	</target>
+
+	
+	<target name="generate" depends="init" description="generate JAXB classes">
+		<delete dir="${generate.dir}" failonerror="false"/>
+		<exec executable="xjc">
+			<arg line="-d src"/>
+			<arg line="-p ${generate.package}"/>
+			<arg value="${generate.schema}"/>
+		</exec>
+	</target>
+
+	
+	<target name="compile" depends="init" description="compile the source">
+		<mkdir dir="build/classes"/>
+		<javac 
+			srcdir="src" 
+			destdir="build/classes" 
+			encoding="utf-8"
+			classpathref="project.class.path"
+			source="1.6"
+			target="1.6"
+			optimize="on"/>
+		<copy todir="build/classes">
+			<fileset dir="res" includes="**/*"/>
+		</copy>
+	</target>
+
+	
+	<target name="jardist" depends="compile" description="generate binary jar archive">
+		<mkdir dir="build/dist"/>
+		<delete file="build/dist/${project.fullname}.jar" failonerror="false"/>
+		<jar destfile="build/dist/${project.fullname}.jar">
+			<fileset dir="build/classes"/>
+			<fileset dir="src"/>
+			<manifest>
+				<attribute name="Built-By" value="${project.authors}"/>
+			</manifest>
+		</jar>
+	</target>
+
+	
+	<target name="bindist" depends="jardist, javadoc" description="generate full binary distribution">
+
+		<mkdir dir="build/dist"/>
+
+		<delete file="build/dist/${project.fullname}.zip" failonerror="false"/>
+		<delete dir="build/dist/${project.fullname}" failonerror="false"/>
+
+		<mkdir dir="build/dist/${project.fullname}"/>
+
+		<copy todir="build/dist/${project.fullname}">
+			<fileset dir=".">
+				<include name="lib/**"/>
+				<include name="bin/**"/>
+				<include name="doc/**"/>
+				<include name="examples/**"/>
+			</fileset>
+		</copy>
+
+		<copy file="build/dist/${project.fullname}.jar" todir="build/dist/${project.fullname}/lib"/>
+
+		<copy todir="build/dist/${project.fullname}/doc">
+			<fileset dir="build" includes="javadoc/**/*"/>
+		</copy>
+
+		<zip destfile="build/dist/${project.fullname}.zip">
+			<fileset dir="build/dist">
+				<include name="${project.fullname}/**/*"/>
+				<exclude name="${project.fullname}/bin/**/*"/>
+			</fileset>
+			<zipfileset dir="build/dist" filemode="755">
+				<include name="${project.fullname}/bin/**/*"/>
+			</zipfileset>
+		</zip>
+		
+		<delete dir="build/dist/${project.fullname}"/>
+
+	</target>
+
+	
+	<target name="javadoc" depends="" description="generate javadoc">
+		<delete dir="build/javadoc"/>
+		<javadoc 
+			destdir="build/javadoc" 
+			encoding="utf-8"
+			charset="utf-8"
+			classpathref="project.class.path"
+			source="1.5"
+			author="true"
+			version="true"
+			use="true"
+			windowtitle="Split">
+			<fileset dir="src">
+				<include name="**/*.java"/>
+				<exclude name="**/*Test.java"/>
+			</fileset>
+		</javadoc>
+	</target>
+
+	
+	<target name="test" depends="compile" description="execute unit tests">
+		<java classname="${test.class}" fork="true">
+			<classpath refid="project.class.path"/>
+		</java>
+	</target>
+
+	
+	<target name="clean" description="clean up">
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="build"/>
+		</delete>
+	</target>
+
+	
+</project>

@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"><html><head><title>Historia</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>
+
+<h1>History</h1>
+
+<ul>
+<li>
+	<p>version 0.0 2006-02</p>
+	<ul>
+		<li>Project inception.</li>
+	</ul>
+</li>
+<li>
+	<p>version 0.9 2006-03-28</p>
+	<ul>
+		<li>Basic functionality.</li>
+		<li>Simple stream splitter and non-stream SRX splitter.</li>
+		<li>Text interface.</li>
+		<li>Performance tool.</li>
+	</ul>
+</li>
+<li>
+	<p>version 0.99 2008-06-17</p>
+	<ul>
+		<li>Completely rewritten SRX split algorithm - streaming and much faster.</li>
+	</ul>
+</li>
+<li>
+	<p>version 1.0 2008-08-17</p>
+	<ul>
+		<li>Renamed project from Splitter to SRX Splitter to reflect the changes and emphasize SRX importance.</li>
+		<li>Changed Splitter interface to TextIterator which implements Iterator.</li> 
+		<li>Removed isReady method from Splitter interface to simplify code and remove
+	unresolved bugs. Threads are better solution to non-blocking streams.</li>
+		<li>Removed simple splitter - it can be easily replaced by SRX splitter with basic rules.</li>
+		<li>Added support for SRX 2.0 in addition to SRX 1.0 along with transformer tool and XSLT stylesheet.</li>
+		<li>Updated documentation and translated it to English.</li>
+	</ul>
+</li>
+<li>
+	<p>version 1.1 2009-04-15</p>
+	<ul>
+		<li>Renamed project from SRX Splitter to Segment.</li>
+		<li>Changed project package from split to net.sourceforge.segment.</li> 
+	</ul>
+</li>
+</ul>
+
+</body></html>
