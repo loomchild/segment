@@ -1,6 +1,5 @@
 package net.sourceforge.segment.ui.console;
 
-import junit.framework.TestSuite;
 import net.sourceforge.segment.SegmentTestSuite;
 
 import org.junit.internal.runners.TextListener;
@@ -17,9 +16,9 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
 	SegmentTestSuite.class
 })
-public class Test extends TestSuite {
+public class Test {
 
-	public void run(String[] args) {
+	public static void main(String[] args) {
         JUnitCore core = new JUnitCore();
         core.addListener(new TextListener());
         core.run(Test.class);

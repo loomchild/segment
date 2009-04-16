@@ -28,9 +28,16 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 	private int startPosition, endPosition;
 	
 	/**
-	 * Tworzy splitter dla danej reguły językowej i tekstu.
-	 * @param languageRule Reguła językowa.
-	 * @param text Tekst.
+	 * Creates text iterator that obtains language rules form given document
+	 * using given language code. To retrieve language rules calls
+	 * {@link SrxDocument#getLanguageRuleList(String)}.
+	 * 
+	 * @param document
+	 *            Document containing language rules.
+	 * @param languageCode
+	 *            Language code to select the rules.
+	 * @param text
+	 *            Text.
 	 */
 	public LegacySrxTextIterator(SrxDocument document, String languageCode, 
 			CharSequence text) {
