@@ -14,9 +14,8 @@ import java.util.Map;
 
 import javax.xml.transform.Templates;
 
-import net.sourceforge.segment.srx.SrxTransformer;
-
 import junit.framework.TestCase;
+import net.sourceforge.segment.srx.SrxTransformer;
 
 public class SrxTransformersTest extends TestCase {
 

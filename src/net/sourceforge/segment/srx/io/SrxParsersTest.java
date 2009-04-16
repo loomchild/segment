@@ -6,12 +6,11 @@ import static net.rootnode.loomchild.util.io.Util.getResourceStream;
 import java.io.Reader;
 import java.util.List;
 
+import junit.framework.TestCase;
 import net.sourceforge.segment.srx.LanguageRule;
 import net.sourceforge.segment.srx.Rule;
 import net.sourceforge.segment.srx.SrxDocument;
 import net.sourceforge.segment.srx.SrxParser;
-
-import junit.framework.TestCase;
 
 public class SrxParsersTest extends TestCase {
 

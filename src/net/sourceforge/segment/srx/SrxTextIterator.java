@@ -49,7 +49,11 @@ public class SrxTextIterator extends AbstractTextIterator {
 		this.text = text;
 		this.segment = null;
 		this.startPosition = 0;
-		this.endPosition = text.length();
+		this.endPosition = 0;
+		//If text is empty iterator finishes immediately.
+		if (!canReadNextChar()) {
+			this.startPosition = text.length();
+		}
 		initializePatterns();
 	}
 
@@ -296,8 +300,12 @@ public class SrxTextIterator extends AbstractTextIterator {
 	 */
 	private boolean canReadNextChar() {
 		try {
-			text.charAt(endPosition);
-			return true;
+			if (endPosition < text.length()) {
+				text.charAt(endPosition);
+				return true;
+			} else {
+				return false;
+			}
 		} catch (EndOfStreamException e) {
 			return false;
 		}
