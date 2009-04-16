@@ -5,9 +5,10 @@ import junit.framework.TestCase;
 public class RuleMatcherTest extends TestCase {
 
 	public void testFind() {
+		SrxDocument document = new SrxDocument();
 		Rule rule = new Rule(true, "ab+", "ca+");
 		String text = "abaabbcabcabcaa";
-		RuleMatcher matcher = new RuleMatcher(rule, text);
+		RuleMatcher matcher = new RuleMatcher(document, rule, text);
 		assertFalse(matcher.hitEnd());
 		assertTrue(matcher.find());
 		assertFalse(matcher.hitEnd());

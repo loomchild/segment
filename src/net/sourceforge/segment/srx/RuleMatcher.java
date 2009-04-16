@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
  * @author loomchild
  */
 public class RuleMatcher implements Cloneable {
+	
+	private SrxDocument document;
 
 	private Rule rule;
 	
@@ -28,11 +30,12 @@ public class RuleMatcher implements Cloneable {
 	 * @param rule Reguła dla której będzie przeszukiwał tekst.
 	 * @param text Tekst.
 	 */
-	public RuleMatcher(Rule rule, CharSequence text) {
+	public RuleMatcher(SrxDocument document, Rule rule, CharSequence text) {
+		this.document = document;
 		this.rule = rule;
 		this.text = text;
-		Pattern beforePattern = Pattern.compile(rule.getBeforePattern());
-		Pattern afterPattern = Pattern.compile(rule.getAfterPattern());
+		Pattern beforePattern = compile(rule.getBeforePattern());
+		Pattern afterPattern = compile(rule.getAfterPattern());
 		this.beforeMatcher = beforePattern.matcher(text);
 		this.afterMatcher = afterPattern.matcher(text);	
 		this.found = true;
@@ -98,11 +101,20 @@ public class RuleMatcher implements Cloneable {
 	}
 
 	public RuleMatcher clone() {
-		RuleMatcher ruleMatcher = new RuleMatcher(rule, text);
+		RuleMatcher ruleMatcher = new RuleMatcher(document, rule, text);
 		ruleMatcher.found = found;
 		cloneMatcher(ruleMatcher.beforeMatcher, beforeMatcher);
 		cloneMatcher(ruleMatcher.afterMatcher, afterMatcher);
 		return ruleMatcher;
+	}
+	
+	private Pattern compile(String regex) {
+		Pattern pattern = (Pattern)document.getCache().get(regex);
+		if (pattern == null) {
+			pattern = Pattern.compile(regex);
+			document.getCache().put(regex, pattern);
+		}
+		return pattern;
 	}
 	
 	private void cloneMatcher(Matcher matcher, Matcher referenceMatcher) {

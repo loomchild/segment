@@ -36,7 +36,21 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 			CharSequence text) {
 		this.languageRuleList = document.getLanguageRuleList(languageCode);
 		this.text = text;
-		initialize();
+		this.segment = null;
+		this.startPosition = 0;
+		this.endPosition = 0;
+		if (!canReadNextChar()) {
+			this.startPosition = text.length();
+		}
+
+		this.ruleMatcherList = new LinkedList<RuleMatcher>();
+		for (LanguageRule languageRule : languageRuleList) {
+			for (Rule rule : languageRule.getRuleList()) {
+				RuleMatcher matcher = new RuleMatcher(document, rule, text);
+				ruleMatcherList.add(matcher);
+			}
+		}
+
 	}
 
 	public LegacySrxTextIterator(SrxDocument document, String languageCode, 
@@ -51,6 +65,10 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 	 */
 	public String next() {
 		if (hasNext()) {
+			// Initialize matchers before first search.
+			if (segment == null) {
+				initMatchers();
+			}
 			boolean found = false;
 			while ((ruleMatcherList.size() > 0) && !found) {
 				RuleMatcher minMatcher = getMinMatcher();
@@ -83,31 +101,17 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 	public boolean hasNext() {
 		return (startPosition < text.length());
 	}
-
-	/**
-	 * Inicjalizuje splitter. Tworzy liste iteratorów.
-	 * @param text Tekst.
-	 */
-	private void initialize() {
-		this.ruleMatcherList = new LinkedList<RuleMatcher>();
-		ruleMatcherList.clear();
-		for (LanguageRule languageRule : languageRuleList) {
-			for (Rule rule : languageRule.getRuleList()) {
-				RuleMatcher matcher = new RuleMatcher(rule, text);
-				boolean found = moveMatcher(matcher, 0);
-				if (found) {
-					ruleMatcherList.add(matcher);
-				}
+	
+	private void initMatchers() {
+		for (Iterator<RuleMatcher> i = ruleMatcherList.iterator(); i.hasNext();) {
+			RuleMatcher matcher = i.next();
+			boolean found = moveMatcher(matcher, 0);
+			if (!found) {
+				i.remove();
 			}
 		}
-		segment = null;
-		startPosition = 0;
-		endPosition = 0;
-		if (!canReadNextChar()) {
-			startPosition = text.length();
-		}
 	}
-	
+
 	/**
 	 * Przesuwa iteratory na kolejną pozycje jeśli to konieczne.
 	 */

@@ -19,6 +19,8 @@ public class SrxDocument {
 	private boolean cascade;
 
 	private List<LanguageMap> languageMapList;
+	
+	private SrxDocumentCache cache;
 
 	/**
 	 * Creates empty document.
@@ -29,6 +31,7 @@ public class SrxDocument {
 	public SrxDocument(boolean cascade) {
 		this.cascade = cascade;
 		this.languageMapList = new ArrayList<LanguageMap>();
+		this.cache = new SrxDocumentCache();
 	}
 
 	/**
@@ -92,4 +95,8 @@ public class SrxDocument {
 		return matchingLanguageRuleList;
 	}
 
+	public SrxDocumentCache getCache() {
+		return cache;
+	}
+	
 }

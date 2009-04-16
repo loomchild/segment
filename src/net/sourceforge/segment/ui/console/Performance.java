@@ -2,7 +2,9 @@ package net.sourceforge.segment.ui.console;
 
 import java.util.Random;
 
+import net.sourceforge.segment.TextIterator;
 import net.sourceforge.segment.srx.LanguageRule;
+import net.sourceforge.segment.srx.LegacySrxTextIterator;
 import net.sourceforge.segment.srx.Rule;
 import net.sourceforge.segment.srx.SrxDocument;
 import net.sourceforge.segment.srx.SrxTextIterator;
@@ -27,11 +29,11 @@ public class Performance {
 
 	public static final int MAX_WORD_NUMBER = (int) Math.pow(10, WORD_LENGTH);
 
-	public static final int DEFAULT_TEXT_LENGTH = 10000;
+	public static final int DEFAULT_TEXT_LENGTH = 100;
 
-	public static final int DEFAULT_RULE_COUNT = 1;
+	public static final int DEFAULT_RULE_COUNT = 10;
 
-	public static final int DEFAULT_RULE_LENGTH = 1;
+	public static final int DEFAULT_RULE_LENGTH = 10;
 
 	private Random random;
 
@@ -50,9 +52,10 @@ public class Performance {
 
 	private Options createOptions() {
 		Options options = new Options();
-		options.addOption("t", "textlen", true, "Text length.");
+		options.addOption("t", "textlen", true, "Text length in thousands of bytes.");
 		options.addOption("r", "rulecount", true, "Rule count.");
 		options.addOption("l", "rulelen", true, "Single rule length.");
+		options.addOption("o", "old", false, "Use old legacy algorithm.");
 		options.addOption("h", "help", false, "Print this help.");
 		return options;
 	}
@@ -76,8 +79,8 @@ public class Performance {
 		String textLengthOption = commandLine.getOptionValue("t");
 		if (textLengthOption != null) {
 			textLength = Integer.parseInt(textLengthOption);
-			if (textLength < 0) {
-				throw new Exception("Too short text: " + textLength);
+			if (textLength <= 0) {
+				throw new Exception("Too short text: " + textLength + "K.");
 			}
 		} else {
 			textLength = DEFAULT_TEXT_LENGTH;
@@ -103,24 +106,51 @@ public class Performance {
 						+ ruleLength);
 			}
 		}
+		boolean legacy = commandLine.hasOption("o");
 
-		System.out.println("Generating SRX...");
-		SrxDocument srxDocument = generateSrxDocument(ruleCount, ruleLength);
-		System.out.println("Generating text...");
-		String text = generateText(textLength);
-		System.out.println("Creating splitter...");
-		SrxTextIterator textIterator = new SrxTextIterator(srxDocument, "",
-				text);
+		System.out.println("Settings: " +
+				"text lenght = " + textLength + "K, " +
+				"rule count = " + ruleCount + ", " +
+				"rule length = " + ruleLength + ".");
 
-		System.out.println("Splitting...");
-		long startTime = System.currentTimeMillis();
-		while (textIterator.hasNext()) {
-			@SuppressWarnings("unused")
-			String segment = textIterator.next();
-		}
-		long endTime = System.currentTimeMillis();
-		float time = ((endTime - startTime) / 100) / 10.0f;
-		System.out.println("Elapsed " + time + " seconds.");
+		Profiler profiler;
+
+		System.out.print("Generating rules... ");
+		profiler = new Profiler();
+		SrxDocument document = generateSrxDocument(ruleCount, ruleLength);
+		System.out.println(profiler.time() + " ms.");
+		
+		System.out.print("Generating text... ");
+		profiler = new Profiler();
+		String text = generateText(textLength * 1000);
+		System.out.println(profiler.time() + " ms.");
+		
+		split("Splitting...", legacy, document, text);
+
+		split("Splitting again...", legacy, document, text);
+	
+	}
+	
+	private void split(String message, boolean legacy, 
+			SrxDocument document, String text) {
+		Profiler profiler;
+		System.out.println(message);
+		
+		System.out.print("  Creating splitter... ");
+		profiler = new Profiler();
+		TextIterator textIterator = createTextIterator(legacy, document, text);
+		long createTime = profiler.time();
+		System.out.println(createTime + " ms.");
+		
+		System.out.print("  Performing split... ");
+		profiler = new Profiler();
+		performSplit(textIterator);
+		long splitTime = profiler.time();
+		System.out.println(splitTime + " ms.");
+		
+		long totalTime = createTime + splitTime;
+		System.out.println(totalTime + " ms.");
+		
 	}
 
 	private String generateText(int length) {
@@ -177,5 +207,37 @@ public class Performance {
 		Rule rule = new Rule(false, regex + "\\.", " ");
 		return rule;
 	}
+	
+	private TextIterator createTextIterator(boolean legacy, 
+			SrxDocument document, String text) {
+		TextIterator textIterator;
+		if (!legacy) {
+			textIterator = new SrxTextIterator(document, "", text);
+		} else {
+			textIterator = new LegacySrxTextIterator(document, "", text);
+		}
+		return textIterator;
+	}
 
+	private void performSplit(TextIterator textIterator) {
+		while (textIterator.hasNext()) {
+			textIterator.next();
+		}
+	}
+	
+}
+
+class Profiler {
+	
+	private long start;
+	
+	public Profiler() {
+		this.start = System.currentTimeMillis();
+	}
+	
+	public long time() {
+		long end = System.currentTimeMillis();
+		return end - start;
+	}
+	
 }
