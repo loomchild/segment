@@ -116,7 +116,7 @@
 			author="true"
 			version="true"
 			use="true"
-			windowtitle="Split">
+			windowtitle="Segment">
 			<fileset dir="src">
 				<include name="**/*.java"/>
 				<exclude name="**/*Test.java"/>

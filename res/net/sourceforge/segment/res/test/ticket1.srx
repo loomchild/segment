@@ -12,7 +12,7 @@
 		<languagerules>
 
 			<languagerule languagerulename="Default">
-				<rule break="yes">
+				<rule>
 					<beforebreak>[\.!?…]['»\"”\)\]\}]?\u0002?\s</beforebreak>
 					<afterbreak/>
 				</rule>

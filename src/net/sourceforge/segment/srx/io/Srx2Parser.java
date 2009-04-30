@@ -53,7 +53,7 @@ public class Srx2Parser implements SrxParser {
 		Srx srx = (Srx) bind.unmarshal(reader);
 
 		SrxDocument document = new SrxDocument();
-		document.setCascade(srx.getHeader().getCascade().equals("yes"));
+		document.setCascade("yes".equals(srx.getHeader().getCascade()));
 
 		Body body = srx.getBody();
 
@@ -62,7 +62,7 @@ public class Srx2Parser implements SrxParser {
 			LanguageRule languageRule = new LanguageRule(lr
 					.getLanguagerulename());
 			for (net.sourceforge.segment.srx.io.bind.Rule r : lr.getRule()) {
-				boolean breaking = r.getBreak().equals("yes");
+				boolean breaking = !"no".equals(r.getBreak());
 
 				String before;
 				if (r.getBeforebreak() != null) {

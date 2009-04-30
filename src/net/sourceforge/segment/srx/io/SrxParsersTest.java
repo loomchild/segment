@@ -18,6 +18,8 @@ public class SrxParsersTest extends TestCase {
 
 	public static final String SRX_2_DOCUMENT_NAME = "net/sourceforge/segment/res/test/example.srx";
 
+	public static final String TICKET_1_DOCUMENT_NAME = "net/sourceforge/segment/res/test/ticket1.srx";
+	
 	public void testSrx1Parse() {
 		testSrx1Parse(new Srx1Parser());
 	}
@@ -29,6 +31,28 @@ public class SrxParsersTest extends TestCase {
 	public void testAnyParse() {
 		testSrx1Parse(new SrxAnyParser());
 		testSrx2Parse(new SrxAnyParser());
+	}
+
+	public void testSrx2ParseTicket1() {
+	    Reader reader = getReader(getResourceStream(TICKET_1_DOCUMENT_NAME));
+
+	    SrxParser parser = new Srx2Parser();
+	    SrxDocument document = parser.parse(reader);
+
+	    assertTrue(document.getCascade());
+
+	    List<LanguageRule> languageRuleList = document
+	    .getLanguageRuleList("en");
+	    
+	    LanguageRule languageRule = languageRuleList.get(0);
+	    assertEquals("Default", languageRule.getName());
+
+	    List<Rule> ruleList = languageRule.getRuleList();
+	    assertEquals(1, ruleList.size());    
+
+	    Rule rule = ruleList.get(0);
+	    assertEquals("[\\.!?…]['»\\\"”\\)\\]\\}]?\\u0002?\\s", rule.getBeforePattern());
+	    assertEquals("", rule.getAfterPattern());
 	}
 
 	public void testSrx1Parse(SrxParser parser) {
