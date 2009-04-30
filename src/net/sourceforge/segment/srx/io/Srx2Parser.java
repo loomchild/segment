@@ -3,6 +3,7 @@ package net.sourceforge.segment.srx.io;
 import static net.rootnode.loomchild.util.io.Util.getReader;
 import static net.rootnode.loomchild.util.io.Util.getResourceStream;
 import static net.rootnode.loomchild.util.xml.Util.getSchema;
+import static net.rootnode.loomchild.util.xml.Util.getContext;
 
 import java.io.Reader;
 import java.util.HashMap;
@@ -32,11 +33,13 @@ public class Srx2Parser implements SrxParser {
 
 	private static final Log log = LogFactory.getLog(Srx2Parser.class);
 
-	private static final String CONTEXT = "net.sourceforge.segment.srx.io.bind";
-
+	//private static final String CONTEXT = "net.sourceforge.segment.srx.io.bind";
+	private static final Class<?> CLASS_TO_BE_BOUND = 
+		net.sourceforge.segment.srx.io.bind.Srx.class;
+	
 	private static final String SCHEMA = "net/sourceforge/segment/res/xml/srx20.xsd";
 
-	private static Bind bind = new Bind(CONTEXT,
+	private static Bind bind = new Bind(getContext(CLASS_TO_BE_BOUND),
 			getSchema(getReader(getResourceStream(SCHEMA))));
 
 	/**
