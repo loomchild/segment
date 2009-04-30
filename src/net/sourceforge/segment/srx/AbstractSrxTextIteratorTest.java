@@ -387,6 +387,35 @@ public abstract class AbstractSrxTextIteratorTest {
 				EMPTY_BREAKING_RULE_DOCUMENT, EMPTY_BREAKING_RULE_LANGUAGE);
 	}
 
+	public static final String TICKET_1_TEXT = 
+		"This is a sentence. ";
+	
+	public static final String[] TICKET_1_RESULT = new String[] { 
+		"This is a sentence. "
+		};
+
+	public static final String TICKET_1_LANGUAGE = "";
+	
+	public static final SrxDocument TICKET_1_DOCUMENT = 
+		createTicket1Document();
+	
+	public static SrxDocument createTicket1Document() {
+		LanguageRule languageRule = new LanguageRule("");
+		languageRule.addRule(new Rule(true, "[\\.!?…]['»\"”\\)\\]\\}]?\u0002?\\s", ""));
+		SrxDocument document = new SrxDocument();
+		document.addLanguageMap(".*", languageRule);
+
+		return document;
+	}
+	
+	/**
+	 * Tests situation from Ticket 1 reported by milek_pl.
+	 */
+	@Test
+	public void testTicket1Rule() {
+		performTest(TICKET_1_RESULT, TICKET_1_TEXT, 
+				TICKET_1_DOCUMENT, TICKET_1_LANGUAGE);
+	}
 
 	protected abstract List<TextIterator> getTextIteratorList(String text, 
 			SrxDocument document, String languageCode);
