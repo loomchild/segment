@@ -13,7 +13,7 @@
 
 			<languagerule languagerulename="Default">
 				<rule>
-					<beforebreak>[\.!?…]['»\"”\)\]\}]?\u0002?\s</beforebreak>
+					<beforebreak>[\.!?…]['»"”\)\]\}]?\u0002?\s</beforebreak>
 					<afterbreak/>
 				</rule>
 			</languagerule>

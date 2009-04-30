@@ -51,7 +51,7 @@ public class SrxParsersTest extends TestCase {
 	    assertEquals(1, ruleList.size());    
 
 	    Rule rule = ruleList.get(0);
-	    assertEquals("[\\.!?…]['»\\\"”\\)\\]\\}]?\\u0002?\\s", rule.getBeforePattern());
+	    assertEquals("[\\.!?…]['»\"”\\)\\]\\}]?\\u0002?\\s", rule.getBeforePattern());
 	    assertEquals("", rule.getAfterPattern());
 	}
 
