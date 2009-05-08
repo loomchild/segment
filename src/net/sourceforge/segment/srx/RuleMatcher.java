@@ -54,16 +54,6 @@ public class RuleMatcher implements Cloneable {
 		}
 		return found;
 	}
-
-	/**
-	 * Szuka dopasowania do reguły od danej pozycji w tekście.
-	 * @param start Pozycja.
-	 * @return Zwraca true jeśli udało się dopasować regułę.
-	 */
-	public boolean find(int start) {
-		beforeMatcher.region(start, beforeMatcher.regionEnd());
-		return find();
-	}
 	
 	/**
 	 * @return Zwraca true jeśli napotkano koniec tekstu.
@@ -83,7 +73,7 @@ public class RuleMatcher implements Cloneable {
  * @return Zwraca pozycje po znaku podziału.
 	 */
 	public int getBreakPosition() {
-		return afterMatcher.start();
+		return beforeMatcher.end();
 	}
 
 	/**

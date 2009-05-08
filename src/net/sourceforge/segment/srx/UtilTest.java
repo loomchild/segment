@@ -12,8 +12,8 @@ public class UtilTest extends TestCase {
 		assertEquals(EXPECTED_UNQUOTED_PATTERN, unqotedPattern);
 	}
 
-	public static final String INFINITE_PATTERN = "a*b\\*\\\\+c+d\\+\\\\\\\\*e++f{1,4}+g{1,}+h{1}+\\Qa+\\E";
-	public static final String EXPECTED_FINITE_PATTERN = "a{0,100}b\\*\\\\{1,100}c{1,100}d\\+\\\\\\\\{0,100}e{1,100}+f{1,4}+g{1,}+h{1}+\\a\\+";
+	public static final String INFINITE_PATTERN = "a*b\\*\\\\+c+d\\+\\\\\\\\*e++f{1,4}+g{3,}+h{1}+\\Qa+\\E";
+	public static final String EXPECTED_FINITE_PATTERN = "a{0,100}b\\*\\\\{1,100}c{1,100}d\\+\\\\\\\\{0,100}e{1,100}+f{1,4}+g{3,100}+h{1}+\\a\\+";
 
 	public void testFinitize() {
 		String finitePattern = Util.finitize(INFINITE_PATTERN, 100);
@@ -29,5 +29,5 @@ public class UtilTest extends TestCase {
 		assertEquals(EXPECTED_NONCAPTURING_GROUPS_PATTERN,
 				noncapturingGroupsPattern);
 	}
-
+	
 }

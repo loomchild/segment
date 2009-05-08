@@ -113,8 +113,11 @@ public class SrxTextIterator extends AbstractTextIterator {
 								Matcher nonBreakingMatcher = nonBreakingPatern
 										.matcher(text);
 								nonBreakingMatcher.useTransparentBounds(true);
+								// When using transparent bound the upper bound
+								// is not important?
+								// Needed because text.length() is unknown.
 								nonBreakingMatcher.region(endPosition,
-										endPosition + 1);
+										endPosition);
 								found = !nonBreakingMatcher.lookingAt();
 							}
 

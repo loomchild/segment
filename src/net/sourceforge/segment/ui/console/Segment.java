@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sourceforge.segment.TextIterator;
+import net.sourceforge.segment.srx.LegacySrxTextIterator;
 import net.sourceforge.segment.srx.SrxDocument;
 import net.sourceforge.segment.srx.SrxParser;
 import net.sourceforge.segment.srx.SrxTextIterator;
@@ -55,6 +56,7 @@ public class Segment {
 		options.addOption("m", "map", true, "Map rule name in SRX 1.0.");
 		options.addOption("b", "begin", true, "Output segment prefix.");
 		options.addOption("e", "end", true, "Output segment suffix.");
+		options.addOption("o", "old", false, "Use old legacy algorithm.");
 		options.addOption("h", "help", false, "Print this help.");
 		return options;
 	}
@@ -106,7 +108,7 @@ public class Segment {
 
 		Map<String, Object> parameterMap = new HashMap<String, Object>();
 
-		String mapRule = commandLine.getOptionValue("m");
+		String mapRule = commandLine.getOptionValue('m');
 		if (mapRule != null) {
 			parameterMap.put(Srx1Transformer.MAP_RULE_NAME, mapRule);
 		}
@@ -120,7 +122,12 @@ public class Segment {
 
 		SrxParser srxParser = new SrxAnyParser();
 		SrxDocument document = srxParser.parse(srxReader);
-		textIterator = new SrxTextIterator(document, languageCode, reader);
+		
+		if (commandLine.hasOption('o')) {
+			textIterator = new LegacySrxTextIterator(document, languageCode, reader);
+		} else {
+			textIterator = new SrxTextIterator(document, languageCode, reader);
+		}
 
 		while (textIterator.hasNext()) {
 			String segment = textIterator.next();

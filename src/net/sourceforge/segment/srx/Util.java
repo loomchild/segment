@@ -8,13 +8,16 @@ public class Util {
 	public static final int DEFAULT_FINITE_INFINITY = 100;
 
 	private static final Pattern STAR_PATTERN = Pattern
-			.compile("(?<=(?<!\\\\)(\\\\\\\\){0,100})\\*");
+			.compile("(?<=(?<!\\\\)(?:\\\\\\\\){0,100})\\*");
 
 	private static final Pattern PLUS_PATTERN = Pattern
-			.compile("(?<=(?<!\\\\)(\\\\\\\\){0,100})(?<![\\?\\*\\+]|\\{[0-9],?[0-9]?\\}?\\})\\+");
+			.compile("(?<=(?<!\\\\)(?:\\\\\\\\){0,100})(?<![\\?\\*\\+]|\\{[0-9],?[0-9]?\\}?\\})\\+");
+
+	private static final Pattern RANGE_PATTERN = Pattern
+			.compile("(?<=(?<!\\\\)(?:\\\\\\\\){0,100})\\{\\s*([0-9]+)\\s*,\\s*\\}");
 
 	private static final Pattern CAPTURING_GROUP_PATTERN = Pattern
-			.compile("(?<=(?<!\\\\)(\\\\\\\\){0,100})\\((?!\\?)");
+			.compile("(?<=(?<!\\\\)(?:\\\\\\\\){0,100})\\((?!\\?)");
 
 	/**
 	 * Replaces block quotes in regular expressions with normal quotes. For
@@ -74,10 +77,16 @@ public class Util {
 	 */
 	public static String finitize(String pattern, int infinity) {
 		String finitePattern = removeBlockQuotes(pattern);
+		
 		Matcher starMatcher = STAR_PATTERN.matcher(finitePattern);
 		finitePattern = starMatcher.replaceAll("{0," + infinity + "}");
+		
 		Matcher plusMatcher = PLUS_PATTERN.matcher(finitePattern);
 		finitePattern = plusMatcher.replaceAll("{1," + infinity + "}");
+		
+		Matcher rangeMatcher = RANGE_PATTERN.matcher(finitePattern);
+		finitePattern = rangeMatcher.replaceAll("{$1," + infinity + "}");
+		
 		return finitePattern;
 	}
 

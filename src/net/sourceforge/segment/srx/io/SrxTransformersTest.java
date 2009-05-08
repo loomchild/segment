@@ -5,6 +5,7 @@ import static net.rootnode.loomchild.util.io.Util.getResourceStream;
 import static net.rootnode.loomchild.util.xml.Util.getTemplates;
 import static net.rootnode.loomchild.util.xml.Util.transform;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -15,6 +16,7 @@ import java.util.Map;
 import javax.xml.transform.Templates;
 
 import junit.framework.TestCase;
+import net.rootnode.loomchild.util.exceptions.IORuntimeException;
 import net.sourceforge.segment.srx.SrxTransformer;
 
 public class SrxTransformersTest extends TestCase {
@@ -69,9 +71,26 @@ public class SrxTransformersTest extends TestCase {
 	}
 
 	private String removeWhitespaces(Reader reader) {
+		
 		StringWriter writer = new StringWriter();
 		transform(templates, reader, writer);
-		return writer.toString();
-	}
 
+		// Java 1.5 requires this because transformation does not work properly.
+		StringReader stringReader = new StringReader(writer.toString());
+		StringBuilder builder = new StringBuilder();
+		try {
+			int i;
+			while ((i = stringReader.read()) != -1) {
+				char c = (char)i;
+				if ((c != ' ' && c != '\t' && c != '\r' && c != '\n' && c != '\f')) {
+					builder.append((char)c);
+				}
+			}
+		} catch (IOException e) {
+			throw new IORuntimeException(e);
+		}
+		
+		return builder.toString();
+	}
+	
 }

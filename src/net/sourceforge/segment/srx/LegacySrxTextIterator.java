@@ -112,7 +112,7 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 	private void initMatchers() {
 		for (Iterator<RuleMatcher> i = ruleMatcherList.iterator(); i.hasNext();) {
 			RuleMatcher matcher = i.next();
-			boolean found = moveMatcher(matcher, 0);
+			boolean found = moveMatcher(matcher);
 			if (!found) {
 				i.remove();
 			}
@@ -125,8 +125,9 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 	private void moveMatchers() {
 		for (Iterator<RuleMatcher> i = ruleMatcherList.iterator(); i.hasNext();) {
 			RuleMatcher matcher = i.next();
-			if (matcher.getBreakPosition() <= endPosition) {
-				boolean found = moveMatcher(matcher, endPosition + 1);
+			boolean found = true;
+			while (found && matcher.getBreakPosition() <= endPosition) {
+				found = moveMatcher(matcher);
 				if (!found) {
 					i.remove();
 				}
@@ -134,14 +135,10 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 		}
 	}
 	
-	private boolean moveMatcher(RuleMatcher matcher, int start) {
+	private boolean moveMatcher(RuleMatcher matcher) {
 		try {
-			if (start < this.text.length()) {
-				matcher.find(start);
-				return !matcher.hitEnd();
-			} else {
-				return false;
-			}
+			matcher.find();
+			return !matcher.hitEnd();
 		} catch (EndOfStreamException e) {
 			return false;
 		}		
