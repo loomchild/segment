@@ -3,7 +3,6 @@
 	<description>Program dzielący tekst na segmenty</description>
 
 	<property name="project.name" value="${ant.project.name}"/>
-	<property name="project.version" value="1.1"/>
 	<property name="project.authors" value="Jarek Lipski"/>
 
 	<property name="generate.schema" value="res/net/sourceforge/segment/res/xml/srx20.xsd"/>
@@ -22,6 +21,18 @@
 	
 	<target name="init">
 		<tstamp/>
+	</target>
+
+	
+	<target name="buildnumber" description="increment build number, the build number would be read from 'build.number' file">		
+		<buildnumber/>
+	</target>
+
+	
+	<target name="fullname" description="set project.fullname property">		
+		<property file="version.number"/>
+		<property file="build.number"/>
+        <property name="project.fullname" value="${project.name}-${version.number}.${build.number}"/>      
 	</target>
 
 	
@@ -51,13 +62,7 @@
 	</target>
 
 	
-	<target name="buildnumber" description="increment build number, the build number would be read from 'build.number' file">		
-		<buildnumber/>	
-        <property name="project.fullname" value="${project.name}-${project.version}.${build.number}"/>      
-	</target>
-
-	
-	<target name="jardist" depends="compile, buildnumber" description="generate binary jar archive">
+	<target name="jardist" depends="compile, buildnumber, fullname" description="generate binary jar archive">
 		<mkdir dir="build/dist"/>
 		<delete file="build/dist/${project.name}-*.jar" failonerror="false"/>
 		<jar destfile="build/dist/${project.fullname}.jar">
