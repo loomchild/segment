@@ -1,5 +1,6 @@
 package net.sourceforge.segment.srx;
 
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ public class SrxTextIteratorTest extends AbstractSrxTextIteratorTest {
 		
 		textIteratorList.add(new SrxTextIterator(document, languageCode, text));
 
-		StringReader reader = new StringReader(text);
+		Reader reader = new StringReader(text);
 		textIteratorList.add(new SrxTextIterator(document, languageCode, reader));
 
 		return textIteratorList;

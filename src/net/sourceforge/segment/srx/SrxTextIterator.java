@@ -105,12 +105,12 @@ public class SrxTextIterator extends AbstractTextIterator {
 						int groupIndex = 1;
 						found = true;
 
-						for (Pattern nonBreakingPatern : 
+						for (Pattern nonBreakingPattern : 
 							mergedPattern.getNonBreakingPatternList()) {
 
 							// Null non breaking pattern does not match anything
-							if (nonBreakingPatern != null) {
-								Matcher nonBreakingMatcher = nonBreakingPatern
+							if (nonBreakingPattern != null) {
+								Matcher nonBreakingMatcher = nonBreakingPattern
 										.matcher(text);
 								nonBreakingMatcher.useTransparentBounds(true);
 								// When using transparent bound the upper bound
@@ -118,7 +118,7 @@ public class SrxTextIterator extends AbstractTextIterator {
 								// Needed because text.length() is unknown.
 								nonBreakingMatcher.region(endPosition,
 										endPosition);
-								found = !nonBreakingMatcher.lookingAt();
+								found = !lookingAt(nonBreakingMatcher);
 							}
 
 							// Break when non-breaking rule matches or
@@ -180,6 +180,23 @@ public class SrxTextIterator extends AbstractTextIterator {
 	private boolean find(Matcher matcher) {
 		try {
 			return matcher.find();
+		} catch (EndOfStreamException e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Checks lookingAt for a given matcher. It is needed as
+	 * {@link net.rootnode.loomchild.util.io.ReaderCharSequence} throws
+	 * EndOfStreamException at the end.
+	 * 
+	 * @param matcher
+	 *            Matcher which will be checked.
+	 * @return Returns true if lookingAt is true.
+	 */
+	private boolean lookingAt(Matcher matcher) {
+		try {
+			return matcher.lookingAt();
 		} catch (EndOfStreamException e) {
 			return false;
 		}

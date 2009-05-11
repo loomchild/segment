@@ -55,7 +55,7 @@
 			classpathref="project.class.path"
 			source="1.5"
 			target="1.5"
-			optimize="on"/>
+			debug="on"/>
 		<copy todir="build/classes">
 			<fileset dir="res" includes="**/*"/>
 		</copy>

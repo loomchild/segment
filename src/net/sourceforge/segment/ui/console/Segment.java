@@ -79,8 +79,8 @@ public class Segment {
 			System.exit(0);
 		}
 
-		Reader reader = getReader((System.in));
-		Writer writer = getWriter((System.out));
+		Reader reader = getReader(System.in);
+		Writer writer = getWriter(System.out);
 
 		String beginSegment = commandLine.getOptionValue('b');
 		if (beginSegment == null) {

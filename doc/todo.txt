@@ -1,1 +1,1 @@
-Zmienić na Java 1.5..
+Skonsolidować wszystkie polecenia w segment. Możliwość profilowania żywych plików.

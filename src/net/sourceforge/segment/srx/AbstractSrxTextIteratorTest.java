@@ -1,18 +1,13 @@
 package net.sourceforge.segment.srx;
 
-import static net.rootnode.loomchild.util.io.Util.getReader;
-import static net.rootnode.loomchild.util.io.Util.getResourceStream;
 import static net.rootnode.loomchild.util.testing.Utils.assertListEquals;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.segment.TextIterator;
-import net.sourceforge.segment.srx.io.Srx2Parser;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public abstract class AbstractSrxTextIteratorTest {
@@ -386,6 +381,39 @@ public abstract class AbstractSrxTextIteratorTest {
 				WORD_BOUNDARY_DOCUMENT, WORD_BOUNDARY_LANGUAGE);
 	}
 	
+	public static final String[] NON_BREAKING_LONGER_THAN_BREAKING_RESULT = 
+			new String[] { 
+	    "Ala ma kota.", " "
+	};
+
+	public static final String NON_BREAKING_LONGER_THAN_BREAKING_LANGUAGE = "";
+
+	public static final SrxDocument NON_BREAKING_LONGER_THAN_BREAKING_DOCUMENT = 
+		createNonBreakingLongerThanBreakingDocument();
+
+	public static SrxDocument createNonBreakingLongerThanBreakingDocument() {
+	    LanguageRule languageRule = new LanguageRule("");
+	
+		languageRule.addRule(new Rule(false, "\\.", "\\sa"));
+		languageRule.addRule(new Rule(true, "\\.", "\\s"));
+
+		SrxDocument document = new SrxDocument();
+		document.addLanguageMap(".*", languageRule);
+
+		return document;
+	}
+
+	/**
+	 * Test when non breaking rule is longer than breaking rule everything
+	 * is OK (problems with lookingAt throwing EndOfStreamException).
+	 */
+	@Test
+	public void testNonBreakingLongerThanBreaking() {
+		performTest(NON_BREAKING_LONGER_THAN_BREAKING_RESULT, 
+				NON_BREAKING_LONGER_THAN_BREAKING_DOCUMENT, 
+				NON_BREAKING_LONGER_THAN_BREAKING_LANGUAGE);
+	}
+
 	public static final String[] TICKET_1_RESULT = new String[] { 
 		"This is a sentence. "
 		};
@@ -422,17 +450,13 @@ public abstract class AbstractSrxTextIteratorTest {
 
 	private void performTest(String[] expectedResult, 
 			SrxDocument document, String languageCode) {
-		performTest("", expectedResult, document, languageCode);
-	}
-
-	private void performTest(String message, String[] expectedResult, 
-			SrxDocument document, String languageCode) {
 		
 		String text = merge(expectedResult);
 		
 		List<TextIterator> textIteratorList = 
 			getTextIteratorList(text, document, languageCode);
 		
+		int i = 0;
 		for (TextIterator textIterator : textIteratorList) {
 
 			List<String> segmentList = new ArrayList<String>();
@@ -440,7 +464,8 @@ public abstract class AbstractSrxTextIteratorTest {
 				segmentList.add(textIterator.next());
 			}
 
-			assertListEquals(message, expectedResult, segmentList);
+			assertListEquals("text iterator " + i, expectedResult, segmentList);
+			++i;
 		}
 	}
 
