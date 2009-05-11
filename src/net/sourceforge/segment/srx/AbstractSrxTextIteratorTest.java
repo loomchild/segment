@@ -3,6 +3,8 @@ package net.sourceforge.segment.srx;
 import static net.rootnode.loomchild.util.testing.Utils.assertListEquals;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -444,31 +446,38 @@ public abstract class AbstractSrxTextIteratorTest {
 				TICKET_1_DOCUMENT, TICKET_1_LANGUAGE);
 	}
 
-	protected abstract List<TextIterator> getTextIteratorList(String text, 
+	protected abstract TextIterator getStringTextIterator(String text, 
 			SrxDocument document, String languageCode);
 
+	protected abstract TextIterator getReaderTextIterator(Reader reader, 
+			SrxDocument document, String languageCode);
 
 	private void performTest(String[] expectedResult, 
 			SrxDocument document, String languageCode) {
 		
 		String text = merge(expectedResult);
 		
-		List<TextIterator> textIteratorList = 
-			getTextIteratorList(text, document, languageCode);
+		TextIterator textIterator;
+		List<String> segmentList;
 		
-		int i = 0;
-		for (TextIterator textIterator : textIteratorList) {
+		textIterator = getStringTextIterator(text, document, languageCode);
+		segmentList = segment(textIterator);
+		assertListEquals("String TextIterator", expectedResult, segmentList);
 
-			List<String> segmentList = new ArrayList<String>();
-			while (textIterator.hasNext()) {
-				segmentList.add(textIterator.next());
-			}
-
-			assertListEquals("text iterator " + i, expectedResult, segmentList);
-			++i;
-		}
+		StringReader reader = new StringReader(text);
+		textIterator = getReaderTextIterator(reader, document, languageCode);
+		segmentList = segment(textIterator);
+		assertListEquals("Reader TextIterator", expectedResult, segmentList);
 	}
 
+	private List<String> segment(TextIterator textIterator) {
+		List<String> segmentList = new ArrayList<String>();
+		while (textIterator.hasNext()) {
+			segmentList.add(textIterator.next());
+		}
+		return segmentList;
+	}
+	
 	private String merge(String[] stringArray) {
 		StringBuilder builder = new StringBuilder();
 		for (String string : stringArray) {

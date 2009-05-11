@@ -1,1 +1,2 @@
 Skonsolidować wszystkie polecenia w segment. Możliwość profilowania żywych plików.
+Spytać się jeszcze o languagetool.srx na LGPL.
