@@ -1,10 +1,12 @@
 package net.sourceforge.segment;
 
 import net.sourceforge.segment.srx.LanguageMapTest;
-import net.sourceforge.segment.srx.LegacySrxTextIteratorTest;
+import net.sourceforge.segment.srx.LegacySrxTextIteratorReaderTest;
+import net.sourceforge.segment.srx.LegacySrxTextIteratorStringTest;
 import net.sourceforge.segment.srx.RuleMatcherTest;
 import net.sourceforge.segment.srx.SrxDocumentTest;
-import net.sourceforge.segment.srx.SrxTextIteratorTest;
+import net.sourceforge.segment.srx.SrxTextIteratorReaderTest;
+import net.sourceforge.segment.srx.SrxTextIteratorStringTest;
 import net.sourceforge.segment.srx.UtilTest;
 import net.sourceforge.segment.srx.io.SrxParsersTest;
 import net.sourceforge.segment.srx.io.SrxTransformersTest;
@@ -19,7 +21,8 @@ import org.junit.runners.Suite;
 	UtilTest.class, LanguageMapTest.class, SrxDocumentTest.class,
 	RuleMatcherTest.class,
 
-	SrxTextIteratorTest.class, LegacySrxTextIteratorTest.class,
+	SrxTextIteratorStringTest.class, SrxTextIteratorReaderTest.class, 
+	LegacySrxTextIteratorStringTest.class, LegacySrxTextIteratorReaderTest.class,
 
 	SrxVersionTest.class, SrxParsersTest.class, SrxTransformersTest.class
 })

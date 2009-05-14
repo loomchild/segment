@@ -61,6 +61,11 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 	}
 
 	public LegacySrxTextIterator(SrxDocument document, String languageCode, 
+			Reader reader, int length) {
+		this(document, languageCode, new ReaderCharSequence(reader, length));
+	}
+
+	public LegacySrxTextIterator(SrxDocument document, String languageCode, 
 			Reader reader) {
 		this(document, languageCode, new ReaderCharSequence(reader));
 	}

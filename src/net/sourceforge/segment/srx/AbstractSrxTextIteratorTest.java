@@ -3,11 +3,10 @@ package net.sourceforge.segment.srx;
 import static net.rootnode.loomchild.util.testing.Utils.assertListEquals;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.rootnode.loomchild.util.exceptions.EndOfStreamException;
 import net.sourceforge.segment.TextIterator;
 
 import org.junit.Test;
@@ -415,7 +414,41 @@ public abstract class AbstractSrxTextIteratorTest {
 				NON_BREAKING_LONGER_THAN_BREAKING_DOCUMENT, 
 				NON_BREAKING_LONGER_THAN_BREAKING_LANGUAGE);
 	}
+	
+	public static final String[] MATCHING_END_RESULT = 
+		new String[] { 
+		"A.", "."
+	};
 
+	public static final String MATCHING_END_LANGUAGE = "";
+
+	public static final SrxDocument MATCHING_END_DOCUMENT = 
+		createMatchingEndDocument();
+
+	public static SrxDocument createMatchingEndDocument() {
+		LanguageRule languageRule = new LanguageRule("");
+
+		languageRule.addRule(new Rule(true, "\\.\\.\\.", ""));
+		languageRule.addRule(new Rule(true, "\\.", ""));
+
+		SrxDocument document = new SrxDocument();
+		document.addLanguageMap(".*", languageRule);
+
+		return document;
+	}
+
+	/**
+	 * Test if unfinished rule matching the end containing other rule will not
+	 * supress it. Does not work in reader version of SrxTextIterator 
+	 * ({@link SrxTextIteratorReaderTest}) because matching throws 
+	 * {@link EndOfStreamException} before it finds the shorter rule.
+	 */
+	@Test
+	public void testMatchingEnd() {
+		performTest(MATCHING_END_RESULT, MATCHING_END_DOCUMENT, 
+				MATCHING_END_LANGUAGE);
+	}
+	
 	public static final String[] TICKET_1_RESULT = new String[] { 
 		"This is a sentence. "
 		};
@@ -446,10 +479,7 @@ public abstract class AbstractSrxTextIteratorTest {
 				TICKET_1_DOCUMENT, TICKET_1_LANGUAGE);
 	}
 
-	protected abstract TextIterator getStringTextIterator(String text, 
-			SrxDocument document, String languageCode);
-
-	protected abstract TextIterator getReaderTextIterator(Reader reader, 
+	protected abstract TextIterator getTextIterator(String text, 
 			SrxDocument document, String languageCode);
 
 	private void performTest(String[] expectedResult, 
@@ -460,14 +490,9 @@ public abstract class AbstractSrxTextIteratorTest {
 		TextIterator textIterator;
 		List<String> segmentList;
 		
-		textIterator = getStringTextIterator(text, document, languageCode);
+		textIterator = getTextIterator(text, document, languageCode);
 		segmentList = segment(textIterator);
-		assertListEquals("String TextIterator", expectedResult, segmentList);
-
-		StringReader reader = new StringReader(text);
-		textIterator = getReaderTextIterator(reader, document, languageCode);
-		segmentList = segment(textIterator);
-		assertListEquals("Reader TextIterator", expectedResult, segmentList);
+		assertListEquals(expectedResult, segmentList);
 	}
 
 	private List<String> segment(TextIterator textIterator) {

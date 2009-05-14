@@ -81,6 +81,17 @@ public class SrxTextIterator extends AbstractTextIterator {
 	 *            Language code to select the rules.
 	 * @param reader
 	 *            Reader from which text will be read.
+	 * @param length
+	 * 			  Length of stream in reader.
+	 */
+	public SrxTextIterator(SrxDocument document, String languageCode,
+			Reader reader, int length) {
+		this(document, languageCode, new ReaderCharSequence(reader, length));
+	}
+
+	/**
+	 * Version where stream has unknown length. Little unstable.
+	 * See {@link AbstractSrxTextIteratorTest#testMatchingEnd()} for details. 
 	 */
 	public SrxTextIterator(SrxDocument document, String languageCode,
 			Reader reader) {
