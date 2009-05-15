@@ -104,7 +104,8 @@ public class SrxTextIterator extends AbstractTextIterator {
 	/**
 	 * Creates streaming text iterator with unknown stream length. 
 	 * Little unstable.
-	 * See {@link AbstractSrxTextIteratorTest#testMatchingEnd()} for details. 
+	 * See {@link net.sourceforge.segment.srx.AbstractSrxTextIteratorTest#testMatchingEnd()} 
+	 * for details. 
 	 */
 	public SrxTextIterator(SrxDocument document, String languageCode,
 			Reader reader) {
