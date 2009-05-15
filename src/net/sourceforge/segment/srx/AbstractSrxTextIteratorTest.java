@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.rootnode.loomchild.util.exceptions.EndOfStreamException;
 import net.sourceforge.segment.TextIterator;
 
 import org.junit.Test;
@@ -441,7 +440,9 @@ public abstract class AbstractSrxTextIteratorTest {
 	 * Test if unfinished rule matching the end containing other rule will not
 	 * supress it. Does not work in reader version of SrxTextIterator 
 	 * ({@link SrxTextIteratorReaderTest}) because matching throws 
-	 * {@link EndOfStreamException} before it finds the shorter rule.
+	 * IndexOutOfBoundsException before it finds the shorter rule.
+ 	 * In some real cases it will work anyway because of lookahead buffer 
+	 * (set to 1 for tests, but in real life will be 2K).
 	 */
 	@Test
 	public void testMatchingEnd() {

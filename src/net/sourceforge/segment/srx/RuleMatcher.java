@@ -49,7 +49,7 @@ public class RuleMatcher implements Cloneable {
 	public boolean find() {
 		found = false;
 		while ((!found) && beforeMatcher.find()) {
-			afterMatcher.region(beforeMatcher.end(), afterMatcher.regionEnd());
+			afterMatcher.region(beforeMatcher.end(), text.length());
 			found = afterMatcher.lookingAt();
 		}
 		return found;

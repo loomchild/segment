@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.rootnode.loomchild.util.exceptions.EndOfStreamException;
 import net.rootnode.loomchild.util.io.ReaderCharSequence;
 import net.sourceforge.segment.AbstractTextIterator;
 
@@ -46,9 +45,6 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 		this.segment = null;
 		this.startPosition = 0;
 		this.endPosition = 0;
-		if (!canReadNextChar()) {
-			this.startPosition = text.length();
-		}
 
 		this.ruleMatcherList = new LinkedList<RuleMatcher>();
 		for (LanguageRule languageRule : languageRuleList) {
@@ -58,6 +54,11 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 			}
 		}
 
+	}
+
+	public LegacySrxTextIterator(SrxDocument document, String languageCode, 
+			Reader reader, int length, int bufferSize) {
+		this(document, languageCode, new ReaderCharSequence(reader, length, bufferSize));
 	}
 
 	public LegacySrxTextIterator(SrxDocument document, String languageCode, 
@@ -89,12 +90,7 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 						endPosition > startPosition) {
 					found = true;
 				}
-				if (canReadNextChar()) {
-					moveMatchers();
-				} else {
-					found = false;
-					ruleMatcherList.clear();
-				}
+				moveMatchers();
 			}
 			if (!found) {
 				endPosition = text.length();
@@ -144,7 +140,7 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 		try {
 			matcher.find();
 			return !matcher.hitEnd();
-		} catch (EndOfStreamException e) {
+		} catch (IndexOutOfBoundsException e) {
 			return false;
 		}		
 	}
@@ -162,25 +158,6 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 			}
 		}
 		return minMatcher;
-	}
-
-	/**
-	 * Checks if next character can be read. It is needed as
-	 * {@link net.rootnode.loomchild.util.io.ReaderCharSequence} throws
-	 * EndOfStreamException at the end.
-	 * @return True if next character is available.
-	 */
-	private boolean canReadNextChar() {
-		try {
-			if (endPosition < text.length()) {
-				text.charAt(endPosition);
-				return true;
-			} else {
-				return false;
-			}
-		} catch (EndOfStreamException e) {
-			return false;
-		}
 	}
 	
 }

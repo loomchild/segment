@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.rootnode.loomchild.util.exceptions.EndOfStreamException;
 import net.rootnode.loomchild.util.io.ReaderCharSequence;
 import net.sourceforge.segment.AbstractTextIterator;
 
@@ -46,11 +45,6 @@ public class SrxTextIterator extends AbstractTextIterator {
 		this.startPosition = 0;
 		this.endPosition = 0;
 
-		//If text is empty iterator finishes immediately.
-		if (!canReadNextChar()) {
-			this.startPosition = text.length();
-		}
-
 		List<LanguageRule> languageRuleList = 
 			document.getLanguageRuleList(languageCode);
 		
@@ -83,14 +77,33 @@ public class SrxTextIterator extends AbstractTextIterator {
 	 *            Reader from which text will be read.
 	 * @param length
 	 * 			  Length of stream in reader.
+	 * @param bufferSize
+	 * 			  Reader buffer size. Segments cannot be longer than this value.
 	 */
 	public SrxTextIterator(SrxDocument document, String languageCode,
-			Reader reader, int length) {
-		this(document, languageCode, new ReaderCharSequence(reader, length));
+			Reader reader, int length, int bufferSize) {
+		this(document, languageCode, 
+				new ReaderCharSequence(reader, length, bufferSize));
 	}
 
 	/**
-	 * Version where stream has unknown length. Little unstable.
+	 * Creates streaming text iterator with default buffer size 
+	 * ({@link ReaderCharSequence#DEFAULT_BUFFER_SIZE}). 
+	 * See {@link #SrxTextIterator(SrxDocument, String, Reader, int, int)}}.
+	 * @param document
+	 * @param languageCode
+	 * @param reader
+	 * @param length
+	 */
+	public SrxTextIterator(SrxDocument document, String languageCode,
+			Reader reader, int length) {
+		this(document, languageCode, 
+				new ReaderCharSequence(reader, length));
+	}
+
+	/**
+	 * Creates streaming text iterator with unknown stream length. 
+	 * Little unstable.
 	 * See {@link AbstractSrxTextIteratorTest#testMatchingEnd()} for details. 
 	 */
 	public SrxTextIterator(SrxDocument document, String languageCode,
@@ -148,7 +161,7 @@ public class SrxTextIterator extends AbstractTextIterator {
 					}
 				}
 			}
-			if (!found || !canReadNextChar()) {
+			if (!found) {
 				endPosition = text.length();
 			}
 			segment = text.subSequence(startPosition, endPosition).toString();
@@ -156,25 +169,6 @@ public class SrxTextIterator extends AbstractTextIterator {
 			return segment;
 		} else {
 			return null;
-		}
-	}
-	
-	/**
-	 * Checks if next character can be read. It is needed as
-	 * {@link net.rootnode.loomchild.util.io.ReaderCharSequence} throws
-	 * EndOfStreamException at the end.
-	 * @return True if next character is available.
-	 */
-	private boolean canReadNextChar() {
-		try {
-			if (endPosition < text.length()) {
-				text.charAt(endPosition);
-				return true;
-			} else {
-				return false;
-			}
-		} catch (EndOfStreamException e) {
-			return false;
 		}
 	}
 
@@ -191,7 +185,7 @@ public class SrxTextIterator extends AbstractTextIterator {
 	private boolean find(Matcher matcher) {
 		try {
 			return matcher.find();
-		} catch (EndOfStreamException e) {
+		} catch (IndexOutOfBoundsException e) {
 			return false;
 		}
 	}
@@ -208,7 +202,7 @@ public class SrxTextIterator extends AbstractTextIterator {
 	private boolean lookingAt(Matcher matcher) {
 		try {
 			return matcher.lookingAt();
-		} catch (EndOfStreamException e) {
+		} catch (IndexOutOfBoundsException e) {
 			return false;
 		}
 	}
