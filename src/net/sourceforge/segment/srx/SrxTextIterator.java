@@ -2,10 +2,10 @@ package net.sourceforge.segment.srx;
 
 import java.io.Reader;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.rootnode.loomchild.util.io.ReaderCharSequence;
+import net.rootnode.loomchild.util.regex.ReaderMatcher;
 import net.sourceforge.segment.AbstractTextIterator;
 
 /**
@@ -21,7 +21,7 @@ public class SrxTextIterator extends AbstractTextIterator {
 	
 	private MergedPattern mergedPattern;
 
-	private Matcher breakingMatcher;
+	private ReaderMatcher breakingMatcher;
 
 	private int startPosition, endPosition;
 
@@ -56,8 +56,8 @@ public class SrxTextIterator extends AbstractTextIterator {
 		}
 		
 		if (mergedPattern.getBreakingPattern() != null) {
-			this.breakingMatcher = 
-				mergedPattern.getBreakingPattern().matcher(text);
+			this.breakingMatcher = new ReaderMatcher(
+					mergedPattern.getBreakingPattern(), text);
 		}
 		
 	}
@@ -82,18 +82,14 @@ public class SrxTextIterator extends AbstractTextIterator {
 	 */
 	public SrxTextIterator(SrxDocument document, String languageCode,
 			Reader reader, int length, int bufferSize) {
-		this(document, languageCode, 
-				new ReaderCharSequence(reader, length, bufferSize));
+		this(document, languageCode, new ReaderCharSequence(reader, length, 
+				bufferSize));
 	}
 
 	/**
 	 * Creates streaming text iterator with default buffer size 
 	 * ({@link ReaderCharSequence#DEFAULT_BUFFER_SIZE}). 
 	 * See {@link #SrxTextIterator(SrxDocument, String, Reader, int, int)}}.
-	 * @param document
-	 * @param languageCode
-	 * @param reader
-	 * @param length
 	 */
 	public SrxTextIterator(SrxDocument document, String languageCode,
 			Reader reader, int length) {
@@ -103,9 +99,7 @@ public class SrxTextIterator extends AbstractTextIterator {
 
 	/**
 	 * Creates streaming text iterator with unknown stream length. 
-	 * Little unstable.
-	 * See {@link net.sourceforge.segment.srx.AbstractSrxTextIteratorTest#testMatchingEnd()} 
-	 * for details. 
+	 * See {@link #SrxTextIterator(SrxDocument, String, Reader, int, int)}}.
 	 */
 	public SrxTextIterator(SrxDocument document, String languageCode,
 			Reader reader) {
@@ -119,7 +113,7 @@ public class SrxTextIterator extends AbstractTextIterator {
 		if (hasNext()) {
 			boolean found = false;
 			if (breakingMatcher != null) {
-				while (!found && find(breakingMatcher)) {
+				while (!found && breakingMatcher.find()) {
 					endPosition = breakingMatcher.end();
 					// When there's more than one breaking rule at the given
 					// place only the first is matched, the rest is skipped.
@@ -135,15 +129,15 @@ public class SrxTextIterator extends AbstractTextIterator {
 
 							// Null non breaking pattern does not match anything
 							if (nonBreakingPattern != null) {
-								Matcher nonBreakingMatcher = nonBreakingPattern
-										.matcher(text);
+								ReaderMatcher nonBreakingMatcher = 
+									new ReaderMatcher(nonBreakingPattern, text);
 								nonBreakingMatcher.useTransparentBounds(true);
 								// When using transparent bound the upper bound
 								// is not important?
 								// Needed because text.length() is unknown.
 								nonBreakingMatcher.region(endPosition,
 										endPosition);
-								found = !lookingAt(nonBreakingMatcher);
+								found = !nonBreakingMatcher.lookingAt();
 							}
 
 							// Break when non-breaking rule matches or
@@ -170,41 +164,6 @@ public class SrxTextIterator extends AbstractTextIterator {
 			return segment;
 		} else {
 			return null;
-		}
-	}
-
-	/**
-	 * Searches for the next pattern occurrence and return true if it has been
-	 * found, false otherwise. It is needed as
-	 * {@link net.rootnode.loomchild.util.io.ReaderCharSequence} throws
-	 * EndOfStreamException at the end.
-	 * 
-	 * @param matcher
-	 *            Matcher which will perform search.
-	 * @return Returns true when the matcher found the pattern.
-	 */
-	private boolean find(Matcher matcher) {
-		try {
-			return matcher.find();
-		} catch (IndexOutOfBoundsException e) {
-			return false;
-		}
-	}
-
-	/**
-	 * Checks lookingAt for a given matcher. It is needed as
-	 * {@link net.rootnode.loomchild.util.io.ReaderCharSequence} throws
-	 * EndOfStreamException at the end.
-	 * 
-	 * @param matcher
-	 *            Matcher which will be checked.
-	 * @return Returns true if lookingAt is true.
-	 */
-	private boolean lookingAt(Matcher matcher) {
-		try {
-			return matcher.lookingAt();
-		} catch (IndexOutOfBoundsException e) {
-			return false;
 		}
 	}
 

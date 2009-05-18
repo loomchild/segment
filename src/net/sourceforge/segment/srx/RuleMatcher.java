@@ -1,7 +1,8 @@
 package net.sourceforge.segment.srx;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import net.rootnode.loomchild.util.regex.ReaderMatcher;
 
 
 /**
@@ -18,9 +19,9 @@ public class RuleMatcher implements Cloneable {
 	
 	private CharSequence text;
 	
-	private Matcher beforeMatcher;
+	private ReaderMatcher beforeMatcher;
 	
-	private Matcher afterMatcher;
+	private ReaderMatcher afterMatcher;
 	
 	boolean found;
 
@@ -36,8 +37,8 @@ public class RuleMatcher implements Cloneable {
 		this.text = text;
 		Pattern beforePattern = compile(rule.getBeforePattern());
 		Pattern afterPattern = compile(rule.getAfterPattern());
-		this.beforeMatcher = beforePattern.matcher(text);
-		this.afterMatcher = afterPattern.matcher(text);	
+		this.beforeMatcher = new ReaderMatcher(beforePattern, text);
+		this.afterMatcher = new ReaderMatcher(afterPattern, text);	
 		this.found = true;
 	}
 	
@@ -90,14 +91,6 @@ public class RuleMatcher implements Cloneable {
 		return rule;
 	}
 
-	public RuleMatcher clone() {
-		RuleMatcher ruleMatcher = new RuleMatcher(document, rule, text);
-		ruleMatcher.found = found;
-		cloneMatcher(ruleMatcher.beforeMatcher, beforeMatcher);
-		cloneMatcher(ruleMatcher.afterMatcher, afterMatcher);
-		return ruleMatcher;
-	}
-	
 	private Pattern compile(String regex) {
 		Pattern pattern = (Pattern)document.getCache().get(regex);
 		if (pattern == null) {
@@ -105,10 +98,5 @@ public class RuleMatcher implements Cloneable {
 			document.getCache().put(regex, pattern);
 		}
 		return pattern;
-	}
-	
-	private void cloneMatcher(Matcher matcher, Matcher referenceMatcher) {
-		matcher.region(referenceMatcher.regionStart(), 
-				referenceMatcher.regionEnd());
 	}
 }

@@ -2,15 +2,10 @@
 
 	<description>Program dzielący tekst na segmenty</description>
 
-	<property name="project.name" value="${ant.project.name}"/>
-	<property name="project.authors" value="Jarek Lipski"/>
 
-	<property name="generate.schema" value="res/net/sourceforge/segment/res/xml/srx20.xsd"/>
-	<property name="generate.package" value="net.sourceforge.segment.srx.io.bind"/>
-	<property name="generate.dir" value="net/sourceforge/segment/srx/io/bind"/>
-	<property name="test.class" value="net.sourceforge.segment.ui.console.Test"/>
+	<property file="build.number" />
+	<property file="build.properties" />
 
-	
 	<path id="project.class.path">
 		<pathelement path="${java.class.path}"/>
 		<pathelement location="build/classes"/>
@@ -21,18 +16,6 @@
 	
 	<target name="init">
 		<tstamp/>
-	</target>
-
-	
-	<target name="buildnumber" description="increment build number, the build number would be read from 'build.number' file">		
-		<buildnumber/>
-	</target>
-
-	
-	<target name="fullname" description="set project.fullname property">		
-		<property file="version.number"/>
-		<property file="build.number"/>
-        <property name="project.fullname" value="${project.name}-${version.number}.${build.number}"/>      
 	</target>
 
 	
@@ -62,7 +45,8 @@
 	</target>
 
 	
-	<target name="jardist" depends="compile, buildnumber, fullname" description="generate binary jar archive">
+	<target name="jardist" depends="compile" description="generate binary jar archive">
+		<buildnumber/>
 		<mkdir dir="build/dist"/>
 		<delete file="build/dist/${project.name}-*.jar" failonerror="false"/>
 		<jar destfile="build/dist/${project.fullname}.jar">

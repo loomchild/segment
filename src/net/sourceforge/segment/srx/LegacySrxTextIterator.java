@@ -137,12 +137,8 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 	}
 	
 	private boolean moveMatcher(RuleMatcher matcher) {
-		try {
-			matcher.find();
-			return !matcher.hitEnd();
-		} catch (IndexOutOfBoundsException e) {
-			return false;
-		}		
+		matcher.find();
+		return !matcher.hitEnd();
 	}
 	
 	/**

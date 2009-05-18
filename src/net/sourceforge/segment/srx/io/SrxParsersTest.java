@@ -2,37 +2,55 @@ package net.sourceforge.segment.srx.io;
 
 import static net.rootnode.loomchild.util.io.Util.getReader;
 import static net.rootnode.loomchild.util.io.Util.getResourceStream;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.Reader;
 import java.util.List;
 
-import junit.framework.TestCase;
+import net.rootnode.loomchild.util.exceptions.XmlException;
 import net.sourceforge.segment.srx.LanguageRule;
 import net.sourceforge.segment.srx.Rule;
 import net.sourceforge.segment.srx.SrxDocument;
 import net.sourceforge.segment.srx.SrxParser;
 
-public class SrxParsersTest extends TestCase {
+import org.junit.Test;
+
+public class SrxParsersTest {
 
 	public static final String SRX_1_DOCUMENT_NAME = "net/sourceforge/segment/res/test/example1.srx";
 
 	public static final String SRX_2_DOCUMENT_NAME = "net/sourceforge/segment/res/test/example.srx";
 
 	public static final String TICKET_1_DOCUMENT_NAME = "net/sourceforge/segment/res/test/ticket1.srx";
-	
+
+	public static final String INVALID_DOCUMENT_NAME = "net/sourceforge/segment/res/test/invalid.srx";
+
+	@Test
 	public void testSrx1Parse() {
 		testSrx1Parse(new Srx1Parser());
 	}
 
+	@Test
 	public void testSrx2Parse() {
 		testSrx2Parse(new Srx2Parser());
 	}
 
+	@Test
 	public void testAnyParse() {
 		testSrx1Parse(new SrxAnyParser());
 		testSrx2Parse(new SrxAnyParser());
 	}
+	
+	@Test(expected = XmlException.class)
+	public void testSrx2ParseInvalid() {
+	    Reader reader = getReader(getResourceStream(INVALID_DOCUMENT_NAME));
+	    SrxParser parser = new Srx2Parser();
+	    parser.parse(reader);
+	}
 
+	@Test
 	public void testSrx2ParseTicket1() {
 	    Reader reader = getReader(getResourceStream(TICKET_1_DOCUMENT_NAME));
 

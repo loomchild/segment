@@ -33,13 +33,13 @@ public class Srx2Parser implements SrxParser {
 
 	private static final Log log = LogFactory.getLog(Srx2Parser.class);
 
-	//private static final String CONTEXT = "net.sourceforge.segment.srx.io.bind";
-	private static final Class<?> CLASS_TO_BE_BOUND = 
-		net.sourceforge.segment.srx.io.bind.Srx.class;
+	private static final String CONTEXT = "net.sourceforge.segment.srx.io.bind";
 	
 	private static final String SCHEMA = "net/sourceforge/segment/res/xml/srx20.xsd";
 
-	private static Bind bind = new Bind(getContext(CLASS_TO_BE_BOUND),
+	// Must pass the ClassLoader directly due to Java 1.5 bugs (LanguageTool).
+	private static Bind bind = new Bind(
+			getContext(CONTEXT, Srx2Parser.class.getClassLoader()),
 			getSchema(getReader(getResourceStream(SCHEMA))));
 
 	/**
