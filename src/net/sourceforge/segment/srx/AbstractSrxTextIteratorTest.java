@@ -54,8 +54,6 @@ public abstract class AbstractSrxTextIteratorTest {
 	public static final String[] EMPTY_RESULT = new String[] { 
 		};
 
-	public static final String EMPTY_LANGUAGE = "";
-	
 	public static final SrxDocument EMPTY_DOCUMENT = 
 		createEmptyDocument();
 	
@@ -73,7 +71,7 @@ public abstract class AbstractSrxTextIteratorTest {
 	 */
 	@Test
 	public void testEmptyText() {
-		performTest(EMPTY_RESULT, EMPTY_DOCUMENT, EMPTY_LANGUAGE);
+		performTest(EMPTY_RESULT, EMPTY_DOCUMENT);
 	}
 
 	
@@ -82,8 +80,6 @@ public abstract class AbstractSrxTextIteratorTest {
 		" Drugie dn. to: Ja też nie"
 		};
 
-	public static final String ALTERNATIVE_RULE_LANGUAGE = "";
-	
 	public static final SrxDocument ALTERNATIVE_RULE_DOCUMENT = 
 		createAlternativeRuleDocument();
 	
@@ -102,8 +98,7 @@ public abstract class AbstractSrxTextIteratorTest {
 	 */
 	@Test
 	public void testAlternativeRuleSplit() {
-		performTest(ALTERNATIVE_RULE_RESULT, 
-				ALTERNATIVE_RULE_DOCUMENT, ALTERNATIVE_RULE_LANGUAGE);
+		performTest(ALTERNATIVE_RULE_RESULT, ALTERNATIVE_RULE_DOCUMENT);
 	}
 	
 
@@ -112,8 +107,6 @@ public abstract class AbstractSrxTextIteratorTest {
 		" Ja też nie"
 		};
 
-	public static final String OVERLAPPING_RULES_LANGUAGE = "";
-	
 	public static final SrxDocument OVERLAPPING_RULES_DOCUMENT = 
 		createOverlappingRulesDocument();
 	
@@ -133,8 +126,7 @@ public abstract class AbstractSrxTextIteratorTest {
 	 */
 	@Test
 	public void testOverlappingRulesSplit() {
-		performTest(OVERLAPPING_RULES_RESULT, 
-				OVERLAPPING_RULES_DOCUMENT, OVERLAPPING_RULES_LANGUAGE);
+		performTest(OVERLAPPING_RULES_RESULT, OVERLAPPING_RULES_DOCUMENT);
 	}
 
 
@@ -144,8 +136,6 @@ public abstract class AbstractSrxTextIteratorTest {
 		" d."
 		};
 
-	public static final String INTERLACED_RULES_LANGUAGE = "";
-	
 	public static final SrxDocument INTERLACED_RULES_DOCUMENT = 
 		createInterlacedRulesDocument();
 	
@@ -167,8 +157,7 @@ public abstract class AbstractSrxTextIteratorTest {
 	 */
 	@Test
 	public void testInterlacedRulesSplit() throws IOException {
-		performTest(INTERLACED_RULES_RESULT, 
-				INTERLACED_RULES_DOCUMENT, INTERLACED_RULES_LANGUAGE);
+		performTest(INTERLACED_RULES_RESULT, INTERLACED_RULES_DOCUMENT);
 	}
 
 
@@ -176,8 +165,6 @@ public abstract class AbstractSrxTextIteratorTest {
 		"abcab"
 		};
 
-	public static final String NO_BREAKING_RULES_LANGUAGE = "";
-	
 	public static final SrxDocument NO_BREAKING_RULES_DOCUMENT = 
 		createNoBreakingRulesDocument();
 	
@@ -195,8 +182,7 @@ public abstract class AbstractSrxTextIteratorTest {
 	 */
 	@Test
 	public void testNoBreakingRules() {
-		performTest(NO_BREAKING_RULES_RESULT, 
-				NO_BREAKING_RULES_DOCUMENT, NO_BREAKING_RULES_LANGUAGE);
+		performTest(NO_BREAKING_RULES_RESULT, NO_BREAKING_RULES_DOCUMENT);
 	}
 
 
@@ -205,8 +191,6 @@ public abstract class AbstractSrxTextIteratorTest {
 		" Xyz."
 		};
 
-	public static final String INFINITE_NEGATIVE_RULE_LANGUAGE = "";
-	
 	public static final SrxDocument INFINITE_NEGATIVE_RULE_DOCUMENT = 
 		createInfiniteNegativeRuleDocument();
 	
@@ -226,7 +210,7 @@ public abstract class AbstractSrxTextIteratorTest {
 	@Test
 	public void testInfiniteNegativeRule() {
 		performTest(INFINITE_NEGATIVE_RULE_RESULT, 
-				INFINITE_NEGATIVE_RULE_DOCUMENT, INFINITE_NEGATIVE_RULE_LANGUAGE);
+				INFINITE_NEGATIVE_RULE_DOCUMENT);
 	}
 
 
@@ -236,8 +220,6 @@ public abstract class AbstractSrxTextIteratorTest {
 		" Xyz."
 		};
 
-	public static final String ONLY_BREAKING_RULES_LANGUAGE = "";
-	
 	public static final SrxDocument ONLY_BREAKING_RULES_DOCUMENT = 
 		createOnlyBreakingRulesDocument();
 	
@@ -256,8 +238,7 @@ public abstract class AbstractSrxTextIteratorTest {
 	 */
 	@Test
 	public void testOnlyBreakingRules() {
-		performTest(ONLY_BREAKING_RULES_RESULT, 
-				 ONLY_BREAKING_RULES_DOCUMENT, ONLY_BREAKING_RULES_LANGUAGE);
+		performTest(ONLY_BREAKING_RULES_RESULT, ONLY_BREAKING_RULES_DOCUMENT);
 	}
 
 	
@@ -265,8 +246,6 @@ public abstract class AbstractSrxTextIteratorTest {
 		"a."
 		};
 
-	public static final String BREAK_AT_THE_END_LANGUAGE = "";
-	
 	public static final SrxDocument BREAK_AT_THE_END_DOCUMENT = 
 		createBreakAtTheEndDocument();
 	
@@ -284,8 +263,7 @@ public abstract class AbstractSrxTextIteratorTest {
 	 */
 	@Test
 	public void testBreakAtTheEndOfText() {
-		performTest(BREAK_AT_THE_END_RESULT, 
-				BREAK_AT_THE_END_DOCUMENT, BREAK_AT_THE_END_LANGUAGE);
+		performTest(BREAK_AT_THE_END_RESULT, BREAK_AT_THE_END_DOCUMENT);
 	}
 	
 	
@@ -293,8 +271,6 @@ public abstract class AbstractSrxTextIteratorTest {
 		"a. b. c"
 		};
 
-	public static final String EMPTY_NON_BREAKING_RULE_LANGUAGE = "";
-	
 	public static final SrxDocument EMPTY_NON_BREAKING_RULE_DOCUMENT = 
 		createEmptyNonBreakingRuleDocument();
 	
@@ -315,8 +291,7 @@ public abstract class AbstractSrxTextIteratorTest {
 	@Test
 	public void testEmptyNonBreakingRule() {
 		performTest(EMPTY_NON_BREAKING_RULE_RESULT, 
-				EMPTY_NON_BREAKING_RULE_DOCUMENT, 
-				EMPTY_NON_BREAKING_RULE_LANGUAGE);
+				EMPTY_NON_BREAKING_RULE_DOCUMENT);
 	}
 	
 	
@@ -327,8 +302,6 @@ public abstract class AbstractSrxTextIteratorTest {
 		"c"
 		};
 
-	public static final String EMPTY_BREAKING_RULE_LANGUAGE = "";
-	
 	public static final SrxDocument EMPTY_BREAKING_RULE_DOCUMENT = 
 		createEmptyBreakingRuleDocument();
 	
@@ -347,8 +320,7 @@ public abstract class AbstractSrxTextIteratorTest {
 	 */
 	@Test
 	public void testEmptyBreakingRule() {
-		performTest(EMPTY_BREAKING_RULE_RESULT, 
-				EMPTY_BREAKING_RULE_DOCUMENT, EMPTY_BREAKING_RULE_LANGUAGE);
+		performTest(EMPTY_BREAKING_RULE_RESULT, EMPTY_BREAKING_RULE_DOCUMENT);
 	}
 	
 	public static final String[] WORD_BOUNDARY_RESULT = new String[] { 
@@ -386,8 +358,6 @@ public abstract class AbstractSrxTextIteratorTest {
 	    "Ala ma kota.", " "
 	};
 
-	public static final String NON_BREAKING_LONGER_THAN_BREAKING_LANGUAGE = "";
-
 	public static final SrxDocument NON_BREAKING_LONGER_THAN_BREAKING_DOCUMENT = 
 		createNonBreakingLongerThanBreakingDocument();
 
@@ -410,16 +380,13 @@ public abstract class AbstractSrxTextIteratorTest {
 	@Test
 	public void testNonBreakingLongerThanBreaking() {
 		performTest(NON_BREAKING_LONGER_THAN_BREAKING_RESULT, 
-				NON_BREAKING_LONGER_THAN_BREAKING_DOCUMENT, 
-				NON_BREAKING_LONGER_THAN_BREAKING_LANGUAGE);
+				NON_BREAKING_LONGER_THAN_BREAKING_DOCUMENT);
 	}
 	
 	public static final String[] MATCHING_END_RESULT = 
 		new String[] { 
 		"A.", "."
 	};
-
-	public static final String MATCHING_END_LANGUAGE = "";
 
 	public static final SrxDocument MATCHING_END_DOCUMENT = 
 		createMatchingEndDocument();
@@ -442,16 +409,41 @@ public abstract class AbstractSrxTextIteratorTest {
 	 */
 	@Test
 	public void testMatchingEnd() {
-		performTest(MATCHING_END_RESULT, MATCHING_END_DOCUMENT, 
-				MATCHING_END_LANGUAGE);
+		performTest(MATCHING_END_RESULT, MATCHING_END_DOCUMENT);
+	}
+	
+	public static final String[] MATCHING_ALL_RESULT = 
+		new String[] { 
+		"A", " B.", " C", " "
+	};
+
+	public static final SrxDocument MATCHING_ALL_DOCUMENT = 
+		createMatchingAllDocument();
+
+	public static SrxDocument createMatchingAllDocument() {
+		LanguageRule languageRule = new LanguageRule("");
+
+		languageRule.addRule(new Rule(true, "[^\\s]*", "\\s"));
+		languageRule.addRule(new Rule(true, "\\.", "\\s"));
+
+		SrxDocument document = new SrxDocument();
+		document.addLanguageMap(".*", languageRule);
+
+		return document;
+	}
+
+	/**
+	 * Test if rules matching whole document will not break other rules.
+	 */
+	@Test
+	public void testMatchingAll() {
+		performTest(MATCHING_ALL_RESULT, MATCHING_ALL_DOCUMENT);
 	}
 	
 	public static final String[] TICKET_1_RESULT = new String[] { 
 		"This is a sentence. "
 		};
 
-	public static final String TICKET_1_LANGUAGE = "";
-	
 	public static final SrxDocument TICKET_1_DOCUMENT = 
 		createTicket1Document();
 	
@@ -472,13 +464,16 @@ public abstract class AbstractSrxTextIteratorTest {
 	 */
 	@Test
 	public void testTicket1Rule() {
-		performTest(TICKET_1_RESULT, 
-				TICKET_1_DOCUMENT, TICKET_1_LANGUAGE);
+		performTest(TICKET_1_RESULT, TICKET_1_DOCUMENT);
 	}
 
 	protected abstract TextIterator getTextIterator(String text, 
 			SrxDocument document, String languageCode);
 
+	private void performTest(String[] expectedResult, SrxDocument document) {
+		performTest(expectedResult, document, "");
+	}
+		
 	private void performTest(String[] expectedResult, 
 			SrxDocument document, String languageCode) {
 		
