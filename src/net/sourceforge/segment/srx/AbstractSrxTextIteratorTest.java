@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.rootnode.loomchild.util.io.ReaderCharSequence;
 import net.sourceforge.segment.TextIterator;
 
 import org.junit.Test;
@@ -438,6 +439,73 @@ public abstract class AbstractSrxTextIteratorTest {
 	@Test
 	public void testMatchingAll() {
 		performTest(MATCHING_ALL_RESULT, MATCHING_ALL_DOCUMENT);
+	}
+
+	public static final String[] OVERLAPPING_BREAKING_RULES_RESULT = 
+		new String[] { 
+		"A.", ".", ".", "B"
+	};
+
+	public static final SrxDocument OVERLAPPING_BREAKING_RULES_DOCUMENT = 
+		createOverlappingBreakingRulesDocument();
+
+	public static SrxDocument createOverlappingBreakingRulesDocument() {
+		LanguageRule languageRule = new LanguageRule("");
+
+		// Order matters - in reverse order it will work.
+		languageRule.addRule(new Rule(true, "\\.\\.\\.", ""));
+		languageRule.addRule(new Rule(true, "\\.", ""));
+
+		SrxDocument document = new SrxDocument();
+		document.addLanguageMap(".*", languageRule);
+
+		return document;
+	}
+
+	/**
+	 * Test if overlapping breaking rules do not interfere with each other.
+	 */
+	@Test
+	public void testOverlappingBreakingRules() {
+		performTest(OVERLAPPING_BREAKING_RULES_RESULT, 
+				OVERLAPPING_BREAKING_RULES_DOCUMENT);
+	}
+	
+	public static final String[] TEXT_LONGER_THAN_BUFFER_RESULT = 
+		createTextLongerThanBufferResult();
+	
+	private static String[] createTextLongerThanBufferResult() {
+		int length = ReaderCharSequence.DEFAULT_BUFFER_SIZE / 10 + 20;
+		String[] result = new String[length];
+		for (int i = 0; i < length; ++i) {
+			result[i] = "AAAAAAAAA.";
+		}
+		return result;
+	}
+	
+
+	public static final SrxDocument TEXT_LONGER_THAN_BUFFER_DOCUMENT = 
+		createTextLongerThanBufferDocument();
+
+	private static SrxDocument createTextLongerThanBufferDocument() {
+		LanguageRule languageRule = new LanguageRule("");
+
+		languageRule.addRule(new Rule(false, "Mr\\.", ""));
+		languageRule.addRule(new Rule(true, "\\.", ""));
+
+		SrxDocument document = new SrxDocument();
+		document.addLanguageMap(".*", languageRule);
+
+		return document;
+	}
+
+	/**
+	 * Test if overlapping breaking rules do not interfere with each other.
+	 */
+	@Test
+	public void testTextLongerThanBufferRules() {
+		performTest(TEXT_LONGER_THAN_BUFFER_RESULT, 
+				TEXT_LONGER_THAN_BUFFER_DOCUMENT);
 	}
 	
 	public static final String[] TICKET_1_RESULT = new String[] { 

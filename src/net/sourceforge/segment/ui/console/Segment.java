@@ -4,6 +4,7 @@ import static net.rootnode.loomchild.util.io.Util.getFileInputStream;
 import static net.rootnode.loomchild.util.io.Util.getReader;
 import static net.rootnode.loomchild.util.io.Util.getResourceStream;
 import static net.rootnode.loomchild.util.io.Util.getWriter;
+import static net.rootnode.loomchild.util.io.Util.readAll;
 
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -124,7 +125,8 @@ public class Segment {
 		SrxDocument document = srxParser.parse(srxReader);
 		
 		if (commandLine.hasOption('o')) {
-			textIterator = new LegacySrxTextIterator(document, languageCode, reader);
+			String string = readAll(reader);
+			textIterator = new LegacySrxTextIterator(document, languageCode, string);
 		} else {
 			textIterator = new SrxTextIterator(document, languageCode, reader);
 		}

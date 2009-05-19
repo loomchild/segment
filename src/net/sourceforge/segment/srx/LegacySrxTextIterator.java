@@ -1,12 +1,10 @@
 package net.sourceforge.segment.srx;
 
 
-import java.io.Reader;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.rootnode.loomchild.util.io.ReaderCharSequence;
 import net.sourceforge.segment.AbstractTextIterator;
 
 /**
@@ -54,21 +52,6 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 			}
 		}
 
-	}
-
-	public LegacySrxTextIterator(SrxDocument document, String languageCode, 
-			Reader reader, int length, int bufferSize) {
-		this(document, languageCode, new ReaderCharSequence(reader, length, bufferSize));
-	}
-
-	public LegacySrxTextIterator(SrxDocument document, String languageCode, 
-			Reader reader, int length) {
-		this(document, languageCode, new ReaderCharSequence(reader, length));
-	}
-
-	public LegacySrxTextIterator(SrxDocument document, String languageCode, 
-			Reader reader) {
-		this(document, languageCode, new ReaderCharSequence(reader));
 	}
 
 	/**

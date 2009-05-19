@@ -1,8 +1,7 @@
 package net.sourceforge.segment.srx;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import net.rootnode.loomchild.util.regex.ReaderMatcher;
 
 
 /**
@@ -19,9 +18,9 @@ public class RuleMatcher implements Cloneable {
 	
 	private CharSequence text;
 	
-	private ReaderMatcher beforeMatcher;
+	private Matcher beforeMatcher;
 	
-	private ReaderMatcher afterMatcher;
+	private Matcher afterMatcher;
 	
 	boolean found;
 
@@ -37,8 +36,8 @@ public class RuleMatcher implements Cloneable {
 		this.text = text;
 		Pattern beforePattern = compile(rule.getBeforePattern());
 		Pattern afterPattern = compile(rule.getAfterPattern());
-		this.beforeMatcher = new ReaderMatcher(beforePattern, text);
-		this.afterMatcher = new ReaderMatcher(afterPattern, text);	
+		this.beforeMatcher = beforePattern.matcher(text);
+		this.afterMatcher = afterPattern.matcher(text);	
 		this.found = true;
 	}
 	
