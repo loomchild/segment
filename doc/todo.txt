@@ -1,3 +1,2 @@
 Skonsolidować wszystkie polecenia w segment. Możliwość profilowania żywych plików.
 Spytać się jeszcze o languagetool.srx na LGPL.
-Nowy algorytm niestrumieniowy z wieloma regułami i regionami, nawet bez redercharsequence - w wersji 2.0..

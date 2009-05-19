@@ -452,7 +452,7 @@ public abstract class AbstractSrxTextIteratorTest {
 	public static SrxDocument createOverlappingBreakingRulesDocument() {
 		LanguageRule languageRule = new LanguageRule("");
 
-		// Order matters - in reverse order it will work.
+		// Order matters - want to check that shorter rule will be matched.
 		languageRule.addRule(new Rule(true, "\\.\\.\\.", ""));
 		languageRule.addRule(new Rule(true, "\\.", ""));
 

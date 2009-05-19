@@ -130,18 +130,25 @@ public class MergedPattern {
 				// they will interfere with capturing group order
 				// which is used to recognize which breaking rule has been
 				// applied and decide which non-breaking rules to use.
-				String beforePattern = Util.removeCapturingGroups(rule
-						.getBeforePattern());
+				// In addition as Java does not allow infinite length patterns
+				// in lookbehind, before pattern need to be shortened.
+				String beforePattern = Util.finitize(
+						Util.removeCapturingGroups(rule.getBeforePattern()));
 				String afterPattern = Util.removeCapturingGroups(rule
 						.getAfterPattern());
+				// Need to use lookbehind also in breaking rule because 
+				// this way they become zero-length matches and I want 
+				// to match shorter rules first, independent of occurrence order
+				// as in normal alternative.
+				// Example:
+				// Input: "aaa".
+				// Pattern "aa|a" matches "aa" first.
+				// Pattern "(?<=aa)|(?<=a)" matches "a" first.
 				if (beforePattern.length() > 0) {
-					patternBuilder.append("(?:" + beforePattern);
+					patternBuilder.append("(?<=" + beforePattern + ")");
 				}
 				if (afterPattern.length() > 0) {
 					patternBuilder.append("(?=" + afterPattern + ")");
-				}
-				if (beforePattern.length() > 0) {
-					patternBuilder.append(")");
 				}
 			}
 		}
@@ -165,17 +172,15 @@ public class MergedPattern {
 					patternBuilder.append('|');
 				}
 				// As Java does not allow infinite length patterns
-				// (containing * or +) in lookbehind, they need to be shortened.
+				// in lookbehind, before pattern need to be shortened.
 				String beforePattern = Util.finitize(rule.getBeforePattern());
 				String afterPattern = rule.getAfterPattern();
-				patternBuilder.append("(?:");
 				if (beforePattern.length() > 0) {
 					patternBuilder.append("(?<=" + beforePattern + ")");
 				}
 				if (afterPattern.length() > 0) {
 					patternBuilder.append("(?=" + afterPattern + ")");
 				}
-				patternBuilder.append(")");
 			}
 		}
 
