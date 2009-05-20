@@ -443,7 +443,7 @@ public abstract class AbstractSrxTextIteratorTest {
 
 	public static final String[] OVERLAPPING_BREAKING_RULES_RESULT = 
 		new String[] { 
-		"A.", ".", ".", "B"
+		"A..", ".", "B"
 	};
 
 	public static final SrxDocument OVERLAPPING_BREAKING_RULES_DOCUMENT = 
@@ -452,9 +452,9 @@ public abstract class AbstractSrxTextIteratorTest {
 	public static SrxDocument createOverlappingBreakingRulesDocument() {
 		LanguageRule languageRule = new LanguageRule("");
 
-		// Order matters - want to check that shorter rule will be matched.
+		// Order matters.
+		languageRule.addRule(new Rule(true, "\\.\\.", ""));
 		languageRule.addRule(new Rule(true, "\\.\\.\\.", ""));
-		languageRule.addRule(new Rule(true, "\\.", ""));
 
 		SrxDocument document = new SrxDocument();
 		document.addLanguageMap(".*", languageRule);

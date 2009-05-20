@@ -114,18 +114,34 @@ public class SrxTextIterator extends AbstractTextIterator {
 			boolean found = false;
 			if (breakingMatcher != null) {
 				while (!found && breakingMatcher.find()) {
-					endPosition = breakingMatcher.end();
+
+					// Find which breaking rule was matched in the matcher.
+					// It must have matched some rule so check for
+					// breakingMatcher.groupCount() is not necessary.
+					int breakingRuleIndex = 1;
+					while (breakingMatcher.group(breakingRuleIndex) == null) {
+						++breakingRuleIndex;
+					}
+					
+					// Breaking position is at the end of the group.
+					endPosition = breakingMatcher.end(breakingRuleIndex);
+					
 					// When there's more than one breaking rule at the given
 					// place only the first is matched, the rest is skipped.
 					// So if position is not increasing the new rules are
 					// applied in the same place as previously matched rule.
 					if (endPosition > startPosition) {
-						// Index of current capturing group
-						int groupIndex = 1;
+
 						found = true;
 
+						// Get non breaking patterns that are applicable 
+						// to breaking rule just matched.
+						List<Pattern> activeNonBreakingPatternList =
+							mergedPattern.getNonBreakingPatternList(
+									breakingRuleIndex);
+						
 						for (Pattern nonBreakingPattern : 
-							mergedPattern.getNonBreakingPatternList()) {
+							activeNonBreakingPatternList) {
 
 							// Null non breaking pattern does not match anything
 							if (nonBreakingPattern != null) {
@@ -140,16 +156,10 @@ public class SrxTextIterator extends AbstractTextIterator {
 								found = !nonBreakingMatcher.lookingAt();
 							}
 
-							// Break when non-breaking rule matches or
-							// the current group index is equal to breaking
-							// rule index, so further non-breaking rules
-							// do not apply to this breaking rule.
-							String group = breakingMatcher.group(groupIndex);
-							if (!found || group != null) {
+							// Break when non-breaking rule matches
+							if (!found) {
 								break;
 							}
-
-							++groupIndex;
 							
 						}
 

@@ -1,6 +1,7 @@
 package net.sourceforge.segment.srx;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -15,47 +16,58 @@ public class MergedPattern {
 	private Pattern breakingPattern;
 
 	private List<Pattern> nonBreakingPatternList;
+	
+	private List<Integer> breakingRuleIndexList;
 
 	public MergedPattern(List<LanguageRule> languageRuleList) {
 		
-		this.nonBreakingPatternList = new ArrayList<Pattern>();
-
 		StringBuilder breakingPatternBuilder = new StringBuilder();
+		
+		this.nonBreakingPatternList = new ArrayList<Pattern>();
+		
+		// This list contains indexes of last breaking rules that occur before
+		// given non breaking pattern on the list. 
+		// It has the same size as nonBreakingPatternList.
+		// It is needed to recognize which non breaking rules to use for
+		// given braking rule.
+		this.breakingRuleIndexList = new ArrayList<Integer>();
+		
+		// Number or breaking rules already added to breaking pattern.
+		int breakingRuleIndex = 0;
 
 		List<Rule> ruleList = extractRules(languageRuleList);
 		List<List<Rule>> ruleGroupList = groupRules(ruleList);
 
-		if (ruleGroupList.size() > 0) {
-			for (List<Rule> ruleGroup : ruleGroupList) {
+		for (List<Rule> ruleGroup : ruleGroupList) {
+			if (ruleGroup.get(0).isBreaking()) {
+				
 				if (breakingPatternBuilder.length() > 0) {
 					breakingPatternBuilder.append('|');
 				}
-				
+
 				// All breaking rules need to be merged because segmentation
 				// need to be done in one pass when text is read from Reader.
-				// Breaking rule need to be inside capturing group so
-				// it is possible to recognize which breaking rule has been
-				// applied during the splitting and know which non-breaking
-				// rules to use.
-				// Breaking rule cannot contain capturing groups.
-				// Capturing groups are replaced with non-capturing groups
-				// inside create breaking pattern function.
 				String breakingGroupPattern = createBreakingPattern(ruleGroup);
-				breakingPatternBuilder.append("(" + breakingGroupPattern + ")");
+				breakingPatternBuilder.append(breakingGroupPattern);
 
-				// If first rule in the group is breaking then there are
-				// no non-breaking rules in the group. In this case null 
-				// is appended to non breaking pattern list, because
-				// null does not match anything.
-				if (!ruleGroup.get(0).isBreaking()) {
-					Pattern nonBreakingGroupPattern = 
-						Pattern.compile(createNonBreakingPattern(ruleGroup));
-					nonBreakingPatternList.add(nonBreakingGroupPattern);
-				} else {
-					nonBreakingPatternList.add(null);
-				}
+				// Increase current braking rule index.
+				breakingRuleIndex += ruleGroup.size();
+
+			} else {
+				
+				// Add non breaking pattern
+				Pattern nonBreakingGroupPattern = 
+					Pattern.compile(createNonBreakingPattern(ruleGroup));
+				nonBreakingPatternList.add(nonBreakingGroupPattern);
+
+				// Add the index of last breaking rule before given 
+				// non breaking pattern.
+				breakingRuleIndexList.add(breakingRuleIndex);
+
 			}
-			
+		}		
+
+		if (breakingPatternBuilder.length() > 0) {
 			this.breakingPattern = Pattern.compile(breakingPatternBuilder
 					.toString());
 		} else {
@@ -63,14 +75,35 @@ public class MergedPattern {
 			// (as empty pattern matches everything).
 			this.breakingPattern = null;
 		}
+
 	}
 
 	public Pattern getBreakingPattern() {
 		return breakingPattern;
 	}
 
-	public List<Pattern> getNonBreakingPatternList() {
-		return nonBreakingPatternList;
+	/**
+	 * Returns all applicable non breaking rules when breaking rule with a
+	 * given number was matched (non breaking rules that occur before
+	 * given breaking rule in SRX file).
+	 * @param breakingRuleIndex
+	 * @return Active non breaking patterns for a given breaking rule.
+	 */
+	public List<Pattern> getNonBreakingPatternList(int breakingRuleIndex) {
+		
+		List<Pattern> result = new ArrayList<Pattern>();
+		
+		Iterator<Pattern> patternIterator = nonBreakingPatternList.iterator();
+		
+		for (int currentBreakingRuleIndex : breakingRuleIndexList) {
+			if (currentBreakingRuleIndex >= breakingRuleIndex) {
+				break;
+			}
+			result.add(patternIterator.next());
+		}
+		
+		return result;
+	
 	}
 
 	/**
@@ -87,25 +120,26 @@ public class MergedPattern {
 	}
 
 	/**
-	 * Divides rules to groups where breaking and non-breaking rules cannot be
-	 * interlaced.
+	 * Divides rules to groups where all rules in the same group are 
+	 * either breaking or non breaking. Does not change rule order.
 	 * 
 	 * @param ruleList
 	 * @return
 	 */
 	private List<List<Rule>> groupRules(List<Rule> ruleList) {
 		List<List<Rule>> ruleGroupList = new ArrayList<List<Rule>>();
-		List<Rule> ruleGroup = new ArrayList<Rule>();
-		boolean previousBreaking = false;
 
+		List<Rule> ruleGroup = null;
+		Rule previousRule = null;
+		
 		for (Rule rule : ruleList) {
-			if (rule.isBreaking() && !previousBreaking) {
-				ruleGroupList.add(ruleGroup);
-			} else if (!rule.isBreaking() && previousBreaking) {
+			if (previousRule == null ||
+					rule.isBreaking() != previousRule.isBreaking()) {
 				ruleGroup = new ArrayList<Rule>();
+				ruleGroupList.add(ruleGroup);
 			}
 			ruleGroup.add(rule);
-			previousBreaking = rule.isBreaking();
+			previousRule = rule;
 		}
 
 		return ruleGroupList;
@@ -122,35 +156,33 @@ public class MergedPattern {
 		StringBuilder patternBuilder = new StringBuilder();
 
 		for (Rule rule : ruleList) {
-			if (rule.isBreaking()) {
-				if (patternBuilder.length() > 0) {
-					patternBuilder.append('|');
-				}
-				// Capturing groups need to be removed from patterns as
-				// they will interfere with capturing group order
-				// which is used to recognize which breaking rule has been
-				// applied and decide which non-breaking rules to use.
-				// In addition as Java does not allow infinite length patterns
-				// in lookbehind, before pattern need to be shortened.
-				String beforePattern = Util.finitize(
-						Util.removeCapturingGroups(rule.getBeforePattern()));
-				String afterPattern = Util.removeCapturingGroups(rule
-						.getAfterPattern());
-				// Need to use lookbehind also in breaking rule because 
-				// this way they become zero-length matches and I want 
-				// to match shorter rules first, independent of occurrence order
-				// as in normal alternative.
-				// Example:
-				// Input: "aaa".
-				// Pattern "aa|a" matches "aa" first.
-				// Pattern "(?<=aa)|(?<=a)" matches "a" first.
-				if (beforePattern.length() > 0) {
-					patternBuilder.append("(?<=" + beforePattern + ")");
-				}
-				if (afterPattern.length() > 0) {
-					patternBuilder.append("(?=" + afterPattern + ")");
-				}
+			if (patternBuilder.length() > 0) {
+				patternBuilder.append('|');
 			}
+			// Capturing groups need to be removed from patterns as
+			// they will interfere with capturing group order
+			// which is used to recognize which breaking rule has been
+			// applied and decide which non-breaking rules to use.
+			String beforePattern = 
+				Util.removeCapturingGroups(rule.getBeforePattern());
+			String afterPattern = 
+				Util.removeCapturingGroups(rule.getAfterPattern());
+			// Whore pattern would be in lookahead because alternative 
+			// behaves differently in lookahead - first matching not first
+			// in order is returned first. For example:
+			// Input: "aaa"
+			// Pattern "aaa|aa" matches "aaa", but pattern "aa|aaa" matches "aa".
+			// Pattern "(?=aaa|aa)" always matches "aa". 
+			patternBuilder.append("(?=");
+			
+			patternBuilder.append(beforePattern);
+			
+			// This will be after break point. 
+			patternBuilder.append("()");
+			
+			patternBuilder.append(afterPattern);
+			
+			patternBuilder.append(")");
 		}
 
 		return patternBuilder.toString();
@@ -167,21 +199,21 @@ public class MergedPattern {
 		StringBuilder patternBuilder = new StringBuilder();
 
 		for (Rule rule : ruleList) {
-			if (!rule.isBreaking()) {
-				if (patternBuilder.length() > 0) {
-					patternBuilder.append('|');
-				}
-				// As Java does not allow infinite length patterns
-				// in lookbehind, before pattern need to be shortened.
-				String beforePattern = Util.finitize(rule.getBeforePattern());
-				String afterPattern = rule.getAfterPattern();
-				if (beforePattern.length() > 0) {
-					patternBuilder.append("(?<=" + beforePattern + ")");
-				}
-				if (afterPattern.length() > 0) {
-					patternBuilder.append("(?=" + afterPattern + ")");
-				}
+			if (patternBuilder.length() > 0) {
+				patternBuilder.append('|');
 			}
+			// As Java does not allow infinite length patterns
+			// in lookbehind, before pattern need to be shortened.
+			String beforePattern = Util.finitize(rule.getBeforePattern());
+			String afterPattern = rule.getAfterPattern();
+			patternBuilder.append("(?:");
+			if (beforePattern.length() > 0) {
+				patternBuilder.append("(?<=" + beforePattern + ")");
+			}
+			if (afterPattern.length() > 0) {
+				patternBuilder.append("(?=" + afterPattern + ")");
+			}
+			patternBuilder.append(")");
 		}
 
 		return patternBuilder.toString();
