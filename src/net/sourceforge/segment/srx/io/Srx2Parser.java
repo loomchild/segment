@@ -37,11 +37,22 @@ public class Srx2Parser implements SrxParser {
 	
 	private static final String SCHEMA = "net/sourceforge/segment/res/xml/srx20.xsd";
 
-	// Must pass the ClassLoader directly due to Java 1.5 bugs (LanguageTool).
-	private static Bind bind = new Bind(
-			getContext(CONTEXT, Srx2Parser.class.getClassLoader()),
-			getSchema(getReader(getResourceStream(SCHEMA))));
+	private static Bind bind = createBind();
 
+	private static Bind createBind() {
+        // Macintosh Java 1.5 work-around borrowed from okapi library
+        // When you use -XstartOnFirstThread as a java -Xarg on Leopard, 
+		// your ContextClassloader gets set to null.
+		Thread.currentThread().setContextClassLoader(Srx2Parser.class.getClassLoader());
+
+		// Must pass the ClassLoader directly due to Java 1.5 bugs when using 
+		// custom ClassLoader.
+		Bind bind = new Bind(
+				getContext(CONTEXT, Srx2Parser.class.getClassLoader()),
+				getSchema(getReader(getResourceStream(SCHEMA))));
+		return bind;
+	}
+	
 	/**
 	 * Parses SRX document from reader.
 	 * 
