@@ -165,15 +165,17 @@ public class SrxTextIterator extends AbstractTextIterator {
 
 					}
 				}
+				// Breaking matcher cannot match text behind segment start in
+				// the future. 
+				if (found && endPosition < text.length()) {
+					breakingMatcher.region(endPosition, text.length());
+				}
 			}
 			if (!found) {
 				endPosition = text.length();
 			}
 			segment = text.subSequence(startPosition, endPosition).toString();
 			startPosition = endPosition;
-			if (breakingMatcher != null && found && endPosition < text.length()) {
-				breakingMatcher.region(endPosition, text.length());
-			}
 			return segment;
 		} else {
 			return null;
