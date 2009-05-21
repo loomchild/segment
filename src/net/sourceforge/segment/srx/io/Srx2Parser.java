@@ -8,6 +8,8 @@ import static net.rootnode.loomchild.util.xml.Util.getSchema;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.rootnode.loomchild.util.xml.Bind;
 import net.sourceforge.segment.srx.LanguageRule;
@@ -43,8 +45,11 @@ public class Srx2Parser implements SrxParser {
         // Macintosh Java 1.5 work-around borrowed from okapi library
         // When you use -XstartOnFirstThread as a java -Xarg on Leopard, 
 		// your ContextClassloader gets set to null.
-		Thread.currentThread().setContextClassLoader(Srx2Parser.class.getClassLoader());
-
+		// On other Macs setting this value breaks everything.
+		if (Thread.currentThread().getContextClassLoader() == null) {
+			Thread.currentThread().setContextClassLoader(Srx2Parser.class.getClassLoader());
+		}
+		
 		// Must pass the ClassLoader directly due to Java 1.5 bugs when using 
 		// custom ClassLoader.
 		Bind bind = new Bind(
