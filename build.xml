@@ -47,6 +47,9 @@
 	
 	<target name="jardist" depends="compile" description="generate binary jar archive">
 		<buildnumber/>
+		<tstamp>
+			<format property="build.date" pattern="yyyy-MM-dd"/>
+		</tstamp>
 		<mkdir dir="build/dist"/>
 		<delete file="build/dist/${project.name}-*.jar" failonerror="false"/>
 		<jar destfile="build/dist/${project.fullname}.jar">
@@ -54,6 +57,8 @@
 			<fileset dir="src"/>
 			<manifest>
 				<attribute name="Built-By" value="${project.authors}"/>
+				<attribute name="Build-Date" value="${build.date}"/>
+				<attribute name="Implementation-Version" value="${project.fullversion}"/>
 			</manifest>
 		</jar>
 	</target>

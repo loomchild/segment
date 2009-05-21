@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sourceforge.segment.TextIterator;
+import net.sourceforge.segment.Version;
 import net.sourceforge.segment.srx.LegacySrxTextIterator;
 import net.sourceforge.segment.srx.SrxDocument;
 import net.sourceforge.segment.srx.SrxParser;
@@ -76,6 +77,15 @@ public class Segment {
 			System.exit(1);
 		}
 		if (commandLine.hasOption('h')) {
+			String signature = "Segment";
+			if (Version.getInstance().getVersion() != null) {
+				signature += " " + Version.getInstance().getVersion();
+			}
+			if (Version.getInstance().getDate() != null) {
+				signature += ", " + Version.getInstance().getDate();
+			}
+			signature += ".";
+			System.out.println(signature);
 			helpFormatter.printHelp("segment", options);
 			System.exit(0);
 		}

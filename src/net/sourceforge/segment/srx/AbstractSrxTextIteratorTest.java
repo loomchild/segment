@@ -1,6 +1,6 @@
 package net.sourceforge.segment.srx;
 
-import static net.rootnode.loomchild.util.testing.Utils.assertListEquals;
+import static net.rootnode.loomchild.util.testing.Util.assertListEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
