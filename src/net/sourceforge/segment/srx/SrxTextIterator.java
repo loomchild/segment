@@ -171,6 +171,9 @@ public class SrxTextIterator extends AbstractTextIterator {
 			}
 			segment = text.subSequence(startPosition, endPosition).toString();
 			startPosition = endPosition;
+			if (breakingMatcher != null && found && endPosition < text.length()) {
+				breakingMatcher.region(endPosition, text.length());
+			}
 			return segment;
 		} else {
 			return null;

@@ -1,2 +1,5 @@
 Skonsolidować wszystkie polecenia w segment. Możliwość profilowania żywych plików.
+--test testuje
+dodać wersje do metadanych, wyświetlać wersje przy helpie, automatycznie dodawać wersje i date w dokumentacji
 Spytać się jeszcze o languagetool.srx na LGPL.
+

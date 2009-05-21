@@ -72,6 +72,7 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 				if (minMatcher.getRule().isBreaking() && 
 						endPosition > startPosition) {
 					found = true;
+					cutMatchers();
 				}
 				moveMatchers();
 			}
@@ -96,8 +97,8 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 	private void initMatchers() {
 		for (Iterator<RuleMatcher> i = ruleMatcherList.iterator(); i.hasNext();) {
 			RuleMatcher matcher = i.next();
-			boolean found = moveMatcher(matcher);
-			if (!found) {
+			matcher.find();
+			if (matcher.hitEnd()) {
 				i.remove();
 			}
 		}
@@ -109,21 +110,31 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 	private void moveMatchers() {
 		for (Iterator<RuleMatcher> i = ruleMatcherList.iterator(); i.hasNext();) {
 			RuleMatcher matcher = i.next();
-			boolean found = true;
-			while (found && matcher.getBreakPosition() <= endPosition) {
-				found = moveMatcher(matcher);
-				if (!found) {
+			while (matcher.getBreakPosition() <= endPosition) {
+				matcher.find();
+				if (matcher.hitEnd()) {
+					i.remove();
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Move matchers that start before previous segment end.
+	 */
+	private void cutMatchers() {
+		for (Iterator<RuleMatcher> i = ruleMatcherList.iterator(); i.hasNext();) {
+			RuleMatcher matcher = i.next();
+			if (matcher.getStartPosition() < endPosition) {
+				matcher.find(endPosition);
+				if (matcher.hitEnd()) {
 					i.remove();
 				}
 			}
 		}
 	}
-	
-	private boolean moveMatcher(RuleMatcher matcher) {
-		matcher.find();
-		return !matcher.hitEnd();
-	}
-	
+
 	/**
 	 * @return Zwraca iterator pierwszego trafionego dopasowania.
 	 */

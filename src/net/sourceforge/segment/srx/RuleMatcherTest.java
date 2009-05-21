@@ -27,6 +27,11 @@ public class RuleMatcherTest extends TestCase {
 		assertEquals(15, matcher.getEndPosition());
 		assertFalse(matcher.find());
 		assertTrue(matcher.hitEnd());
+		assertTrue(matcher.find(6));
+		assertEquals(7, matcher.getStartPosition());
+		assertEquals(9, matcher.getBreakPosition());
+		assertEquals(11, matcher.getEndPosition());
+
 	}
 	
 }
