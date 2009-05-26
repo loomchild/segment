@@ -6,6 +6,10 @@ import java.util.jar.Manifest;
 
 import net.rootnode.loomchild.util.exceptions.ResourceNotFoundException;
 
+/**
+ * Retrieves segment version. Singleton.
+ * @author loomchild
+ */
 public class Version {
 	
 	public static final String VERSION_ATTRIBUTE = "Implementation-Version";  
