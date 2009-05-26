@@ -6,11 +6,16 @@ import java.util.jar.Manifest;
 
 import net.rootnode.loomchild.util.exceptions.ResourceNotFoundException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Retrieves segment version. Singleton.
  * @author loomchild
  */
 public class Version {
+	
+    private static final Log log = LogFactory.getLog(Version.class);
 	
 	public static final String VERSION_ATTRIBUTE = "Implementation-Version";  
 	public static final String DATE_ATTRIBUTE = "Build-Date";  
@@ -32,6 +37,7 @@ public class Version {
 			date = manifest.getMainAttributes().getValue(DATE_ATTRIBUTE);
 		} catch (ResourceNotFoundException e) {
 			// Ignore, attributes stay null
+			log.trace("Version number cannot be retrieved.");
 		}
 	}
 
