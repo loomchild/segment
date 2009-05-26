@@ -15,7 +15,9 @@
 
 	
 	<target name="init">
-		<tstamp/>
+		<tstamp>
+			<format property="build.date" pattern="yyyy-MM-dd"/>
+		</tstamp>
 	</target>
 
 	
@@ -47,9 +49,6 @@
 	
 	<target name="jardist" depends="compile" description="generate binary jar archive">
 		<buildnumber/>
-		<tstamp>
-			<format property="build.date" pattern="yyyy-MM-dd"/>
-		</tstamp>
 		<mkdir dir="build/dist"/>
 		<delete file="build/dist/${project.name}-*.jar" failonerror="false"/>
 		<jar destfile="build/dist/${project.fullname}.jar">
