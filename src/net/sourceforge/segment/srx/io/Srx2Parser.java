@@ -8,8 +8,6 @@ import static net.rootnode.loomchild.util.xml.Util.getSchema;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import net.rootnode.loomchild.util.xml.Bind;
 import net.sourceforge.segment.srx.LanguageRule;
