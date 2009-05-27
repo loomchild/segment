@@ -1,7 +1,0 @@
-#!/bin/bash
-
-SCRIPT_DIR=`dirname $0`
-CLASS=net.sourceforge.segment.ui.console.Performance
-export JAVA_OPTS=-Xmx256M
-
-$SCRIPT_DIR/exec $CLASS $*

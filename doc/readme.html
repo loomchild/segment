@@ -3,7 +3,7 @@
 
 <h1>Segment</h1>
 
-<h3>Version 1.2, Date 2009-05-10</h3>
+<h3>Version @project.fullversion@, Date @build.date@</h3>
 <hr>
 
 <h2>Table of Contents</h2>
@@ -58,9 +58,9 @@ Without parameters text is split using simple, built-in rules.
 To get help on command line parameters run:<br/>
 <code>bin/segment -h</code><br/>
 The most popular command line is probably:<br/>
-<code>bin/segment -s rules.srx -l language &lt; in.txt &gt; out.txt</code><br/>
+<code>bin/segment -s rules.srx -l language -i in.txt -o out.txt</code><br/>
 Where rules.srx is a file containing splitting rules, language is input file
-language, in.txt is a input file and out.txt is a output file.
+language code, in.txt is a input file and out.txt is a output file.
 To control output format useful parameters are -b and -e which define 
 string that will be written before and after the segment (this replaces the 
 standard end of line character).
@@ -68,16 +68,18 @@ standard end of line character).
 
 <h2><a name="performance">Performance</a></h2>
 <p>
-To evaluate performance the script bin/performance can be used.
-It generates random text with given length in characters (-t option) and random
-SRX language rules (-r option controls language rules count, 
--l controls number of non-breaking rules in individual language rule).   
-As a result split time is displayed.
+To evaluate performance bin/segment -p can be used.
+To generate random text --generate-text options should be used with text length in kilobytes as a parameter. 
+To generate random SRX --generate-srx option should be used with rule count and rule length separated by a comma as a parameter.
+To repeat the whole process -2 option should be used.
+As a result split time is displayed. Common usage example:<br/>
+<code>bin/segment -p -2 --generate-text 100 --generate-srx 10,10</code><br/>
 </p>
 
 <h2><a name="testing">Testing</a></h2>
 <p>
-The program has integrated unit tests. To run them execute bin/test.
+The program has integrated unit tests. To run them execute:<br/>
+<code>bin/segment --test.</code>
 </p>
 
 <h2><a name="formats">Data formats</a></h2>
@@ -107,10 +109,10 @@ Currently input is treated as plain text, formatting is not handled specially
 </p>
 <p>
 To convert between old SRX version and current SRX version there is a tool, 
-bin/transform. It reads SRX from standard input and writes 
+invoked by bin/segment -t. It reads SRX from standard input and writes 
 transformed SRX to standard output. Usage example:<br/>
-<code>bin/transform &lt; old.srx &gt; new.srx</code><br/>
-The tool accepts some command line parameters, use bin/transform -h for details.
+<code>bin/segment -t -i old.srx -o new.srx</code><br/>
+The tool accepts some command line parameters, use bin/segment -h for details.
 The tool uses XSLT stylesheet, it can be found in resources directory and used 
 separately with any XSLT processor.
 </p>

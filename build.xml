@@ -6,6 +6,10 @@
 	<property file="build.number" />
 	<property file="build.properties" />
 
+	<tstamp>
+		<format property="build.date" pattern="yyyy-MM-dd"/>
+	</tstamp>
+
 	<path id="project.class.path">
 		<pathelement path="${java.class.path}"/>
 		<pathelement location="build/classes"/>
@@ -13,15 +17,13 @@
 		<fileset dir="lib" includes="**/*.jar" />
 	</path>
 
-	
-	<target name="init">
-		<tstamp>
-			<format property="build.date" pattern="yyyy-MM-dd"/>
-		</tstamp>
-	</target>
+	<filterset id="filter.version">
+		<filter token="project.fullversion" value="${project.fullversion}"/>
+		<filter token="build.date" value="${build.date}"/>
+	</filterset>
 
 	
-	<target name="generate" depends="init" description="generate JAXB classes">
+	<target name="generate" description="generate JAXB classes">
 		<delete dir="${generate.dir}" failonerror="false"/>
 		<exec executable="xjc">
 			<arg line="-d src"/>
@@ -31,7 +33,7 @@
 	</target>
 
 	
-	<target name="compile" depends="init" description="compile the source">
+	<target name="compile" description="compile the source">
 		<mkdir dir="build/classes"/>
 		<javac 
 			srcdir="src" 
@@ -76,8 +78,14 @@
 			<fileset dir=".">
 				<include name="lib/**"/>
 				<include name="bin/**"/>
+				<include name="example/**"/>
+			</fileset>
+		</copy>
+
+		<copy todir="build/dist/${project.fullname}" filtering="true">
+			<filterset refid="filter.version"/>
+			<fileset dir=".">
 				<include name="doc/**"/>
-				<include name="examples/**"/>
 			</fileset>
 		</copy>
 
@@ -119,13 +127,6 @@
 				<exclude name="**/*Test.java"/>
 			</fileset>
 		</javadoc>
-	</target>
-
-	
-	<target name="test" depends="compile" description="execute unit tests">
-		<java classname="${test.class}" fork="true">
-			<classpath refid="project.class.path"/>
-		</java>
 	</target>
 
 	

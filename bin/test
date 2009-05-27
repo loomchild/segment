@@ -1,6 +1,0 @@
-#!/bin/bash
-
-SCRIPT_DIR=`dirname $0`
-CLASS=net.sourceforge.segment.ui.console.Test
-
-$SCRIPT_DIR/exec $CLASS $*
