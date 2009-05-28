@@ -10,7 +10,6 @@ import static net.rootnode.loomchild.util.io.Util.readAll;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
@@ -62,7 +61,7 @@ public class Segment {
 	public static final int SENTENCE_LENGTH = 5;
 	
 	private Random random;
-	private String generatedText;
+	private String text;
 
 	public static void main(String[] args) {
 		try {
@@ -98,9 +97,7 @@ public class Segment {
 	}
 	
 	private void printUsage(HelpFormatter helpFormatter) {
-		PrintWriter err = new PrintWriter(System.err, true);
-		helpFormatter.printUsage(err, 80, "segment --help");
-		System.exit(1);
+		System.out.println("Unknown command. Use segment -h for help.");
 	}
 	
 	private void printHelp(Options options, HelpFormatter helpFormatter) {
@@ -201,20 +198,20 @@ public class Segment {
 	private Reader createRandomTextReader(String generateTextOption, 
 			boolean profile) {
 
-		if (generatedText == null) {
+		if (text == null) {
 			long start = System.currentTimeMillis();
 			if (profile) {
 				System.out.print("Generating text... ");
 			}
 
-			this.generatedText = generateText(generateTextOption);
+			this.text = generateText(generateTextOption);
 			
 			if (profile) {
 				System.out.println(System.currentTimeMillis() - start + " ms.");
 			}
 		}
 		
-		Reader reader = new StringReader(generatedText);
+		Reader reader = new StringReader(text);
 		return reader;
 	}
 
@@ -389,11 +386,11 @@ public class Segment {
 			SrxDocument document, Reader reader, Writer writer, 
 			boolean profile) throws IOException {
 		
-		long start = System.currentTimeMillis();
-
 		if (profile) {
 			System.out.println("Segmenting... ");
 		}
+
+		long start = System.currentTimeMillis();
 
 		String languageCode = commandLine.getOptionValue('l');
 		if (languageCode == null) {
@@ -425,15 +422,18 @@ public class Segment {
 			String languageCode, Reader reader, boolean legacy, boolean profile) {
 		TextIterator textIterator;
 
-		long start = System.currentTimeMillis();
-
+		if (legacy) {
+			readText(reader);
+		}
+		
 		if (profile) {
 			System.out.print("    Creating text iterator... ");
 		}
 
+		long start = System.currentTimeMillis();
+		
 		if (legacy) {
-			String string = readAll(reader);
-			textIterator = new LegacySrxTextIterator(document, languageCode, string);
+			textIterator = new LegacySrxTextIterator(document, languageCode, text);
 		} else {
 			textIterator = new SrxTextIterator(document, languageCode, reader);
 		}
@@ -449,11 +449,11 @@ public class Segment {
 			String beginSegment, String endSegment, boolean profile) 
 			throws IOException {
 
-		long start = System.currentTimeMillis();
-
 		if (profile) {
 			System.out.print("    Performing segmentation... ");
 		}
+
+		long start = System.currentTimeMillis();
 
 		while (textIterator.hasNext()) {
 			String segment = textIterator.next();
@@ -466,6 +466,13 @@ public class Segment {
 			System.out.println(System.currentTimeMillis() - start + " ms.");
 		}
 
+	}
+	
+	private String readText(Reader reader) {
+		if (text == null) {
+			text = readAll(reader);
+		}
+		return text;
 	}
 
 	private void transform(CommandLine commandLine) throws IOException {
@@ -509,21 +516,23 @@ public class Segment {
 		CommandLine commandLine = null;
 
 		try {
+
 			commandLine = parser.parse(options, args);
+
+			if (commandLine.hasOption('h')) {
+				printHelp(options, helpFormatter);
+			} else if (commandLine.hasOption('z')) {
+				test();
+			} else if (commandLine.hasOption('t')) {
+				transform(commandLine);
+			} else {
+				segment(commandLine);
+			}
+
 		} catch (ParseException e) {
 			printUsage(helpFormatter);
 		}
 		
-		if (commandLine.hasOption('h')) {
-			printHelp(options, helpFormatter);
-		} else if (commandLine.hasOption('z')) {
-			test();
-		} else if (commandLine.hasOption('t')) {
-			transform(commandLine);
-		} else {
-			segment(commandLine);
-		}
-
 	}
 
 }

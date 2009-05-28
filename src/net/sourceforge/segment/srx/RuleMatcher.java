@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  *
  * @author loomchild
  */
-public class RuleMatcher implements Cloneable {
+public class RuleMatcher {
 	
 	private SrxDocument document;
 
