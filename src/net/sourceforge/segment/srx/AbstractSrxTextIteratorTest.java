@@ -452,9 +452,8 @@ public abstract class AbstractSrxTextIteratorTest {
 	public static SrxDocument createOverlappingBreakingRulesDocument() {
 		LanguageRule languageRule = new LanguageRule("");
 
-		// Order matters.
-		languageRule.addRule(new Rule(true, "\\.\\.", ""));
 		languageRule.addRule(new Rule(true, "\\.\\.\\.", ""));
+		languageRule.addRule(new Rule(true, "\\.\\.", ""));
 
 		SrxDocument document = new SrxDocument();
 		document.addLanguageMap(".*", languageRule);
@@ -469,6 +468,36 @@ public abstract class AbstractSrxTextIteratorTest {
 	public void testOverlappingBreakingRules() {
 		performTest(OVERLAPPING_BREAKING_RULES_RESULT, 
 				OVERLAPPING_BREAKING_RULES_DOCUMENT);
+	}
+
+	public static final String[] MIXED_BREAKING_RULES_RESULT = 
+		new String[] { 
+		"xabc", "d"
+	};
+
+	public static final SrxDocument MIXED_BREAKING_RULES_DOCUMENT = 
+		createMixedBreakingRulesDocument();
+
+	public static SrxDocument createMixedBreakingRulesDocument() {
+		LanguageRule languageRule = new LanguageRule("");
+
+		languageRule.addRule(new Rule(false, "b", "c"));
+		languageRule.addRule(new Rule(true, "b", ""));
+		languageRule.addRule(new Rule(true, "abc", ""));
+
+		SrxDocument document = new SrxDocument();
+		document.addLanguageMap(".*", languageRule);
+
+		return document;
+	}
+
+	/**
+	 * Test if overlapping breaking rules do not interfere with each other.
+	 */
+	@Test
+	public void testMixedBreakingRules() {
+		performTest(MIXED_BREAKING_RULES_RESULT, 
+				MIXED_BREAKING_RULES_DOCUMENT);
 	}
 	
 	public static final String[] TEXT_LONGER_THAN_BUFFER_RESULT = 
