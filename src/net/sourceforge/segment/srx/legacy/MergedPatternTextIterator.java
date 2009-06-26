@@ -89,7 +89,6 @@ public class MergedPatternTextIterator extends AbstractTextIterator {
 	/**
 	 * Creates streaming text iterator with default buffer size 
 	 * ({@link ReaderCharSequence#DEFAULT_BUFFER_SIZE}). 
-	 * See {@link #SrxTextIterator(SrxDocument, String, Reader, int, int)}}.
 	 */
 	public MergedPatternTextIterator(SrxDocument document, String languageCode,
 			Reader reader, int length) {
@@ -99,7 +98,6 @@ public class MergedPatternTextIterator extends AbstractTextIterator {
 
 	/**
 	 * Creates streaming text iterator with unknown stream length. 
-	 * See {@link #SrxTextIterator(SrxDocument, String, Reader, int, int)}}.
 	 */
 	public MergedPatternTextIterator(SrxDocument document, String languageCode,
 			Reader reader) {
