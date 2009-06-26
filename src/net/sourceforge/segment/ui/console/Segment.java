@@ -1,11 +1,11 @@
 package net.sourceforge.segment.ui.console;
 
-import static net.rootnode.loomchild.util.io.Util.getFileInputStream;
-import static net.rootnode.loomchild.util.io.Util.getFileOutputStream;
-import static net.rootnode.loomchild.util.io.Util.getReader;
-import static net.rootnode.loomchild.util.io.Util.getResourceStream;
-import static net.rootnode.loomchild.util.io.Util.getWriter;
-import static net.rootnode.loomchild.util.io.Util.readAll;
+import static net.sourceforge.segment.util.Util.getFileInputStream;
+import static net.sourceforge.segment.util.Util.getFileOutputStream;
+import static net.sourceforge.segment.util.Util.getReader;
+import static net.sourceforge.segment.util.Util.getResourceStream;
+import static net.sourceforge.segment.util.Util.getWriter;
+import static net.sourceforge.segment.util.Util.readAll;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,12 +17,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import net.rootnode.loomchild.util.io.NullWriter;
 import net.sourceforge.segment.SegmentTestSuite;
 import net.sourceforge.segment.TextIterator;
 import net.sourceforge.segment.Version;
 import net.sourceforge.segment.srx.LanguageRule;
-import net.sourceforge.segment.srx.LegacySrxTextIterator;
 import net.sourceforge.segment.srx.Rule;
 import net.sourceforge.segment.srx.SrxDocument;
 import net.sourceforge.segment.srx.SrxParser;
@@ -31,6 +29,9 @@ import net.sourceforge.segment.srx.SrxTransformer;
 import net.sourceforge.segment.srx.io.Srx1Transformer;
 import net.sourceforge.segment.srx.io.SrxAnyParser;
 import net.sourceforge.segment.srx.io.SrxAnyTransformer;
+import net.sourceforge.segment.srx.legacy.MergedPatternTextIterator;
+import net.sourceforge.segment.srx.legacy.PolengSrxTextIterator;
+import net.sourceforge.segment.util.NullWriter;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -48,6 +49,10 @@ import org.junit.runner.JUnitCore;
  * @author loomchild
  */
 public class Segment {
+	
+	private enum Algorithm {
+		poleng, merge, ultimate;
+	}
 
 	public static final String DEFAULT_SRX = "net/sourceforge/segment/res/xml/default.srx";
 
@@ -83,7 +88,8 @@ public class Segment {
 		options.addOption("m", "map", true, "Map rule name in SRX 1.0.");
 		options.addOption("b", "begin", true, "Output segment prefix.");
 		options.addOption("e", "end", true, "Output segment suffix.");
-		options.addOption("c", "legacy", false, "Use legacy algorithm.");
+		options.addOption("a", "algorithm", true, "Algorithm. Can be poleng, merge or ultimate (default).");
+		options.addOption("u", "ultimate", false, "Use utlimate algorithm.");
 		options.addOption("i", "input", true, "Use given input file instead of standard input.");
 		options.addOption("o", "output", true, "Use given output file instead of standard output.");
 		options.addOption("t", "transform", false, "Convert old SRX to current version.");
@@ -392,25 +398,11 @@ public class Segment {
 
 		long start = System.currentTimeMillis();
 
-		String languageCode = commandLine.getOptionValue('l');
-		if (languageCode == null) {
-			languageCode = "";
-		}
-		boolean legacy = commandLine.hasOption('c');
-		
-		TextIterator textIterator = 
-			createTextIterator(document, languageCode, reader, legacy, profile);
+		TextIterator textIterator = createTextIterator(commandLine, 
+				document, reader, profile);
 
-		String beginSegment = commandLine.getOptionValue('b');
-		if (beginSegment == null) {
-			beginSegment = DEFAULT_BEGIN_SEGMENT;
-		}
-		String endSegment = commandLine.getOptionValue('e');
-		if (endSegment == null) {
-			endSegment = DEFAULT_END_SEGMENT;
-		}
 
-		performSegment(textIterator, writer, beginSegment, endSegment, profile);
+		performSegment(commandLine, textIterator, writer, profile);
 		
 		if (profile) {
 			System.out.println(System.currentTimeMillis() - start + " ms.");
@@ -418,11 +410,22 @@ public class Segment {
 		
 	}
 	
-	private TextIterator createTextIterator(SrxDocument document, 
-			String languageCode, Reader reader, boolean legacy, boolean profile) {
+	private TextIterator createTextIterator(CommandLine commandLine, 
+			SrxDocument document, Reader reader, boolean profile) {
 		TextIterator textIterator;
-
-		if (legacy) {
+		
+		String languageCode = commandLine.getOptionValue('l');
+		if (languageCode == null) {
+			languageCode = "";
+		}
+		
+		String algorithmString = commandLine.getOptionValue('a');
+		Algorithm algorithm = Algorithm.ultimate;
+		if (algorithmString != null) {
+			algorithm = Algorithm.valueOf(algorithmString);
+		}
+		
+		if (algorithm == Algorithm.poleng) {
 			readText(reader);
 		}
 		
@@ -432,10 +435,14 @@ public class Segment {
 
 		long start = System.currentTimeMillis();
 		
-		if (legacy) {
-			textIterator = new LegacySrxTextIterator(document, languageCode, text);
-		} else {
+		if (algorithm == Algorithm.poleng) {
+			textIterator = new PolengSrxTextIterator(document, languageCode, text);
+		} else if (algorithm == Algorithm.ultimate) {
 			textIterator = new SrxTextIterator(document, languageCode, reader);
+		} else if (algorithm == Algorithm.merge) {
+			textIterator = new MergedPatternTextIterator(document, languageCode, reader);
+		} else {
+			throw new IllegalArgumentException("Unknown algorithm: " + algorithm + ".");
 		}
 
 		if (profile) {
@@ -445,9 +452,18 @@ public class Segment {
 		return textIterator;
 	}
 	
-	private void performSegment(TextIterator textIterator, Writer writer, 
-			String beginSegment, String endSegment, boolean profile) 
+	private void performSegment(CommandLine commandLine, 
+			TextIterator textIterator, Writer writer, boolean profile) 
 			throws IOException {
+
+		String beginSegment = commandLine.getOptionValue('b');
+		if (beginSegment == null) {
+			beginSegment = DEFAULT_BEGIN_SEGMENT;
+		}
+		String endSegment = commandLine.getOptionValue('e');
+		if (endSegment == null) {
+			endSegment = DEFAULT_END_SEGMENT;
+		}
 
 		if (profile) {
 			System.out.print("    Performing segmentation... ");
