@@ -5,8 +5,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Map;
 
-import net.rootnode.loomchild.util.exceptions.XmlException;
 import net.sourceforge.segment.srx.SrxTransformer;
+import net.sourceforge.segment.util.XmlException;
 
 /**
  * Represents any version intelligent SRX document transformer to newest

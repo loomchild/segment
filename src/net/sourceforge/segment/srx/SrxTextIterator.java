@@ -1,30 +1,62 @@
 package net.sourceforge.segment.srx;
 
+
 import java.io.Reader;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.rootnode.loomchild.util.io.ReaderCharSequence;
-import net.rootnode.loomchild.util.regex.ReaderMatcher;
 import net.sourceforge.segment.AbstractTextIterator;
+import net.sourceforge.segment.srx.legacy.RuleMatcher;
 
 /**
- * Represents text iterator that splits text according to SRX rules.
- * 
+ * Represents a splitter splitting text according to rules in SRX file.
+ *
  * @author loomchild
  */
 public class SrxTextIterator extends AbstractTextIterator {
+	
+	public static final int DEFAULT_BUFFER_SIZE = 65536;
+	
+	public static final int DEFAULT_MARGIN = 128;
+	
 
-	private CharSequence text;
+	private SrxDocument document;
 
 	private String segment;
+
+	private int start, end;
 	
-	private MergedPattern mergedPattern;
+	private TextManager textManager;
+	
+	private RuleManager ruleManager;
+	
+	private List<RuleMatcher> ruleMatcherList;
+	
+	private int margin;
+	
+	
+	private SrxTextIterator(SrxDocument document, String languageCode, 
+			TextManager textManager, int margin) {
 
-	private ReaderMatcher breakingMatcher;
-
-	private int startPosition, endPosition;
-
+		if (textManager.getBufferSize() > 0 &&
+				textManager.getBufferSize() <= margin) {
+			throw new IllegalArgumentException("Margin: " + margin +
+					" must be smaller than buffer itself: " + 
+					textManager.getBufferSize() + ".");
+		}
+		
+		this.document = document;
+		this.segment = null;
+		this.start = 0;
+		this.end = 0;
+		this.textManager = textManager;
+		this.ruleManager = new RuleManager(document, languageCode);
+		this.margin = margin;
+	}
+		
 	/**
 	 * Creates text iterator that obtains language rules form given document
 	 * using given language code. To retrieve language rules calls
@@ -37,156 +69,183 @@ public class SrxTextIterator extends AbstractTextIterator {
 	 * @param text
 	 *            Text.
 	 */
-	public SrxTextIterator(SrxDocument document, String languageCode,
+	public SrxTextIterator(SrxDocument document, String languageCode, 
 			CharSequence text) {
-		
-		this.text = text;
-		this.segment = null;
-		this.startPosition = 0;
-		this.endPosition = 0;
-
-		List<LanguageRule> languageRuleList = 
-			document.getLanguageRuleList(languageCode);
-		
-		this.mergedPattern = 
-			(MergedPattern)document.getCache().get(languageRuleList);
-		if (mergedPattern == null) {
-			mergedPattern = new MergedPattern(languageRuleList);
-			document.getCache().put(languageRuleList, mergedPattern);
-		}
-		
-		if (mergedPattern.getBreakingPattern() != null) {
-			this.breakingMatcher = new ReaderMatcher(
-					mergedPattern.getBreakingPattern(), text);
-		}
-		
+		this(document, languageCode, new TextManager(text), 0);
 	}
 
-	/**
-	 * Creates streaming text iterator that obtains language rules form given
-	 * document using given language code. To retrieve language rules calls
-	 * {@link SrxDocument#getLanguageRuleList(String)}. To handle streams uses
-	 * ReaderCharSequence, so not all possible regular expressions are accepted.
-	 * See {@link ReaderCharSequence} for details.
-	 * 
-	 * @param document
-	 *            Document containing language rules.
-	 * @param languageCode
-	 *            Language code to select the rules.
-	 * @param reader
-	 *            Reader from which text will be read.
-	 * @param length
-	 * 			  Length of stream in reader.
-	 * @param bufferSize
-	 * 			  Reader buffer size. Segments cannot be longer than this value.
-	 */
-	public SrxTextIterator(SrxDocument document, String languageCode,
-			Reader reader, int length, int bufferSize) {
-		this(document, languageCode, new ReaderCharSequence(reader, length, 
-				bufferSize));
+	public SrxTextIterator(SrxDocument document, String languageCode, 
+			Reader reader, int bufferSize, int margin) {
+		this(document, languageCode, new TextManager(reader, bufferSize), margin);
 	}
 
-	/**
-	 * Creates streaming text iterator with default buffer size 
-	 * ({@link ReaderCharSequence#DEFAULT_BUFFER_SIZE}). 
-	 * See {@link #SrxTextIterator(SrxDocument, String, Reader, int, int)}}.
-	 */
-	public SrxTextIterator(SrxDocument document, String languageCode,
-			Reader reader, int length) {
-		this(document, languageCode, 
-				new ReaderCharSequence(reader, length));
+	public SrxTextIterator(SrxDocument document, String languageCode, 
+			Reader reader, int bufferSize) {
+		this(document, languageCode, reader, bufferSize, DEFAULT_MARGIN);
 	}
-
-	/**
-	 * Creates streaming text iterator with unknown stream length. 
-	 * See {@link #SrxTextIterator(SrxDocument, String, Reader, int, int)}}.
-	 */
-	public SrxTextIterator(SrxDocument document, String languageCode,
+		
+	public SrxTextIterator(SrxDocument document, String languageCode, 
 			Reader reader) {
-		this(document, languageCode, new ReaderCharSequence(reader));
+		this(document, languageCode, reader, DEFAULT_BUFFER_SIZE);
 	}
-
+		
 	/**
-	 * {@inheritDoc}
+	 * Finds the next segment.
+	 * @return Returns next segment or null if it doesn't exist.
 	 */
 	public String next() {
 		if (hasNext()) {
+
+			// Initialize matchers before first search.
+			if (segment == null) {
+				initMatchers();
+			}
+			
 			boolean found = false;
-			if (breakingMatcher != null) {
-				while (!found && breakingMatcher.find()) {
+			
+			while (!found) {
+				
+				RuleMatcher minMatcher = getMinMatcher();
+				
+				if (minMatcher == null && !textManager.hasMoreText()) {
 
-					// Find which breaking rule was matched in the matcher.
-					// It must have matched some rule so check for
-					// breakingMatcher.groupCount() is not necessary.
-					int breakingRuleIndex = 1;
-					while (breakingMatcher.group(breakingRuleIndex) == null) {
-						++breakingRuleIndex;
-					}
+					found = true;
+					end = textManager.getText().length();
+				
+				} else {
 					
-					// Breaking position is at the end of the group.
-					endPosition = breakingMatcher.end(breakingRuleIndex);
-					
-					// When there's more than one breaking rule at the given
-					// place only the first is matched, the rest is skipped.
-					// So if position is not increasing the new rules are
-					// applied in the same place as previously matched rule.
-					if (endPosition > startPosition) {
-
-						found = true;
-
-						// Get non breaking patterns that are applicable 
-						// to breaking rule just matched.
-						List<Pattern> activeNonBreakingPatternList =
-							mergedPattern.getNonBreakingPatternList(
-									breakingRuleIndex);
+					if (textManager.hasMoreText() && 
+							(minMatcher == null || 
+							minMatcher.getBreakPosition() > 
+							textManager.getBufferSize() - margin)) {
 						
-						for (Pattern nonBreakingPattern : 
-							activeNonBreakingPatternList) {
-
-							// Null non breaking pattern does not match anything
-							if (nonBreakingPattern != null) {
-								ReaderMatcher nonBreakingMatcher = 
-									new ReaderMatcher(nonBreakingPattern, text);
-								nonBreakingMatcher.useTransparentBounds(true);
-								// When using transparent bound the upper bound
-								// is not important?
-								// Needed because text.length() is unknown.
-								nonBreakingMatcher.region(endPosition,
-										endPosition);
-								found = !nonBreakingMatcher.lookingAt();
-							}
-
-							// Break when non-breaking rule matches
-							if (!found) {
-								break;
-							}
-							
+						if (start == 0) {
+							throw new IllegalStateException("Buffer too short");
 						}
+						
+						textManager.readText(start);
+						start = 0;
+						initMatchers();
+						minMatcher = getMinMatcher();						
 
 					}
+					
+					end = minMatcher.getBreakPosition();
+
+					if (end > start) {
+						found = isBreaking(minMatcher);
+						if (found) {
+							cutMatchers();
+						}
+					}
+					
 				}
-				// Breaking matcher cannot match text behind segment start in
-				// the future. 
-				if (found && endPosition < text.length()) {
-					breakingMatcher.region(endPosition, text.length());
-				}
+				
+				moveMatchers();
 			}
-			if (!found) {
-				endPosition = text.length();
-			}
-			segment = text.subSequence(startPosition, endPosition).toString();
-			startPosition = endPosition;
+			
+			segment = textManager.getText().subSequence(start, end).toString();
+			start = end;
 			return segment;
+			
 		} else {
+			
 			return null;
+			
 		}
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @return Returns true if there are more segments.
 	 */
 	public boolean hasNext() {
-		return (startPosition < text.length());
+		return (textManager.hasMoreText() || 
+				start < textManager.getText().length());
+	}
+	
+	/**
+	 * Initializes matcher list according to rules from ruleManager and 
+	 * text from textManager.
+	 */
+	private void initMatchers() {
+		this.ruleMatcherList = new LinkedList<RuleMatcher>();
+		for (Rule rule : ruleManager.getBreakingRuleList()) {
+			RuleMatcher matcher = 
+				new RuleMatcher(document, rule, textManager.getText());
+			matcher.find();
+			if (!matcher.hitEnd()) {
+				ruleMatcherList.add(matcher);
+			}
+		}
 	}
 
+	/**
+	 * Moves all matchers to the next position if needed.
+	 */
+	private void moveMatchers() {
+		for (Iterator<RuleMatcher> i = ruleMatcherList.iterator(); i.hasNext();) {
+			RuleMatcher matcher = i.next();
+			while (matcher.getBreakPosition() <= end) {
+				matcher.find();
+				if (matcher.hitEnd()) {
+					i.remove();
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Move matchers that start before previous segment end.
+	 */
+	private void cutMatchers() {
+		for (Iterator<RuleMatcher> i = ruleMatcherList.iterator(); i.hasNext();) {
+			RuleMatcher matcher = i.next();
+			if (matcher.getStartPosition() < end) {
+				matcher.find(end);
+				if (matcher.hitEnd()) {
+					i.remove();
+				}
+			}
+		}
+	}
+
+	/**
+	 * @return Returns first matcher in the text or null if there are no matchers.
+	 */
+	private RuleMatcher getMinMatcher() {
+		int minPosition = Integer.MAX_VALUE;
+		RuleMatcher minMatcher = null;
+		for (RuleMatcher matcher : ruleMatcherList) {
+			if (matcher.getBreakPosition() < minPosition) {
+				minPosition = matcher.getBreakPosition();
+				minMatcher = matcher;
+			}
+		}
+		return minMatcher;
+	}
+	
+	/**
+	 * Returns true if there are no non breaking rules preventing given
+	 * rule matcher from breaking the text.
+	 * @param ruleMatcher Rule matcher.
+	 * @return Returns true if rule matcher breaks the text.
+	 */
+	private boolean isBreaking(RuleMatcher ruleMatcher) {
+		
+		Pattern pattern = 
+			ruleManager.getNonBreakingPattern(ruleMatcher.getRule());
+		
+		if (pattern != null) {
+			Matcher matcher = pattern.matcher(textManager.getText());
+			matcher.useTransparentBounds(true);
+			matcher.region(ruleMatcher.getBreakPosition(), 
+					textManager.getText().length());
+			return !matcher.lookingAt();
+		} else {
+			return true;
+		}
+
+	}
+	
 }

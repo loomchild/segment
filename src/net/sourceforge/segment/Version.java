@@ -1,10 +1,10 @@
 package net.sourceforge.segment;
 
-import static net.rootnode.loomchild.util.io.Util.getJarManifest;
+import static net.sourceforge.segment.util.Util.getJarManifest;
 
 import java.util.jar.Manifest;
 
-import net.rootnode.loomchild.util.exceptions.ResourceNotFoundException;
+import net.sourceforge.segment.util.ResourceNotFoundException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

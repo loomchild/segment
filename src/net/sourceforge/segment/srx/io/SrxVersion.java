@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.rootnode.loomchild.util.exceptions.IORuntimeException;
+import net.sourceforge.segment.util.IORuntimeException;
 
 public enum SrxVersion {
 

@@ -1,9 +1,13 @@
-package net.sourceforge.segment.srx;
+package net.sourceforge.segment.srx.legacy;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import net.sourceforge.segment.srx.LanguageRule;
+import net.sourceforge.segment.srx.Rule;
+import net.sourceforge.segment.util.Util;
 
 /**
  * Represents merged splitting pattern.

@@ -1,7 +1,7 @@
 package net.sourceforge.segment.srx.io;
 
-import static net.rootnode.loomchild.util.io.Util.getReader;
-import static net.rootnode.loomchild.util.io.Util.getResourceStream;
+import static net.sourceforge.segment.util.Util.getReader;
+import static net.sourceforge.segment.util.Util.getResourceStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -9,11 +9,11 @@ import static org.junit.Assert.assertTrue;
 import java.io.Reader;
 import java.util.List;
 
-import net.rootnode.loomchild.util.exceptions.XmlException;
 import net.sourceforge.segment.srx.LanguageRule;
 import net.sourceforge.segment.srx.Rule;
 import net.sourceforge.segment.srx.SrxDocument;
 import net.sourceforge.segment.srx.SrxParser;
+import net.sourceforge.segment.util.XmlException;
 
 import org.junit.Test;
 

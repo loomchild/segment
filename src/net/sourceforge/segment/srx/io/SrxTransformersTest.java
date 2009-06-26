@@ -1,9 +1,9 @@
 package net.sourceforge.segment.srx.io;
 
-import static net.rootnode.loomchild.util.io.Util.getReader;
-import static net.rootnode.loomchild.util.io.Util.getResourceStream;
-import static net.rootnode.loomchild.util.xml.Util.getTemplates;
-import static net.rootnode.loomchild.util.xml.Util.transform;
+import static net.sourceforge.segment.util.Util.getReader;
+import static net.sourceforge.segment.util.Util.getResourceStream;
+import static net.sourceforge.segment.util.Util.getTemplates;
+import static net.sourceforge.segment.util.Util.transform;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -16,8 +16,8 @@ import java.util.Map;
 import javax.xml.transform.Templates;
 
 import junit.framework.TestCase;
-import net.rootnode.loomchild.util.exceptions.IORuntimeException;
 import net.sourceforge.segment.srx.SrxTransformer;
+import net.sourceforge.segment.util.IORuntimeException;
 
 public class SrxTransformersTest extends TestCase {
 

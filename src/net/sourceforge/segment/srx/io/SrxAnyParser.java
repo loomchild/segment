@@ -3,9 +3,9 @@ package net.sourceforge.segment.srx.io;
 import java.io.BufferedReader;
 import java.io.Reader;
 
-import net.rootnode.loomchild.util.exceptions.XmlException;
 import net.sourceforge.segment.srx.SrxDocument;
 import net.sourceforge.segment.srx.SrxParser;
+import net.sourceforge.segment.util.XmlException;
 
 /**
  * Represents any version intelligent SRX document parser. Responsible for

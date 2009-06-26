@@ -1,12 +1,11 @@
 package net.sourceforge.segment.srx;
 
-import static net.rootnode.loomchild.util.testing.Util.assertListEquals;
+import static net.sourceforge.segment.util.Util.assertListEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.rootnode.loomchild.util.io.ReaderCharSequence;
 import net.sourceforge.segment.TextIterator;
 
 import org.junit.Test;
@@ -491,27 +490,24 @@ public abstract class AbstractSrxTextIteratorTest {
 		return document;
 	}
 
-	/**
-	 * Test if overlapping breaking rules do not interfere with each other.
-	 */
 	@Test
 	public void testMixedBreakingRules() {
 		performTest(MIXED_BREAKING_RULES_RESULT, 
 				MIXED_BREAKING_RULES_DOCUMENT);
 	}
 	
+	
 	public static final String[] TEXT_LONGER_THAN_BUFFER_RESULT = 
 		createTextLongerThanBufferResult();
 	
 	private static String[] createTextLongerThanBufferResult() {
-		int length = ReaderCharSequence.DEFAULT_BUFFER_SIZE / 10 + 20;
+		int length = SrxTextIterator.DEFAULT_BUFFER_SIZE / 10 + 20;
 		String[] result = new String[length];
 		for (int i = 0; i < length; ++i) {
 			result[i] = "AAAAAAAAA.";
 		}
 		return result;
-	}
-	
+	}	
 
 	public static final SrxDocument TEXT_LONGER_THAN_BUFFER_DOCUMENT = 
 		createTextLongerThanBufferDocument();
@@ -528,10 +524,6 @@ public abstract class AbstractSrxTextIteratorTest {
 		return document;
 	}
 
-	/**
-	 * Test if overlapping breaking rules do not interfere with each other.
-	 */
-	@Test
 	public void testTextLongerThanBufferRules() {
 		performTest(TEXT_LONGER_THAN_BUFFER_RESULT, 
 				TEXT_LONGER_THAN_BUFFER_DOCUMENT);

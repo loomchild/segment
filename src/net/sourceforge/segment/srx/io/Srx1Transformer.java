@@ -1,12 +1,12 @@
 package net.sourceforge.segment.srx.io;
 
-import static net.rootnode.loomchild.util.io.Util.getFileInputStream;
-import static net.rootnode.loomchild.util.io.Util.getFileOutputStream;
-import static net.rootnode.loomchild.util.io.Util.getReader;
-import static net.rootnode.loomchild.util.io.Util.getResourceStream;
-import static net.rootnode.loomchild.util.io.Util.getWriter;
-import static net.rootnode.loomchild.util.xml.Util.getSchema;
-import static net.rootnode.loomchild.util.xml.Util.getTemplates;
+import static net.sourceforge.segment.util.Util.getFileInputStream;
+import static net.sourceforge.segment.util.Util.getFileOutputStream;
+import static net.sourceforge.segment.util.Util.getReader;
+import static net.sourceforge.segment.util.Util.getResourceStream;
+import static net.sourceforge.segment.util.Util.getSchema;
+import static net.sourceforge.segment.util.Util.getTemplates;
+import static net.sourceforge.segment.util.Util.getWriter;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,9 +17,9 @@ import java.util.Map;
 import javax.xml.transform.Templates;
 import javax.xml.validation.Schema;
 
-import net.rootnode.loomchild.util.exceptions.IORuntimeException;
-import net.rootnode.loomchild.util.xml.Util;
 import net.sourceforge.segment.srx.SrxTransformer;
+import net.sourceforge.segment.util.IORuntimeException;
+import net.sourceforge.segment.util.Util;
 
 /**
  * Represents SRX document transformer between SRX 1.0 and newest supported

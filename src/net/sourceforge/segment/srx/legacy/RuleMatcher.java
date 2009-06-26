@@ -1,17 +1,22 @@
-package net.sourceforge.segment.srx;
+package net.sourceforge.segment.srx.legacy;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sourceforge.segment.srx.Rule;
+import net.sourceforge.segment.srx.SrxDocument;
+import net.sourceforge.segment.util.Util;
+
 
 /**
  * Reprezentuje iterator po tekście wyszukujący kolejne wystąpienia danej reguły.
- * Używane przez {@link LegacySrxTextIterator}.
+ * Używane przez {@link PolengSrxTextIterator}.
  *
  * @author loomchild
  */
 public class RuleMatcher {
 	
+	@SuppressWarnings("unused")
 	private SrxDocument document;
 
 	private Rule rule;
@@ -34,8 +39,8 @@ public class RuleMatcher {
 		this.document = document;
 		this.rule = rule;
 		this.text = text;
-		Pattern beforePattern = compile(rule.getBeforePattern());
-		Pattern afterPattern = compile(rule.getAfterPattern());
+		Pattern beforePattern = Util.compile(document, rule.getBeforePattern());
+		Pattern afterPattern = Util.compile(document, rule.getAfterPattern());
 		this.beforeMatcher = beforePattern.matcher(text);
 		this.afterMatcher = afterPattern.matcher(text);	
 		this.found = true;
@@ -101,12 +106,4 @@ public class RuleMatcher {
 		return rule;
 	}
 
-	private Pattern compile(String regex) {
-		Pattern pattern = (Pattern)document.getCache().get(regex);
-		if (pattern == null) {
-			pattern = Pattern.compile(regex);
-			document.getCache().put(regex, pattern);
-		}
-		return pattern;
-	}
 }

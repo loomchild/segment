@@ -1,6 +1,6 @@
 package net.sourceforge.segment.srx.io;
 
-import static net.rootnode.loomchild.util.io.Util.copyAll;
+import static net.sourceforge.segment.util.Util.copyAll;
 
 import java.io.Reader;
 import java.io.Writer;

@@ -1,4 +1,4 @@
-package net.sourceforge.segment.srx;
+package net.sourceforge.segment.srx.legacy;
 
 
 import java.util.Iterator;
@@ -6,13 +6,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.sourceforge.segment.AbstractTextIterator;
+import net.sourceforge.segment.srx.LanguageRule;
+import net.sourceforge.segment.srx.Rule;
+import net.sourceforge.segment.srx.SrxDocument;
 
 /**
  * Reprezentuje splitter dzielący na podstawie reguł zawartych w pliku srx.
  *
  * @author loomchild
  */
-public class LegacySrxTextIterator extends AbstractTextIterator {
+public class PolengSrxTextIterator extends AbstractTextIterator {
 
 	private List<LanguageRule> languageRuleList;
 	
@@ -36,7 +39,7 @@ public class LegacySrxTextIterator extends AbstractTextIterator {
 	 * @param text
 	 *            Text.
 	 */
-	public LegacySrxTextIterator(SrxDocument document, String languageCode, 
+	public PolengSrxTextIterator(SrxDocument document, String languageCode, 
 			CharSequence text) {
 		this.languageRuleList = document.getLanguageRuleList(languageCode);
 		this.text = text;

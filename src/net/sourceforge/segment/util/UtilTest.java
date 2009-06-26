@@ -1,4 +1,4 @@
-package net.sourceforge.segment.srx;
+package net.sourceforge.segment.util;
 
 import junit.framework.TestCase;
 
@@ -24,8 +24,8 @@ public class UtilTest extends TestCase {
 	public static final String EXPECTED_NONCAPTURING_GROUPS_PATTERN = "(?:aa)\\(bb\\\\(?:cc(?:dd))ee(?:ff)\\(\\)";
 
 	public void testRemoveCapturingGroups() {
-		String noncapturingGroupsPattern = Util
-				.removeCapturingGroups(CAPTURING_GROUPS_PATTERN);
+		String noncapturingGroupsPattern = 
+				Util.removeCapturingGroups(CAPTURING_GROUPS_PATTERN);
 		assertEquals(EXPECTED_NONCAPTURING_GROUPS_PATTERN,
 				noncapturingGroupsPattern);
 	}

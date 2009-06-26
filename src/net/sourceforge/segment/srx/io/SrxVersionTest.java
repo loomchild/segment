@@ -1,7 +1,7 @@
 package net.sourceforge.segment.srx.io;
 
-import static net.rootnode.loomchild.util.io.Util.getReader;
-import static net.rootnode.loomchild.util.io.Util.getResourceStream;
+import static net.sourceforge.segment.util.Util.getReader;
+import static net.sourceforge.segment.util.Util.getResourceStream;
 
 import java.io.BufferedReader;
 

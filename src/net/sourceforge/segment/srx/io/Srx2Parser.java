@@ -1,15 +1,14 @@
 package net.sourceforge.segment.srx.io;
 
-import static net.rootnode.loomchild.util.io.Util.getReader;
-import static net.rootnode.loomchild.util.io.Util.getResourceStream;
-import static net.rootnode.loomchild.util.xml.Util.getContext;
-import static net.rootnode.loomchild.util.xml.Util.getSchema;
+import static net.sourceforge.segment.util.Util.getContext;
+import static net.sourceforge.segment.util.Util.getReader;
+import static net.sourceforge.segment.util.Util.getResourceStream;
+import static net.sourceforge.segment.util.Util.getSchema;
 
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.rootnode.loomchild.util.xml.Bind;
 import net.sourceforge.segment.srx.LanguageRule;
 import net.sourceforge.segment.srx.Rule;
 import net.sourceforge.segment.srx.SrxDocument;
@@ -18,6 +17,7 @@ import net.sourceforge.segment.srx.io.bind.Body;
 import net.sourceforge.segment.srx.io.bind.Languagemap;
 import net.sourceforge.segment.srx.io.bind.Languagerule;
 import net.sourceforge.segment.srx.io.bind.Srx;
+import net.sourceforge.segment.util.Bind;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -1,6 +1,8 @@
-package net.sourceforge.segment.srx;
+package net.sourceforge.segment.srx.legacy;
 
 import junit.framework.TestCase;
+import net.sourceforge.segment.srx.Rule;
+import net.sourceforge.segment.srx.SrxDocument;
 
 public class RuleMatcherTest extends TestCase {
 
