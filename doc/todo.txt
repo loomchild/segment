@@ -1,0 +1,7 @@
+przepisać TextManager
+napisać test wydajność z prawdziwymi danymi
+przyspiszyć parsowanie
+english comments in Util, comments for new classes
+może rozszerzyć interfejs TextIterator o metodę next(Writer) żeby był w pełni strumieniowy
+Rule powinny być skompilowane? czy to przyspieszy?
+nowa opcja preload text w interfejsie.
