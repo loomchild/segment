@@ -94,6 +94,7 @@ public class Segment {
 		options.addOption("o", "output", true, "Use given output file instead of standard output.");
 		options.addOption("t", "transform", false, "Convert old SRX to current version.");
 		options.addOption("p", "profile", false, "Print profile information.");
+		options.addOption("r", "preload", false, "Preload document into memory before segmentation.");
 		options.addOption("2", "twice", false, "Repeat the whole process twice.");
 		options.addOption("x", "generate-text", true, "Generate random input with given length in KB.");
 		options.addOption("y", "generate-srx", true, "Generate random segmentation rules with given rule count and rule length separated by a comma.");
@@ -425,8 +426,14 @@ public class Segment {
 			algorithm = Algorithm.valueOf(algorithmString);
 		}
 		
-		if (algorithm == Algorithm.poleng) {
-			readText(reader);
+		boolean preload = commandLine.hasOption('r');
+		
+		if (algorithm == Algorithm.poleng && !preload) {
+			throw new IllegalArgumentException("For poleng algorithm preload option (-r) is mandatory.");
+		}
+		
+		if (preload) {
+			preloadText(reader, profile);
 		}
 		
 		if (profile) {
@@ -438,9 +445,17 @@ public class Segment {
 		if (algorithm == Algorithm.poleng) {
 			textIterator = new PolengSrxTextIterator(document, languageCode, text);
 		} else if (algorithm == Algorithm.ultimate) {
-			textIterator = new SrxTextIterator(document, languageCode, reader);
+			if (preload) {
+				textIterator = new SrxTextIterator(document, languageCode, text);
+			} else {
+				textIterator = new SrxTextIterator(document, languageCode, reader);
+			}
 		} else if (algorithm == Algorithm.merge) {
-			textIterator = new MergedPatternTextIterator(document, languageCode, reader);
+			if (preload) {
+				textIterator = new MergedPatternTextIterator(document, languageCode, text);
+			} else {
+				textIterator = new MergedPatternTextIterator(document, languageCode, reader);
+			}
 		} else {
 			throw new IllegalArgumentException("Unknown algorithm: " + algorithm + ".");
 		}
@@ -484,9 +499,16 @@ public class Segment {
 
 	}
 	
-	private String readText(Reader reader) {
+	private String preloadText(Reader reader, boolean profile) {
 		if (text == null) {
+			if (profile) {
+				System.out.print("    Preloading text... ");
+			}
+			long start = System.currentTimeMillis();
 			text = readAll(reader);
+			if (profile) {
+				System.out.println(System.currentTimeMillis() - start + " ms.");
+			}
 		}
 		return text;
 	}

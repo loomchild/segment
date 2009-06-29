@@ -1,7 +1,4 @@
-przepisać TextManager
-napisać test wydajność z prawdziwymi danymi
-przyspiszyć parsowanie
+moze textmanager pownien wykorzystywać wzorzec stan do leniwego ładowania tekstu?
+napisać test wydajność z prawdziwymi danymi i jednocześnie test porównawczy na prawdziwych danych. 
 english comments in Util, comments for new classes
 może rozszerzyć interfejs TextIterator o metodę next(Writer) żeby był w pełni strumieniowy
-Rule powinny być skompilowane? czy to przyspieszy?
-nowa opcja preload text w interfejsie.

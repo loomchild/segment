@@ -445,7 +445,7 @@ public class Util {
 	}
 	
 	public static Pattern compile(SrxDocument document, String regex) {
-		Pattern pattern = (Pattern)document.getCache().get(regex);
+		Pattern pattern = document.getCache().get(regex, Pattern.class);
 		if (pattern == null) {
 			pattern = Pattern.compile(regex);
 			document.getCache().put(regex, pattern);

@@ -38,8 +38,6 @@ public class TextManager {
 		this.text = null;
 		this.reader = reader;
 		this.bufferSize = bufferSize;
-		
-		text = read(bufferSize + 1);
 	}
 
 	public int getBufferSize() {
@@ -47,14 +45,18 @@ public class TextManager {
 	}
 	
 	public CharSequence getText() {
+		initText();
 		return text;
 	}
 	
 	public boolean hasMoreText() {
+		initText();
 		return nextCharacter != -1;
 	}
 	
 	public void readText(int amount) {
+		
+		initText();
 		
 		if (amount <= 0) {
 			throw new IllegalArgumentException("Amount must be positive.");
@@ -78,6 +80,12 @@ public class TextManager {
 		
 		text = builder.toString();
 
+	}
+	
+	private void initText() {
+		if (text == null) {
+			text = read(bufferSize + 1);
+		}
 	}
 	
 	private String read(int amount) {

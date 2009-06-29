@@ -9,7 +9,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sourceforge.segment.AbstractTextIterator;
-import net.sourceforge.segment.srx.legacy.RuleMatcher;
 
 /**
  * Represents a splitter splitting text according to rules in SRX file.

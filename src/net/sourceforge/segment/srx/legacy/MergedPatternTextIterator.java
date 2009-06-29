@@ -49,7 +49,7 @@ public class MergedPatternTextIterator extends AbstractTextIterator {
 			document.getLanguageRuleList(languageCode);
 		
 		this.mergedPattern = 
-			(MergedPattern)document.getCache().get(languageRuleList);
+			document.getCache().get(languageRuleList, MergedPattern.class);
 		if (mergedPattern == null) {
 			mergedPattern = new MergedPattern(languageRuleList);
 			document.getCache().put(languageRuleList, mergedPattern);

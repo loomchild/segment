@@ -16,50 +16,68 @@ public class RuleManager {
 	
 	private Map<Rule, Pattern> nonBreakingPaternMap;
 	
+	@SuppressWarnings("unchecked")
 	public RuleManager(SrxDocument document, String languageCode) {
 		this.document = document;
 		
 		List<LanguageRule> languageRuleList = 
 			document.getLanguageRuleList(languageCode);
 		
-		this.breakingRuleList = new ArrayList<Rule>();
-		this.nonBreakingPaternMap = new HashMap<Rule, Pattern>();
-
-		StringBuilder nonBreakingPatternBuilder = new StringBuilder();
+		Object[] cachedPatterns = 
+			document.getCache().get(languageRuleList, Object[].class);
 		
-		for (LanguageRule languageRule : languageRuleList) {
-			for (Rule rule : languageRule.getRuleList()) {
+		if (cachedPatterns != null) {
+		
+			this.breakingRuleList = (List<Rule>)cachedPatterns[0];
+			this.nonBreakingPaternMap = (Map<Rule, Pattern>)cachedPatterns[1];
+		
+		} else {
+		
+			this.breakingRuleList = new ArrayList<Rule>();
+			this.nonBreakingPaternMap = new HashMap<Rule, Pattern>();
 
-				if (rule.isBreaking()) {
-				
-					breakingRuleList.add(rule);
+			StringBuilder nonBreakingPatternBuilder = new StringBuilder();
+			
+			for (LanguageRule languageRule : languageRuleList) {
+				for (Rule rule : languageRule.getRuleList()) {
+
+					if (rule.isBreaking()) {
 					
-					Pattern nonBreakingPattern;
+						breakingRuleList.add(rule);
+						
+						Pattern nonBreakingPattern;
+						
+						if (nonBreakingPatternBuilder.length() > 0) {
+							String nonBreakingPatternString = 
+								nonBreakingPatternBuilder.toString();
+							nonBreakingPattern = 
+								Util.compile(document, nonBreakingPatternString);
+						} else {
+							nonBreakingPattern = null;
+						}
+
+						nonBreakingPaternMap.put(rule, nonBreakingPattern);
 					
-					if (nonBreakingPatternBuilder.length() > 0) {
-						String nonBreakingPatternString = 
-							nonBreakingPatternBuilder.toString();
-						nonBreakingPattern = 
-							Util.compile(document, nonBreakingPatternString);
 					} else {
-						nonBreakingPattern = null;
-					}
-
-					nonBreakingPaternMap.put(rule, nonBreakingPattern);
-				
-				} else {
-				
-					if (nonBreakingPatternBuilder.length() > 0) {
-						nonBreakingPatternBuilder.append('|');
-					}
-
-					String patternString = createNonBreakingPatternString(rule);
 					
-					nonBreakingPatternBuilder.append(patternString);
-			
+						if (nonBreakingPatternBuilder.length() > 0) {
+							nonBreakingPatternBuilder.append('|');
+						}
+
+						String patternString = createNonBreakingPatternString(rule);
+						
+						nonBreakingPatternBuilder.append(patternString);
+				
+					}
+				
 				}
-			
 			}
+
+			cachedPatterns = new Object[] {
+				this.breakingRuleList, this.nonBreakingPaternMap
+			};
+			document.getCache().put(languageRuleList, cachedPatterns);
+			
 		}
 		
 	}
@@ -74,7 +92,7 @@ public class RuleManager {
 	
 	private String createNonBreakingPatternString(Rule rule) {
 
-		String patternString = (String)document.getCache().get(rule);
+		String patternString = document.getCache().get(rule, String.class);
 		
 		if (patternString == null) {
 

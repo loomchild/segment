@@ -1,10 +1,9 @@
-package net.sourceforge.segment.srx.legacy;
+package net.sourceforge.segment.srx;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sourceforge.segment.srx.Rule;
-import net.sourceforge.segment.srx.SrxDocument;
+import net.sourceforge.segment.srx.legacy.PolengSrxTextIterator;
 import net.sourceforge.segment.util.Util;
 
 

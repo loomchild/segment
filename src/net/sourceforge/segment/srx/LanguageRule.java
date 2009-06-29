@@ -63,4 +63,24 @@ public class LanguageRule {
 		return name;
 	}
 
+	public int hashCode() {
+		return name.hashCode();
+	}
+
+	public boolean equals(Object object) {
+		if (this == object)
+			return true;
+		if (object == null)
+			return false;
+		if (getClass() != object.getClass())
+			return false;
+		LanguageRule other = (LanguageRule)object;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
+
 }

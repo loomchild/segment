@@ -8,6 +8,7 @@ import java.util.List;
 import net.sourceforge.segment.AbstractTextIterator;
 import net.sourceforge.segment.srx.LanguageRule;
 import net.sourceforge.segment.srx.Rule;
+import net.sourceforge.segment.srx.RuleMatcher;
 import net.sourceforge.segment.srx.SrxDocument;
 
 /**
