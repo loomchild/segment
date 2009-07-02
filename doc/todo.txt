@@ -1,4 +1,16 @@
+Spytać sie jak to powinno działać
+
+Przetestować w languagetool.
+
+Add comments to SrxTextIterator - next
+Delete dots in return, throws, param,
+param lowercase.
+Update documentation.
+
 moze textmanager pownien wykorzystywać wzorzec stan do leniwego ładowania tekstu?
+może.. LazyCharSequence z referencja do TextManagera?
+
+Spytać się o SRX-a, poszukać tekstu do testów.
 napisać test wydajność z prawdziwymi danymi i jednocześnie test porównawczy na prawdziwych danych. 
-english comments in Util, comments for new classes
+
 może rozszerzyć interfejs TextIterator o metodę next(Writer) żeby był w pełni strumieniowy

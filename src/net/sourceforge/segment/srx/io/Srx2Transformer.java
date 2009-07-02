@@ -20,12 +20,9 @@ public class Srx2Transformer implements SrxTransformer {
 	/**
 	 * Copies SRX document from reader to writer without transformation.
 	 * 
-	 * @param reader
-	 *            Reader containing SRX document.
-	 * @param writer
-	 *            Writer to write SRX document.
-	 * @param parameterMap
-	 *            Map containing transformation parameters, ignored.
+	 * @param reader reader containing SRX document
+	 * @param writer writer to write SRX document
+	 * @param parameterMap map containing transformation parameters, ignored
 	 */
 	public void transform(Reader reader, Writer writer,
 			Map<String, Object> parameterMap) {
@@ -35,11 +32,9 @@ public class Srx2Transformer implements SrxTransformer {
 	/**
 	 * Returns given reader without modification.
 	 * 
-	 * @param reader
-	 *            Reader containing SRX document.
-	 * @param parameterMap
-	 *            Map containing transformation parameters, ignored.
-	 * @return Returns reader.
+	 * @param reader reader containing SRX document
+	 * @param parameterMap map containing transformation parameters, ignored
+	 * @return reader
 	 */
 	public Reader transform(Reader reader, Map<String, Object> parameterMap) {
 		return reader;

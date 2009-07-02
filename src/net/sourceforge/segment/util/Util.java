@@ -43,7 +43,6 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 
 import junit.framework.AssertionFailedError;
 import net.sourceforge.segment.srx.SrxDocument;
@@ -55,6 +54,8 @@ import org.xml.sax.XMLReader;
 public class Util {
 	
 	public static final int READ_BUFFER_SIZE = 1024;
+
+	public static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
 
 	public static final int DEFAULT_FINITE_INFINITY = 100;
 
@@ -70,6 +71,11 @@ public class Util {
 	private static final Pattern CAPTURING_GROUP_PATTERN = Pattern
 			.compile("(?<=(?<!\\\\)(?:\\\\\\\\){0,100})\\((?!\\?)");
 
+	/**
+	 * @param inputStream
+	 * @return UTF-8 encoded reader from given input stream
+	 * @throws IORuntimeException if IO error occurs
+	 */
 	public static BufferedReader getReader(InputStream inputStream) {
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -80,6 +86,11 @@ public class Util {
 		}
 	}
 
+	/**
+	 * @param outputStream
+	 * @return UTF-8 encoded writer to a given output stream
+	 * @throws IORuntimeException if IO error occurs
+	 */
 	public static PrintWriter getWriter(OutputStream outputStream) {
 		try {
 			return new PrintWriter(new OutputStreamWriter((outputStream),
@@ -89,6 +100,12 @@ public class Util {
 		}
 	}
 
+	/**
+	 * Opens a file for reading and returns input stream associated with it.
+	 * @param fileName
+	 * @return input stream
+	 * @throws IORuntimeException if IO error occurs
+	 */
 	public static FileInputStream getFileInputStream(String fileName) {
 		try {
 			return new FileInputStream(fileName);
@@ -97,6 +114,12 @@ public class Util {
 		}
 	}
 
+	/**
+	 * Opens a file for writing and returns output stream associated with it.
+	 * @param fileName
+	 * @return output stream
+	 * @throws IORuntimeException if IO error occurs
+	 */
 	public static FileOutputStream getFileOutputStream(String fileName) {
 		try {
 			return new FileOutputStream(fileName);
@@ -106,14 +129,13 @@ public class Util {
 	}
 
 	/**
-	 * Znajduje zasób i zwraca go w postaci strumienia wejściowego. Do szukania
-	 * zasobu używa systemowego Classloader-a.
+	 * Finds a resource using system classloader and returns it as
+	 * input stream.
+	 * @see ClassLoader
 	 * 
-	 * @param name
-	 *            Nazwa zasobu.
-	 * @return Zwraca strumień wejściowy zasobu.
-	 * @throws ResourceNotFoundException
-	 *             Zgłaszany gdy nie udało się odnaleźć zasobu.
+	 * @param name resource name
+	 * @return resource input stream
+	 * @throws ResourceNotFoundException if resource can not be found 
 	 */
 	public static InputStream getResourceStream(String name) {
 		InputStream inputStream = Util.class.getClassLoader()
@@ -125,42 +147,11 @@ public class Util {
 	}
 
 	/**
-	 * Znajduje ścieżkę do zasobu. Trzeba ograniczyć używanie ponieważ nie
-	 * działa poprawnie gdy zasób znajduje się w archiwum JAR.
-	 * 
-	 * @param name
-	 *            Nazwa zasobu.
-	 * @return Zwraca ścieżkę do zasobu.
-	 * @throws ResourceNotFoundException
-	 *             Zgłaszany gdy nie udało się odnaleźć zasobu.
-	 */
-	public static String getResourcePath(String name) {
-		URL url = Util.class.getClassLoader().getResource(name);
-		if (url == null) {
-			throw new ResourceNotFoundException(name);
-		}
-		return url.getPath();
-	}
-	
-	public static String read(Reader reader, int count) {
-		try {
-			char[] readBuffer = new char[count];
-			reader.read(readBuffer);
-			return new String(readBuffer);
-		} catch (IOException e) {
-			throw new IORuntimeException(e);
-		}
-	}
-
-	/**
-	 * Wczytuje całą zawartość strumienia wejściowego do napisu. W razie
-	 * niepowodzenia zgłasza wyjątek.
+	 * Reads whole contents of a reader to a string.
 	 * 
 	 * @param reader
-	 *            Strumień wejściowy.
-	 * @return Zwraca napis zawierający odczytany strumień.
-	 * @throws IORuntimeException
-	 *             gdy wystąpi błąd IO.
+	 * @return a string containing reader contents
+	 * @throws IORuntimeException on IO error
 	 */
 	public static String readAll(Reader reader) {
 		StringWriter writer = new StringWriter();
@@ -168,6 +159,12 @@ public class Util {
 		return writer.toString();
 	}
 
+	/**
+	 * Copies the whole content of a reader to a writer.
+	 * @param reader
+	 * @param writer
+	 * @throws IORuntimeException on IO error
+	 */
 	public static void copyAll(Reader reader, Writer writer) {
 		try {
 			char[] readBuffer = new char[READ_BUFFER_SIZE];
@@ -179,24 +176,13 @@ public class Util {
 			throw new IORuntimeException(e);
 		}
 	}
-
-	public static String getFileExtension(String fileName) {
-		int dotPosition = fileName.lastIndexOf('.');
-		if (dotPosition == -1) {
-			return "";
-		} else {
-			return fileName.substring(dotPosition);
-		}
-	}
 	
-	public static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
-
 	/**
 	 * Returns Manifest of a jar containing given class. If class is not
 	 * in a jar, throws {@link ResourceNotFoundException}.
-	 * @param klass Class.
-	 * @return Manifest.
-	 * @throws ResourceNotFoundException Thrown if manifest was not found.
+	 * @param klass class
+	 * @return manifest
+	 * @throws ResourceNotFoundException if manifest was not found
 	 */
 	public static Manifest getJarManifest(Class<?> klass) {
         URL classUrl = klass.getResource(klass.getSimpleName() + ".class");
@@ -226,6 +212,13 @@ public class Util {
         }
     }
 	
+	/**
+	 * Returns XMLReader validating against given XML schema. 
+	 * The reader ignores DTD defined in XML file.
+	 * @param schema
+	 * @return XMLReader
+	 * @throws XMLException when SAX error occurs
+	 */
 	public static XMLReader getXmlReader(Schema schema) {
 		try {
 			SAXParserFactory parserFactory = SAXParserFactory.newInstance();
@@ -245,14 +238,32 @@ public class Util {
 		}
 	}
 
+	/**
+	 * @see Util#getXmlReader(Schema)
+	 * @return XMLReader without XML schema associated with it
+	 * @throws XMLException when SAX error occurs
+	 */
 	public static XMLReader getXmlReader() {
 		return getXmlReader(null);
 	}
 
+	/**
+	 * Reads a XML schema from given reader. 
+	 * @param reader
+	 * @return XML Schema
+	 * @throws XMLException when XML schema parsing error occurs
+	 */
 	public static Schema getSchema(Reader reader) {
 		return getSchema(new Reader[] { reader });
 	}
 
+	/**
+	 * Reads a XML schema from given readers. Schema files can depend on
+	 * one another.
+	 * @param readerArray readers containing XML schemas
+	 * @return XML Schema object
+	 * @throws XMLException when XML schema parsing error occurs
+	 */
 	public static Schema getSchema(Reader[] readerArray) {
 		try {
 			Source[] sourceArray = new Source[readerArray.length];
@@ -270,12 +281,22 @@ public class Util {
 		}
 	}
 
+	/**
+	 * @param reader
+	 * @param schema XML schema
+	 * @return XML source from given reader and with given schema 
+	 */
 	public static Source getSource(Reader reader, Schema schema) {
 		Source source = new SAXSource(getXmlReader(schema),
 				new InputSource(reader));
 		return source;
 	}
 
+	/**
+	 * @param context context package name
+	 * @return JAXB context
+	 * @throws XMLException if JAXB error occurs
+	 */
 	public static JAXBContext getContext(String context) {
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(context);
@@ -285,6 +306,12 @@ public class Util {
 		}
 	}
 
+	/**
+	 * @param context context package name
+	 * @param classLoader class loader used to load classes from the context
+	 * @return JAXB context; loads the classes using given classloader
+	 * @throws XMLException if JAXB error occurs
+	 */
 	public static JAXBContext getContext(String context, 
 			ClassLoader classLoader) {
 		try {
@@ -295,6 +322,12 @@ public class Util {
 		}
 	}
 
+	/**
+	 * @param classesToBeBound
+	 * @return JAXBContext according to classes to bind 
+	 * Dependency classes are also loaded automatically.
+	 * @throws XMLException if JAXB error occurs
+	 */
 	public static JAXBContext getContext(Class<?>... classesToBeBound) {
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(classesToBeBound);
@@ -303,7 +336,14 @@ public class Util {
 			throw new XmlException("Error creating JAXB context", e);
 		}
 	}
-	
+
+	/**
+	 * Returns XML transform templates from given reader containing XSLT 
+	 * stylesheet.
+	 * @param reader
+	 * @return templates; they can be reused many times to perform the transformation
+	 * @throws XMLException if XML parsing error occurs
+	 */
 	public static Templates getTemplates(Reader reader) {
 		try {
 			TransformerFactory factory = TransformerFactory.newInstance();
@@ -316,6 +356,15 @@ public class Util {
 		}
 	}
 
+	/**
+	 * Performs XML schema validation and XSLT transformation.
+	 * @param templates XSLT stylesheet
+	 * @param schema XML schema to validate against
+	 * @param reader reader with input document
+	 * @param writer writer which will be used to write output
+	 * @param parameterMap transformation parameters
+	 * @throws XMLException if transformation error occurs
+	 */
 	public static void transform(Templates templates, Schema schema,
 			Reader reader, Writer writer, Map<String, Object> parameterMap) {
 		try {
@@ -334,32 +383,44 @@ public class Util {
 		}
 	}
 
-	public static void transform(Templates templates, Reader reader,
-			Writer writer, Map<String, Object> parameterMap) {
-		transform(templates, null, reader, writer, parameterMap);
-	}
-
+	/**
+	 * Performs XML schema validation and XSLT transformation.
+	 * @param templates XSLT stylesheet
+	 * @param schema XML schema to validate against
+	 * @param reader reader with input document
+	 * @param writer writer which will be used to write output
+	 * @throws XMLException if transformation error occurs
+	 */
 	public static void transform(Templates templates, Schema schema,
 			Reader reader, Writer writer) {
 		Map<String, Object> parameterMap = Collections.emptyMap();
 		transform(templates, schema, reader, writer, parameterMap);
 	}
 
+	/**
+	 * Performs XSLT transformation.
+	 * @param templates XSLT stylesheet
+	 * @param reader reader with input document
+	 * @param writer writer which will be used to write output
+	 * @param parameterMap transformation parameters
+	 * @throws XMLException if transformation error occurs
+	 */
+	public static void transform(Templates templates, Reader reader, 
+			Writer writer, Map<String, Object> parameterMap) {
+		transform(templates, null, reader, writer, parameterMap); 
+	}
+
+	/**
+	 * Performs XSLT transformation.
+	 * @param templates XSLT stylesheet
+	 * @param reader reader with input document
+	 * @param writer writer which will be used to write output
+	 * @throws XMLException if transformation error occurs
+	 */
 	public static void transform(Templates templates, Reader reader,
 			Writer writer) {
-		transform(templates, null, reader, writer);
-	}
-	
-	public static void validate(Schema schema, Reader reader) {
-		try {
-			Source source = new StreamSource(reader);
-			Validator validator = schema.newValidator();
-			validator.validate(source);
-		} catch (SAXException e) {
-			throw new XmlException("Validation error.", e);
-		} catch (IOException e) {
-			throw new IORuntimeException(e);
-		}
+		Map<String, Object> parameterMap = Collections.emptyMap();
+		transform(templates, reader, writer, parameterMap);
 	}
 	
 	/**
@@ -367,8 +428,7 @@ public class Util {
 	 * example "\Qabc\E" will be replace with "\a\b\c".
 	 * 
 	 * @param pattern
-	 *            Pattern.
-	 * @return Returns pattern with replaced block quotes.
+	 * @return pattern with replaced block quotes
 	 */
 	public static String removeBlockQuotes(String pattern) {
 		StringBuilder patternBuilder = new StringBuilder();
@@ -412,11 +472,9 @@ public class Util {
 	 * and {1,n}. As a side effect block quotes are replaced with normal quotes
 	 * by using {@link #removeBlockQuotes(String)}.
 	 * 
-	 * @param pattern
-	 *            Pattern to be finitized.
-	 * @param infinity
-	 *            n number.
-	 * @return Returns limited length pattern.
+	 * @param pattern pattern to be finitized
+	 * @param infinity "n" number
+	 * @return limited length pattern
 	 */
 	public static String finitize(String pattern, int infinity) {
 		String finitePattern = removeBlockQuotes(pattern);
@@ -436,9 +494,8 @@ public class Util {
 	/**
 	 * Finitizes pattern with default infinity. {@link #finitize(String, int)}
 	 * 
-	 * @param pattern
-	 *            Pattern to be finitized.
-	 * @return Finite pattern.
+	 * @param pattern pattern to be finitized
+	 * @return finite pattern
 	 */
 	public static String finitize(String pattern) {
 		return finitize(pattern, DEFAULT_FINITE_INFINITY);
@@ -459,8 +516,7 @@ public class Util {
 	 * by using {@link #removeBlockQuotes(String)}.
 	 * 
 	 * @param pattern
-	 *            Pattern.
-	 * @return Returns modified pattern.
+	 * @return modified pattern
 	 */
 	public static String removeCapturingGroups(String pattern) {
 		String newPattern = removeBlockQuotes(pattern);
@@ -474,14 +530,11 @@ public class Util {
 	 * Asserts that list has given contents. Otherwise throws exception. To be
 	 * used in testing.
 	 * 
-	 * @param <T>
-	 *            List type
-	 * @param expectedArray
-	 *            Expected list contents.
-	 * @param actualList
-	 *            List to be checked.
-	 * @throws AssertionFailedError
-	 *             Thrown when list are not equal.
+	 * @param <T> list type
+	 * @param message message to be shown if check fails
+	 * @param expectedArray expected list contents
+	 * @param actualList list to be checked
+	 * @throws AssertionFailedError if list and array are not equal
 	 */
 	public static <T> void assertListEquals(String message, T[] expectedArray,
 			List<T> actualList) {
@@ -493,6 +546,12 @@ public class Util {
 		}
 	}
 
+	/**
+	 * @see #assertListEquals(String, Object[], List)
+	 * @param <T> list type
+	 * @param expectedArray expected list contents
+	 * @param actualList List to be checked
+	 */
 	public static <T> void assertListEquals(T[] expectedArray,
 			List<T> actualList) {
 		assertListEquals("", expectedArray, actualList);

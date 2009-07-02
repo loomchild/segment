@@ -16,7 +16,7 @@ import net.sourceforge.segment.srx.SrxDocument;
  *
  * @author loomchild
  */
-public class PolengSrxTextIterator extends AbstractTextIterator {
+public class AccurateSrxTextIterator extends AbstractTextIterator {
 
 	private List<LanguageRule> languageRuleList;
 	
@@ -33,14 +33,11 @@ public class PolengSrxTextIterator extends AbstractTextIterator {
 	 * using given language code. To retrieve language rules calls
 	 * {@link SrxDocument#getLanguageRuleList(String)}.
 	 * 
-	 * @param document
-	 *            Document containing language rules.
-	 * @param languageCode
-	 *            Language code to select the rules.
+	 * @param document document containing language rules
+	 * @param languageCode language code to select the rules
 	 * @param text
-	 *            Text.
 	 */
-	public PolengSrxTextIterator(SrxDocument document, String languageCode, 
+	public AccurateSrxTextIterator(SrxDocument document, String languageCode, 
 			CharSequence text) {
 		this.languageRuleList = document.getLanguageRuleList(languageCode);
 		this.text = text;
@@ -60,8 +57,8 @@ public class PolengSrxTextIterator extends AbstractTextIterator {
 
 	/**
 	 * Wyszukuje następne dopasowanie.
-	 * @return Zwraca następny segment albo null jeśli nie istnieje.
-	 * @throws IOSRuntimeException Zgłaszany gdy nastąpi błąd przy odczycie strumienia.
+	 * @return Zwraca następny segment albo null jeśli nie istnieje
+	 * @throws IOSRuntimeException Zgłaszany gdy nastąpi błąd przy odczycie strumienia
 	 */
 	public String next() {
 		if (hasNext()) {
@@ -92,7 +89,7 @@ public class PolengSrxTextIterator extends AbstractTextIterator {
 	}
 
 	/**
-	 * @return Zwraca true gdy są dostępne kolejne segmenty.
+	 * @return Zwraca true gdy są dostępne kolejne segmenty
 	 */
 	public boolean hasNext() {
 		return (startPosition < text.length());
@@ -140,7 +137,7 @@ public class PolengSrxTextIterator extends AbstractTextIterator {
 	}
 
 	/**
-	 * @return Zwraca iterator pierwszego trafionego dopasowania.
+	 * @return Zwraca iterator pierwszego trafionego dopasowania
 	 */
 	private RuleMatcher getMinMatcher() {
 		int minPosition = Integer.MAX_VALUE;

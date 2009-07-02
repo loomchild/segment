@@ -20,8 +20,7 @@ public class SrxAnyParser implements SrxParser {
 	 * document version.
 	 * 
 	 * @param reader
-	 *            Reader.
-	 * @return Return initialized document.
+	 * @return Return initialized document
 	 */
 	public SrxDocument parse(Reader reader) {
 		SrxParser parser;

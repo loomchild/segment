@@ -21,9 +21,8 @@ public class Srx1Parser implements SrxParser {
 	 * Transforms document to SRX 2.0 using {@link Srx1Transformer} and default
 	 * transformation parameters and parses it using {@link Srx2Parser}.
 	 * 
-	 * @param reader
-	 *            Reader from which read the document.
-	 * @return Returns initialized SRX document.
+	 * @param reader reader from which read the document
+	 * @return initialized SRX document
 	 */
 	public SrxDocument parse(Reader reader) {
 		SrxTransformer transformer = new Srx1Transformer();

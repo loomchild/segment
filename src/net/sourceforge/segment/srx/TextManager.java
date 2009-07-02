@@ -21,7 +21,11 @@ public class TextManager {
 	
 	private int bufferSize;
 	
-
+	/** 
+	 * Creates text manager containing given text. Reading more text is not 
+	 * possible when using this constructor.
+	 * @param text
+	 */
 	public TextManager(CharSequence text) {
 		this.text = text;
 		this.nextCharacter = -1;
@@ -29,6 +33,14 @@ public class TextManager {
 		this.bufferSize = text.length();
 	}
 
+	/**
+	 * Creates text manager reading text from given reader. Only specified
+	 * amount of memory for buffer will be used. Managed text will never 
+	 * be longer than given buffer size. 
+	 * Text is not actually read until required (lazy initialization). 
+	 * @param reader
+	 * @param bufferSize read buffer size
+	 */
 	public TextManager(Reader reader, int bufferSize) {
 		if (bufferSize <= 0) {
 			throw new IllegalArgumentException("Buffer size: " + bufferSize + 
@@ -44,16 +56,29 @@ public class TextManager {
 		return bufferSize;
 	}
 	
+	/**
+	 * @return current text
+	 */
 	public CharSequence getText() {
 		initText();
 		return text;
 	}
 	
+	/**
+	 * @return true if more text can be read
+	 */
 	public boolean hasMoreText() {
 		initText();
 		return nextCharacter != -1;
 	}
 	
+	/**
+	 * Deletes given amount of characters from current character buffer and 
+	 * tries to read up to given amount of new characters and stores them in
+	 * current character buffer.
+	 * @param amount amount of characters to read
+	 * @throws IllegalArgumentException  if {@link #hasMoreText()} returns false or amount is greater than buffer size
+	 */
 	public void readText(int amount) {
 		
 		initText();
@@ -82,12 +107,21 @@ public class TextManager {
 
 	}
 	
+	/**
+	 * Reads initial text from reader if it has not been initialized yet.
+	 */
 	private void initText() {
 		if (text == null) {
 			text = read(bufferSize + 1);
 		}
 	}
 	
+	/**
+	 * Reads the given amount of characters and returns them as a string. 
+	 * Updates {@link #nextCharacter} by reading one additional character.
+	 * @param amount amount to be read
+	 * @return read characters as a string
+	 */
 	private String read(int amount) {
 		try {
 			

@@ -6,6 +6,10 @@ import javax.xml.transform.TransformerException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Handles XML transformation errors by writing them to logr. 
+ * @author loomchild
+ */
 public class TransformationErrorListener implements ErrorListener {
 
 	private static final Log log = LogFactory

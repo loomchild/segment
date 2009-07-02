@@ -20,12 +20,22 @@ import javax.xml.validation.Schema;
 
 import org.xml.sax.InputSource;
 
+/**
+ * Helper class for JAXB binding.
+ * Responsible for marshalling and unmarshalling using given schema and context.
+ * @author loomchild
+ */
 public class Bind {
 
 	private Marshaller marshaller;
 
 	private Unmarshaller unmarshaller;
 
+	/**
+	 * Creates Bind.
+	 * @param context JAXB context
+	 * @param schema XML schema
+	 */
 	public Bind(JAXBContext context, Schema schema) {
 		try {
 			unmarshaller = context.createUnmarshaller();
@@ -39,6 +49,11 @@ public class Bind {
 		}
 	}
 
+	/**
+	 * Writes given object to given writer validating it.
+	 * @param writer
+	 * @param object
+	 */
 	public void marshal(Writer writer, Object object) {
 		try {
 			marshaller.marshal(object, writer);
@@ -47,6 +62,11 @@ public class Bind {
 		}
 	}
 
+	/**
+	 * Writes given object to a file with given name validating it.
+	 * @param fileName
+	 * @param object
+	 */
 	public void marshal(String fileName, Object object) {
 		try {
 			Writer writer = getWriter(getFileOutputStream(fileName));
@@ -57,6 +77,11 @@ public class Bind {
 		}
 	}
 
+	/**
+	 * Retrieves object from given reader validation the input.
+	 * @param reader
+	 * @return object
+	 */
 	public Object unmarshal(Reader reader) {
 		try {
 			Source source = new SAXSource(getXmlReader(), new InputSource(
@@ -67,6 +92,11 @@ public class Bind {
 		}
 	}
 
+	/**
+	 * Retrieves object from a file with given name validating the input.
+	 * @param fileName
+	 * @return object
+	 */
 	public Object unmarshal(String fileName) {
 		try {
 			Reader reader = getReader(getFileInputStream(fileName));

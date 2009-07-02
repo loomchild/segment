@@ -24,12 +24,9 @@ public class SrxAnyTransformer implements SrxTransformer {
 	 * {@link SrxVersion#parse(BufferedReader)}, which does not always work
 	 * perfectly.
 	 * 
-	 * @param reader
-	 *            Reader containing SRX document.
-	 * @param writer
-	 *            Writer to write transformed SRX document.
-	 * @param parameterMap
-	 *            Map containing transformation parameters.
+	 * @param reader reader containing SRX document
+	 * @param writer writer to write transformed SRX document
+	 * @param parameterMap map containing transformation parameters
 	 */
 	public void transform(Reader reader, Writer writer,
 			Map<String, Object> parameterMap) {
@@ -44,12 +41,9 @@ public class SrxAnyTransformer implements SrxTransformer {
 	 * {@link SrxVersion#parse(BufferedReader)}, which does not always work
 	 * perfectly.
 	 * 
-	 * @param reader
-	 *            Reader containing SRX document.
-	 * @param parameterMap
-	 *            Map containing transformation parameters.
-	 * @return Returns reader containing SRX document in newest supported
-	 *         version.
+	 * @param reader reader containing SRX document
+	 * @param parameterMap map containing transformation parameters
+	 * @return reader containing SRX document in newest supported version
 	 */
 	public Reader transform(Reader reader, Map<String, Object> parameterMap) {
 		BufferedReader bufferedReader = new BufferedReader(reader);

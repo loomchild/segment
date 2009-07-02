@@ -29,8 +29,8 @@ import net.sourceforge.segment.srx.SrxTransformer;
 import net.sourceforge.segment.srx.io.Srx1Transformer;
 import net.sourceforge.segment.srx.io.SrxAnyParser;
 import net.sourceforge.segment.srx.io.SrxAnyTransformer;
-import net.sourceforge.segment.srx.legacy.MergedPatternTextIterator;
-import net.sourceforge.segment.srx.legacy.PolengSrxTextIterator;
+import net.sourceforge.segment.srx.legacy.AccurateSrxTextIterator;
+import net.sourceforge.segment.srx.legacy.FastTextIterator;
 import net.sourceforge.segment.util.NullWriter;
 
 import org.apache.commons.cli.CommandLine;
@@ -51,7 +51,7 @@ import org.junit.runner.JUnitCore;
 public class Segment {
 	
 	private enum Algorithm {
-		poleng, merge, ultimate;
+		accurate, fast, ultimate;
 	}
 
 	public static final String DEFAULT_SRX = "net/sourceforge/segment/res/xml/default.srx";
@@ -88,7 +88,7 @@ public class Segment {
 		options.addOption("m", "map", true, "Map rule name in SRX 1.0.");
 		options.addOption("b", "begin", true, "Output segment prefix.");
 		options.addOption("e", "end", true, "Output segment suffix.");
-		options.addOption("a", "algorithm", true, "Algorithm. Can be poleng, merge or ultimate (default).");
+		options.addOption("a", "algorithm", true, "Algorithm. Can be accurate, fast or ultimate (default).");
 		options.addOption("u", "ultimate", false, "Use utlimate algorithm.");
 		options.addOption("i", "input", true, "Use given input file instead of standard input.");
 		options.addOption("o", "output", true, "Use given output file instead of standard output.");
@@ -135,14 +135,19 @@ public class Segment {
 
 			boolean profile = commandLine.hasOption('p');
 			boolean twice = commandLine.hasOption('2');
+			boolean preload = commandLine.hasOption('r');
 			
 			if (twice && !profile) {
 				throw new RuntimeException("Can only repeat segmentation twice in profile mode.");
 			}
 
-			reader = createTextReader(commandLine, profile, twice);
+			reader = createTextReader(commandLine, profile, twice, preload);
 
 			writer = createTextWriter(commandLine);
+
+			if (preload) {
+				preloadText(reader, profile);
+			}
 
 			SrxDocument document = createSrxDocument(commandLine, profile);
 
@@ -150,7 +155,7 @@ public class Segment {
 
 			if (twice) {
 				
-				reader = createTextReader(commandLine, profile, twice);
+				reader = createTextReader(commandLine, profile, twice, preload);
 				
 				createAndSegment(commandLine, document, reader, writer, profile);
 				
@@ -171,7 +176,7 @@ public class Segment {
 	}
 	
 	private Reader createTextReader(CommandLine commandLine, boolean profile, 
-			boolean twice) throws IOException {
+			boolean twice, boolean preload) throws IOException {
 		Reader reader;
 
 		if (commandLine.hasOption('x')) {
@@ -180,9 +185,9 @@ public class Segment {
 		} else if (commandLine.hasOption('i')) {
 			reader = createFileReader(commandLine.getOptionValue('i'));
 		} else {
-			if (twice) {
+			if (twice && !preload) {
 				throw new RuntimeException("Cannot read standard input twice. " +
-						"Provide an input file or generate input text.");
+						"Preload text (-r), provide an input file (-i) or generate input text (-x).");
 			}
 			reader = createStandardInputReader();
 		}
@@ -402,7 +407,6 @@ public class Segment {
 		TextIterator textIterator = createTextIterator(commandLine, 
 				document, reader, profile);
 
-
 		performSegment(commandLine, textIterator, writer, profile);
 		
 		if (profile) {
@@ -413,6 +417,7 @@ public class Segment {
 	
 	private TextIterator createTextIterator(CommandLine commandLine, 
 			SrxDocument document, Reader reader, boolean profile) {
+		
 		TextIterator textIterator;
 		
 		String languageCode = commandLine.getOptionValue('l');
@@ -426,35 +431,29 @@ public class Segment {
 			algorithm = Algorithm.valueOf(algorithmString);
 		}
 		
-		boolean preload = commandLine.hasOption('r');
-		
-		if (algorithm == Algorithm.poleng && !preload) {
-			throw new IllegalArgumentException("For poleng algorithm preload option (-r) is mandatory.");
-		}
-		
-		if (preload) {
-			preloadText(reader, profile);
-		}
-		
 		if (profile) {
 			System.out.print("    Creating text iterator... ");
 		}
 
 		long start = System.currentTimeMillis();
 		
-		if (algorithm == Algorithm.poleng) {
-			textIterator = new PolengSrxTextIterator(document, languageCode, text);
+		if (algorithm == Algorithm.accurate) {
+			if (text != null) {
+				textIterator = new AccurateSrxTextIterator(document, languageCode, text);
+			} else {
+				throw new IllegalArgumentException("For accurate algorithm preload option (-r) is mandatory.");
+			}
 		} else if (algorithm == Algorithm.ultimate) {
-			if (preload) {
+			if (text != null) {
 				textIterator = new SrxTextIterator(document, languageCode, text);
 			} else {
 				textIterator = new SrxTextIterator(document, languageCode, reader);
 			}
-		} else if (algorithm == Algorithm.merge) {
-			if (preload) {
-				textIterator = new MergedPatternTextIterator(document, languageCode, text);
+		} else if (algorithm == Algorithm.fast) {
+			if (text != null) {
+				textIterator = new FastTextIterator(document, languageCode, text);
 			} else {
-				textIterator = new MergedPatternTextIterator(document, languageCode, reader);
+				textIterator = new FastTextIterator(document, languageCode, reader);
 			}
 		} else {
 			throw new IllegalArgumentException("Unknown algorithm: " + algorithm + ".");
@@ -502,7 +501,7 @@ public class Segment {
 	private String preloadText(Reader reader, boolean profile) {
 		if (text == null) {
 			if (profile) {
-				System.out.print("    Preloading text... ");
+				System.out.print("Preloading text... ");
 			}
 			long start = System.currentTimeMillis();
 			text = readAll(reader);

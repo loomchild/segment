@@ -10,6 +10,12 @@ import net.sourceforge.segment.TextIterator;
 
 import org.junit.Test;
 
+/**
+ * Segmentation text used in all text iterator tests. 
+ * Inheriting tests must implement 
+ * {@link #getTextIterator(String, SrxDocument, String)} abstract method.
+ * @author loomchild
+ */
 public abstract class AbstractSrxTextIteratorTest {
 
 	public static final String[] SIMPLE_RESULT = new String[] { 
@@ -556,6 +562,13 @@ public abstract class AbstractSrxTextIteratorTest {
 		performTest(TICKET_1_RESULT, TICKET_1_DOCUMENT);
 	}
 
+	/**
+	 * Create text iterator. This method needs to be implemented by inheriting.
+	 * @param text text to segment
+	 * @param document SRX document
+	 * @param languageCode language code of text
+	 * @return newly created text iterator
+	 */
 	protected abstract TextIterator getTextIterator(String text, 
 			SrxDocument document, String languageCode);
 

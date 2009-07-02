@@ -1,9 +1,8 @@
 package net.sourceforge.segment.util;
 
 /**
- * XML exception.
- * 
- * @author Jarek Lipski (loomchild)
+ * Runtime version of XML exception.
+ * @author loomchild
  */
 public class XmlException extends RuntimeException {
 

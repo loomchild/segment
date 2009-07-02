@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Represents rule for segmenting text in some language. Contains breaking or
- * non breaking rule list.
+ * Represents rule for segmenting text in some language. Contains {@link Rule}
+ * list.
  * 
  * @author loomchild
  */
@@ -19,10 +19,8 @@ public class LanguageRule {
 	/**
 	 * Creates language rule.
 	 * 
-	 * @param name
-	 *            Language rule name.
-	 * @param ruleList
-	 *            Rule list (it will be shallow copied).
+	 * @param name language rule name
+	 * @param ruleList rule list (it will be shallow copied)
 	 */
 	public LanguageRule(String name, List<Rule> ruleList) {
 		this.ruleList = new ArrayList<Rule>(ruleList);
@@ -32,15 +30,14 @@ public class LanguageRule {
 	/**
 	 * Creates empty language rule.
 	 * 
-	 * @param name
-	 *            Language rule name.
+	 * @param name language rule name
 	 */
 	public LanguageRule(String name) {
 		this(name, new ArrayList<Rule>());
 	}
 
 	/**
-	 * @return Returns unmodifiable rules list.
+	 * @return unmodifiable rules list
 	 */
 	public List<Rule> getRuleList() {
 		return Collections.unmodifiableList(ruleList);
@@ -48,16 +45,14 @@ public class LanguageRule {
 
 	/**
 	 * Adds rule to the end of rule list.
-	 * 
 	 * @param rule
-	 *            Rule.
 	 */
 	public void addRule(Rule rule) {
 		ruleList.add(rule);
 	}
 
 	/**
-	 * @return Returns language rule name.
+	 * @return language rule name
 	 */
 	public String getName() {
 		return name;

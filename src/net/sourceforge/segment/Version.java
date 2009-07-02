@@ -37,14 +37,20 @@ public class Version {
 			date = manifest.getMainAttributes().getValue(DATE_ATTRIBUTE);
 		} catch (ResourceNotFoundException e) {
 			// Ignore, attributes stay null
-			log.trace("Version number cannot be retrieved.");
+			log.debug("Version number cannot be retrieved.");
 		}
 	}
 
+	/**
+	 * @return segment version string
+	 */
 	public String getVersion() {
 		return version;
 	}
 	
+	/**
+	 * @return segment build date
+	 */
 	public String getDate() {
 		return date;
 	}

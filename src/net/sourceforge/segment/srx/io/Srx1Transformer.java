@@ -53,12 +53,9 @@ public class Srx1Transformer implements SrxTransformer {
 	 * appropriate map rule to select, resulting document will not contain
 	 * language maps and will be unusable.
 	 * 
-	 * @param reader
-	 *            Reader containing SRX 1.0 document.
-	 * @param writer
-	 *            Writer to write transformed SRX document.
-	 * @param parameterMap
-	 *            Map containing transformation parameters.
+	 * @param reader reader containing SRX 1.0 document
+	 * @param writer writer to write transformed SRX document
+	 * @param parameterMap map containing transformation parameters
 	 */
 	public void transform(Reader reader, Writer writer,
 			Map<String, Object> parameterMap) {
@@ -69,14 +66,11 @@ public class Srx1Transformer implements SrxTransformer {
 	 * Transforms given SRX 1.0 document and returns Reader containing SRX
 	 * document in newest supported version. Creates temporary file and uses
 	 * {@link #transform(Reader, Writer, Map)}.
-	 * 
-	 * @param reader
-	 *            Reader containing SRX 1.0 document.
-	 * @param parameterMap
-	 *            Map containing transformation parameters.
-	 * @return Returns reader containing SRX document in newest supported
-	 *         version.
 	 * @see #transform(Reader, Writer, Map)
+	 * 
+	 * @param reader reader containing SRX 1.0 document
+	 * @param parameterMap map containing transformation parameters.
+	 * @return reader containing SRX document in newest supported version
 	 */
 	public Reader transform(Reader reader, Map<String, Object> parameterMap) {
 		try {

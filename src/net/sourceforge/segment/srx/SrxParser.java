@@ -12,9 +12,8 @@ public interface SrxParser {
 	/**
 	 * Parses SRX document.
 	 * 
-	 * @param reader
-	 *            Reader from which read the document.
-	 * @return Returns initialized SRX document.
+	 * @param reader reader from which read the document
+	 * @return initialized SRX document
 	 */
 	public SrxDocument parse(Reader reader);
 

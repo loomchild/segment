@@ -3,13 +3,11 @@ package net.sourceforge.segment.srx;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sourceforge.segment.srx.legacy.PolengSrxTextIterator;
 import net.sourceforge.segment.util.Util;
 
 
 /**
- * Reprezentuje iterator po tekście wyszukujący kolejne wystąpienia danej reguły.
- * Używane przez {@link PolengSrxTextIterator}.
+ * Represents matcher finding subsequent occurrences of one rule.
  *
  * @author loomchild
  */
@@ -30,9 +28,9 @@ public class RuleMatcher {
 
 	
 	/**
-	 * Tworzy iterator.
-	 * @param rule Reguła dla której będzie przeszukiwał tekst.
-	 * @param text Tekst.
+	 * Creates matcher.
+	 * @param rule rule which will be searched in the text
+	 * @param text
 	 */
 	public RuleMatcher(SrxDocument document, Rule rule, CharSequence text) {
 		this.document = document;
@@ -46,9 +44,8 @@ public class RuleMatcher {
 	}
 	
 	/**
-	 * Szuka następnego dopasowania do reguły w tekście po ostatnio znalezionym
-	 * dopasowaniu.
-	 * @return Zwraca true jeśli udało się dopasować regułę.
+	 * Finds next rule match after previously found.
+	 * @return true if rule has been matched
 	 */
 	public boolean find() {
 		found = false;
@@ -60,9 +57,9 @@ public class RuleMatcher {
 	}
 
 	/**
-	 * Szuka następnego dopasowania do reguły w tekście po danej pozycji.
-	 * @param start Pozycja w której należy zacząć poszukiwanie.
-	 * @return Zwraca true jeśli udało się dopasować regułę.
+	 * Finds next rule match after given start position. 
+	 * @param start start position
+	 * @return true if rule has been matched
 	 */
 	public boolean find(int start) {
 		beforeMatcher.region(start, text.length());
@@ -70,36 +67,35 @@ public class RuleMatcher {
 	}
 	
 	/**
-	 * @return Zwraca true jeśli napotkano koniec tekstu.
+	 * @return true if end of text has been reached while searching
 	 */
 	public boolean hitEnd() {
 		return !found;
 	}
 	
 	/**
-	 * @return Zwraca pozycje początku dopasowania.
+	 * @return position in text where the last matching starts
 	 */
 	public int getStartPosition() {
 		return beforeMatcher.start();
 	}
 
 	/**
-	 * @return Zwraca pozycje po znaku podziału.
+	 * @return position in text where text should be splitted according to last matching
 	 */
 	public int getBreakPosition() {
 		return afterMatcher.start();
 	}
 
 	/**
-	 * @return Zwraca pozycje końca dopasowania.
+	 * @return position in text where the last matching ends
 	 */
 	public int getEndPosition() {
 		return afterMatcher.end();
 	}
 
-
 	/**
-	 * @return Zwraca dopasowywaną przez ten iterator regułę.
+	 * @return matcher rule
 	 */
 	public Rule getRule() {
 		return rule;

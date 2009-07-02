@@ -25,8 +25,7 @@ public class SrxDocument {
 	/**
 	 * Creates empty document.
 	 * 
-	 * @param cascade
-	 *            If document is cascading.
+	 * @param cascade true if document is cascading
 	 */
 	public SrxDocument(boolean cascade) {
 		this.cascade = cascade;
@@ -35,8 +34,7 @@ public class SrxDocument {
 	}
 
 	/**
-	 * Creates empty document with default cascade. See {@link #DEFAULT_CASCADE}
-	 * .
+	 * Creates empty document with default cascade. See {@link #DEFAULT_CASCADE}.
 	 */
 	public SrxDocument() {
 		this(DEFAULT_CASCADE);
@@ -45,15 +43,14 @@ public class SrxDocument {
 	/**
 	 * Sets if document is cascading or not.
 	 * 
-	 * @param cascade
-	 *            If document is cascading.
+	 * @param cascade true f document is cascading
 	 */
 	public void setCascade(boolean cascade) {
 		this.cascade = cascade;
 	}
 
 	/**
-	 * @return Returns if document is cascading or not.
+	 * @return true if document is cascading
 	 */
 	public boolean getCascade() {
 		return cascade;
@@ -62,10 +59,8 @@ public class SrxDocument {
 	/**
 	 * Add language map to this document.
 	 * 
-	 * @param pattern
-	 *            language code pattern.
+	 * @param pattern language code pattern
 	 * @param languageRule
-	 *            language rule.
 	 */
 	public void addLanguageMap(String pattern, LanguageRule languageRule) {
 		LanguageMap languageMap = new LanguageMap(pattern, languageRule);
@@ -78,9 +73,8 @@ public class SrxDocument {
 	 * given language code. If no matching language rules are found returns
 	 * empty list.
 	 * 
-	 * @param languageCode
-	 *            Language code, for example en_US.
-	 * @return Returns matching language rules.
+	 * @param languageCode language code, for example en_US
+	 * @return matching language rules
 	 */
 	public List<LanguageRule> getLanguageRuleList(String languageCode) {
 		List<LanguageRule> matchingLanguageRuleList = new ArrayList<LanguageRule>();

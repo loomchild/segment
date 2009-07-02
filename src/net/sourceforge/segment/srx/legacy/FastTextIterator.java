@@ -9,11 +9,11 @@ import net.sourceforge.segment.srx.LanguageRule;
 import net.sourceforge.segment.srx.SrxDocument;
 
 /**
- * Represents text iterator that splits text according to SRX rules.
+ * Represents fast text iterator that splits text according to SRX rules.
  * 
  * @author loomchild
  */
-public class MergedPatternTextIterator extends AbstractTextIterator {
+public class FastTextIterator extends AbstractTextIterator {
 
 	private CharSequence text;
 
@@ -30,14 +30,11 @@ public class MergedPatternTextIterator extends AbstractTextIterator {
 	 * using given language code. To retrieve language rules calls
 	 * {@link SrxDocument#getLanguageRuleList(String)}.
 	 * 
-	 * @param document
-	 *            Document containing language rules.
-	 * @param languageCode
-	 *            Language code to select the rules.
+	 * @param document document containing language rules
+	 * @param languageCode language code to select the rules
 	 * @param text
-	 *            Text.
 	 */
-	public MergedPatternTextIterator(SrxDocument document, String languageCode,
+	public FastTextIterator(SrxDocument document, String languageCode,
 			CharSequence text) {
 		
 		this.text = text;
@@ -69,18 +66,13 @@ public class MergedPatternTextIterator extends AbstractTextIterator {
 	 * ReaderCharSequence, so not all possible regular expressions are accepted.
 	 * See {@link ReaderCharSequence} for details.
 	 * 
-	 * @param document
-	 *            Document containing language rules.
-	 * @param languageCode
-	 *            Language code to select the rules.
-	 * @param reader
-	 *            Reader from which text will be read.
-	 * @param length
-	 * 			  Length of stream in reader.
-	 * @param bufferSize
-	 * 			  Reader buffer size. Segments cannot be longer than this value.
+	 * @param document document containing language rules
+	 * @param languageCode language code to select the rules
+	 * @param reader reader from which text will be read
+	 * @param length length of stream in reader
+	 * @param bufferSize Reader buffer size. Segments cannot be longer than this value
 	 */
-	public MergedPatternTextIterator(SrxDocument document, String languageCode,
+	public FastTextIterator(SrxDocument document, String languageCode,
 			Reader reader, int length, int bufferSize) {
 		this(document, languageCode, new ReaderCharSequence(reader, length, 
 				bufferSize));
@@ -90,7 +82,7 @@ public class MergedPatternTextIterator extends AbstractTextIterator {
 	 * Creates streaming text iterator with default buffer size 
 	 * ({@link ReaderCharSequence#DEFAULT_BUFFER_SIZE}). 
 	 */
-	public MergedPatternTextIterator(SrxDocument document, String languageCode,
+	public FastTextIterator(SrxDocument document, String languageCode,
 			Reader reader, int length) {
 		this(document, languageCode, 
 				new ReaderCharSequence(reader, length));
@@ -99,7 +91,7 @@ public class MergedPatternTextIterator extends AbstractTextIterator {
 	/**
 	 * Creates streaming text iterator with unknown stream length. 
 	 */
-	public MergedPatternTextIterator(SrxDocument document, String languageCode,
+	public FastTextIterator(SrxDocument document, String languageCode,
 			Reader reader) {
 		this(document, languageCode, new ReaderCharSequence(reader));
 	}

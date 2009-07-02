@@ -1,5 +1,10 @@
 package net.sourceforge.segment.srx.legacy;
 
+/**
+ * Represents character buffer with fixed capacity. 
+ * Implements {@link CharSequence} methods and in addition queue methods.
+ * @author loomchild
+ */
 public class Buffer implements CharSequence {
 
 	private char[] buffer;

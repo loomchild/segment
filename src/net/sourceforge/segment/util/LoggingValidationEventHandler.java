@@ -6,6 +6,10 @@ import javax.xml.bind.ValidationEventHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Handles XML validation errors by writing them to log.
+ * @author loomchild
+ */
 public class LoggingValidationEventHandler implements ValidationEventHandler {
 
 	private static final Log log = LogFactory

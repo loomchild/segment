@@ -4,6 +4,11 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Represents {@link MatchResult} that uses {@link ReaderCharSequence} as
+ * a text - it takes care of exceptions that are thrown by it. 
+ * @author loomchild
+ */
 public class ReaderMatcher implements MatchResult {
 	
 	private Matcher matcher;

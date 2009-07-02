@@ -16,10 +16,8 @@ public class LanguageMap {
 	/**
 	 * Creates mapping.
 	 * 
-	 * @param pattern
-	 *            Language code pattern.
-	 * @param languageRule
-	 *            Language rule.
+	 * @param pattern language code pattern
+	 * @param languageRule language rule
 	 */
 	public LanguageMap(String pattern, LanguageRule languageRule) {
 		this.languagePattern = Pattern.compile(pattern);
@@ -27,16 +25,15 @@ public class LanguageMap {
 	}
 
 	/**
-	 * @param languageCode
-	 *            Language code.
-	 * @return Returns true if given language code matches language pattern.
+	 * @param languageCode language code
+	 * @return true if given language code matches language pattern
 	 */
 	public boolean matches(String languageCode) {
 		return languagePattern.matcher(languageCode).matches();
 	}
 
 	/**
-	 * @return Returns language rule.
+	 * @return language rule
 	 */
 	public LanguageRule getLanguageRule() {
 		return languageRule;

@@ -9,16 +9,48 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sourceforge.segment.AbstractTextIterator;
+import net.sourceforge.segment.util.IORuntimeException;
 
 /**
- * Represents a splitter splitting text according to rules in SRX file.
+ * Represents text iterator splitting text according to rules in SRX file.
+ * 
+ * The algorithm idea is as follows:
+ * 1. Rule matcher list is created based on SRX file and language. Each rule 
+ *    matcher is responsible for matching before break and after break regular 
+ *    expressions of one breaking rule.
+ * 2. Each rule matcher is matched to the text. If the rule was not found the 
+ *    rule matcher is removed from the list. 
+ * 3. First rule matcher in terms of its breaking position in text is selected.
+ * 4. List of non breaking rules corresponding to breaking rule is retrieved. 
+ * 5. If none of non breaking rules is matching in breaking position then 
+ *    the text is marked as split and new segment is created. In addition 
+ *    all rule matchers are moved so they start after the end of new segment 
+ *    (which is the same as break position of the matched rule). 
+ * 6. All the rules that have break position behind last matched rule 
+ *    break position are moved until they pass it.
+ * 7. If segment was not found the whole process is repeated.
+ *
+ * In streaming version of this algorithm character buffer is searched. 
+ * When the end of it is reached or breaking position is in the margin 
+ * (breaking position > buffer size - margin) and there is more text, 
+ * the buffer is moved until it starts after last found segment, 
+ * rule matchers are reinitialized and the text is searched again.
+ * Buffer size must be greater than any segment size, otherwise exception
+ * will be thrown. 
  *
  * @author loomchild
  */
 public class SrxTextIterator extends AbstractTextIterator {
 	
+	/**
+	 * Default size of read buffer when using streaming version of this class.
+	 * Any segment cannot be longer than buffer size.
+	 */
 	public static final int DEFAULT_BUFFER_SIZE = 65536;
 	
+	/**
+	 * Default margin value. 
+	 */
 	public static final int DEFAULT_MARGIN = 128;
 	
 
@@ -37,6 +69,14 @@ public class SrxTextIterator extends AbstractTextIterator {
 	private int margin;
 	
 	
+	/**
+	 * Private constructor used internally by other constructors.
+	 *  
+	 * @param document SRX document
+	 * @param languageCode text language code
+	 * @param textManager text manager containing the text
+	 * @param margin margin size
+	 */
 	private SrxTextIterator(SrxDocument document, String languageCode, 
 			TextManager textManager, int margin) {
 
@@ -58,39 +98,75 @@ public class SrxTextIterator extends AbstractTextIterator {
 		
 	/**
 	 * Creates text iterator that obtains language rules form given document
-	 * using given language code. To retrieve language rules calls
-	 * {@link SrxDocument#getLanguageRuleList(String)}.
+	 * using given language code. This constructor version is not streaming 
+	 * because it receives whole text as a string. 
 	 * 
-	 * @param document
-	 *            Document containing language rules.
-	 * @param languageCode
-	 *            Language code to select the rules.
+	 * @param document SRX document
+	 * @param languageCode text language code of text used to retrieve the rules
 	 * @param text
-	 *            Text.
 	 */
 	public SrxTextIterator(SrxDocument document, String languageCode, 
 			CharSequence text) {
 		this(document, languageCode, new TextManager(text), 0);
 	}
 
+	/**
+	 * Creates text iterator that obtains language rules from given document 
+	 * using given language code. This is streaming constructor - it reads
+	 * text from reader using buffer with given size and margin. Single
+	 * segment cannot be longer than buffer size.
+	 * If rule is matched but its position is in the margin 
+	 * (position > bufferSize - margin) then the matching is ignored, 
+	 * and more text is read and rule is matched again.
+	 * This is needed because incomplete rule can be located at the end of the 
+	 * buffer and never matched. 
+	 * 
+	 * @param document SRX document
+	 * @param languageCode text language code of text used to retrieve the rules
+	 * @param reader reader from which read the text
+	 * @param bufferSize read buffer size
+	 * @param margin margin size
+	 */
 	public SrxTextIterator(SrxDocument document, String languageCode, 
 			Reader reader, int bufferSize, int margin) {
 		this(document, languageCode, new TextManager(reader, bufferSize), margin);
 	}
 
+	/**
+	 * Creates streaming text iterator with default margin 
+	 * ({@link #DEFAULT_MARGIN}).
+	 * @see #SrxTextIterator(SrxDocument, String, Reader, int, int)
+	 * 
+	 * @param document SRX document
+	 * @param languageCode text language code
+	 * @param reader reader from which read the text
+	 * @param bufferSize read buffer size
+	 */
 	public SrxTextIterator(SrxDocument document, String languageCode, 
 			Reader reader, int bufferSize) {
 		this(document, languageCode, reader, bufferSize, DEFAULT_MARGIN);
 	}
 		
+	/**
+	 * Creates streaming text iterator with default buffer size
+	 * ({@link #DEFAULT_BUFFER_SIZE}) and margin ({@link #DEFAULT_MARGIN}).
+	 * @see #SrxTextIterator(SrxDocument, String, Reader, int, int)
+	 *
+	 * @param document SRX document
+	 * @param languageCode text language code
+	 * @param reader reader from which read the text
+	 */
 	public SrxTextIterator(SrxDocument document, String languageCode, 
 			Reader reader) {
 		this(document, languageCode, reader, DEFAULT_BUFFER_SIZE);
 	}
 		
 	/**
-	 * Finds the next segment.
-	 * @return Returns next segment or null if it doesn't exist.
+	 * Finds the next segment in the text and returns it.
+	 * 
+	 * @return next segment or null if it doesn't exist
+	 * @throws IllegalStateException if buffer is too small to hold the segment
+	 * @throws IORuntimeException if IO error occurs when reading the text
 	 */
 	public String next() {
 		if (hasNext()) {
@@ -155,7 +231,7 @@ public class SrxTextIterator extends AbstractTextIterator {
 	}
 
 	/**
-	 * @return Returns true if there are more segments.
+	 * @return true if there are more segments
 	 */
 	public boolean hasNext() {
 		return (textManager.hasMoreText() || 
@@ -179,7 +255,8 @@ public class SrxTextIterator extends AbstractTextIterator {
 	}
 
 	/**
-	 * Moves all matchers to the next position if needed.
+	 * Moves all matchers to the next position if their break position 
+	 * is smaller than last segment end position.
 	 */
 	private void moveMatchers() {
 		for (Iterator<RuleMatcher> i = ruleMatcherList.iterator(); i.hasNext();) {
@@ -210,7 +287,7 @@ public class SrxTextIterator extends AbstractTextIterator {
 	}
 
 	/**
-	 * @return Returns first matcher in the text or null if there are no matchers.
+	 * @return first matcher in the text or null if there are no matchers
 	 */
 	private RuleMatcher getMinMatcher() {
 		int minPosition = Integer.MAX_VALUE;
@@ -227,8 +304,8 @@ public class SrxTextIterator extends AbstractTextIterator {
 	/**
 	 * Returns true if there are no non breaking rules preventing given
 	 * rule matcher from breaking the text.
-	 * @param ruleMatcher Rule matcher.
-	 * @return Returns true if rule matcher breaks the text.
+	 * @param ruleMatcher rule matcher
+	 * @return true if rule matcher breaks the text
 	 */
 	private boolean isBreaking(RuleMatcher ruleMatcher) {
 		

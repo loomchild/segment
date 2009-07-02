@@ -7,6 +7,11 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+/**
+ * This class is used to ignore XML DTD entities. 
+ * Without it XML parsing will fail if DTD could not be found in specified location.
+ * @author loomchild
+ */
 public class IgnoreDTDEntityResolver implements EntityResolver {
 
 	public IgnoreDTDEntityResolver() {

@@ -30,13 +30,9 @@ public class ReaderCharSequence implements CharSequence {
 	/**
 	 * Create.
 	 * 
-	 * @param reader
-	 *            Reader from which char sequence will be read.
-	 * @param length
-	 *            Length of the input. When it cannot be determined it can be
-	 *            set to infinity.
-	 * @param bufferSize
-	 *            Size of the character buffer.
+	 * @param reader reader from which char sequence will be read
+	 * @param length length of the input. When it cannot be determined it can be set to infinity
+	 * @param bufferSize size of the character buffer
 	 */
 	public ReaderCharSequence(Reader reader, int length, int bufferSize, 
 			int lookahead) {
@@ -138,8 +134,8 @@ public class ReaderCharSequence implements CharSequence {
 	 * relative index = 2
 	 * </pre>
 	 * 
-	 * @param index Sequence index.
-	 * @return Returns buffer relative index.
+	 * @param index sequence index
+	 * @return buffer relative index
 	 */
 	private int getRelativeIndex(int index) {
 		return index - (position - buffer.length());

@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Responsible for storing cached data.
+ * Represents SRX document cache.
+ * Responsible for managing cached data. It can store more than one object 
+ * under one key as long as value class is different.
  * 
  * @author loomchild
  */
@@ -16,6 +18,13 @@ public class SrxDocumentCache {
 		this.map = new HashMap<Class<?>, Map<Object, Object>>();
 	}
 	
+	/**
+	 * Retrieves object from cache. 
+	 * @param <T> value object type
+	 * @param key
+	 * @param valueClass class of value object
+	 * @return value object
+	 */
 	@SuppressWarnings("unchecked")
 	public <T> T get(Object key, Class<T> valueClass) {
 		T value = null;
@@ -26,6 +35,12 @@ public class SrxDocumentCache {
 		return value;
 	}
 
+	/**
+	 * Puts an object in cache.
+	 * @param <T> value object type
+	 * @param key
+	 * @param value value object
+	 */
 	public <T> void put(Object key, T value) {
 		Map<Object, Object> klassMap = map.get(value.getClass());
 		if (klassMap == null) {

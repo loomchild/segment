@@ -91,7 +91,7 @@ public class MergedPattern {
 	 * given number was matched (non breaking rules that occur before
 	 * given breaking rule in SRX file).
 	 * @param breakingRuleIndex
-	 * @return Active non breaking patterns for a given breaking rule.
+	 * @return Active non breaking patterns for a given breaking rule
 	 */
 	public List<Pattern> getNonBreakingPatternList(int breakingRuleIndex) {
 		
@@ -112,8 +112,7 @@ public class MergedPattern {
 
 	/**
 	 * @param languageRuleList
-	 *            Language rule list.
-	 * @return Returns merged list of rules form given language rules.
+	 * @return merged list of rules form given language rules
 	 */
 	private List<Rule> extractRules(List<LanguageRule> languageRuleList) {
 		List<Rule> ruleList = new ArrayList<Rule>();
@@ -128,7 +127,7 @@ public class MergedPattern {
 	 * either breaking or non breaking. Does not change rule order.
 	 * 
 	 * @param ruleList
-	 * @return
+	 * @return list of grouped rules
 	 */
 	private List<List<Rule>> groupRules(List<Rule> ruleList) {
 		List<List<Rule>> ruleGroupList = new ArrayList<List<Rule>>();
@@ -153,8 +152,7 @@ public class MergedPattern {
 	 * Merges all breaking rules on list into one pattern.
 	 * 
 	 * @param ruleList
-	 *            List of rules
-	 * @return Returns pattern.
+	 * @return breaking pattern
 	 */
 	private String createBreakingPattern(List<Rule> ruleList) {
 		StringBuilder patternBuilder = new StringBuilder();
@@ -196,8 +194,7 @@ public class MergedPattern {
 	 * Creates non breaking pattern by merging given rules.
 	 * 
 	 * @param ruleList
-	 *            Rule list.
-	 * @return Non breaking pattern.
+	 * @return Non breaking pattern
 	 */
 	private String createNonBreakingPattern(List<Rule> ruleList) {
 		StringBuilder patternBuilder = new StringBuilder();

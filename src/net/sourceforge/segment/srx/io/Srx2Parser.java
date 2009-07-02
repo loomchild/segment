@@ -60,8 +60,7 @@ public class Srx2Parser implements SrxParser {
 	 * Parses SRX document from reader.
 	 * 
 	 * @param reader
-	 *            Reader.
-	 * @return Returns initialized document.
+	 * @return initialized document
 	 */
 	public SrxDocument parse(Reader reader) {
 		Srx srx = (Srx) bind.unmarshal(reader);
