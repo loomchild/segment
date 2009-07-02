@@ -2,7 +2,6 @@ package net.sourceforge.segment.util;
 
 import static junit.framework.Assert.assertEquals;
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -11,7 +10,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -76,10 +74,9 @@ public class Util {
 	 * @return UTF-8 encoded reader from given input stream
 	 * @throws IORuntimeException if IO error occurs
 	 */
-	public static BufferedReader getReader(InputStream inputStream) {
+	public static Reader getReader(InputStream inputStream) {
 		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					inputStream, "utf-8"));
+			Reader reader = new InputStreamReader(inputStream, "utf-8");
 			return reader;
 		} catch (UnsupportedEncodingException e) {
 			throw new IORuntimeException(e);
@@ -91,10 +88,9 @@ public class Util {
 	 * @return UTF-8 encoded writer to a given output stream
 	 * @throws IORuntimeException if IO error occurs
 	 */
-	public static PrintWriter getWriter(OutputStream outputStream) {
+	public static Writer getWriter(OutputStream outputStream) {
 		try {
-			return new PrintWriter(new OutputStreamWriter((outputStream),
-					"utf-8"), true);
+			return new OutputStreamWriter((outputStream), "utf-8");
 		} catch (UnsupportedEncodingException e) {
 			throw new IORuntimeException(e);
 		}

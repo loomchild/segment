@@ -81,6 +81,32 @@ public class Segment {
 		this.random = new Random();
 	}
 
+	private void run(String[] args) throws Exception {
+		Options options = createOptions();
+		HelpFormatter helpFormatter = new HelpFormatter();
+		CommandLineParser parser = new PosixParser();
+		CommandLine commandLine = null;
+
+		try {
+
+			commandLine = parser.parse(options, args);
+
+			if (commandLine.hasOption('h')) {
+				printHelp(options, helpFormatter);
+			} else if (commandLine.hasOption('z')) {
+				test();
+			} else if (commandLine.hasOption('t')) {
+				transform(commandLine);
+			} else {
+				segment(commandLine);
+			}
+
+		} catch (ParseException e) {
+			printUsage(helpFormatter);
+		}
+		
+	}
+	
 	private Options createOptions() {
 		Options options = new Options();
 		options.addOption("s", "srx", true, "SRX file.");
@@ -544,32 +570,6 @@ public class Segment {
 			writer.close();
 			
 		}
-	}
-
-	private void run(String[] args) throws Exception {
-		Options options = createOptions();
-		HelpFormatter helpFormatter = new HelpFormatter();
-		CommandLineParser parser = new PosixParser();
-		CommandLine commandLine = null;
-
-		try {
-
-			commandLine = parser.parse(options, args);
-
-			if (commandLine.hasOption('h')) {
-				printHelp(options, helpFormatter);
-			} else if (commandLine.hasOption('z')) {
-				test();
-			} else if (commandLine.hasOption('t')) {
-				transform(commandLine);
-			} else {
-				segment(commandLine);
-			}
-
-		} catch (ParseException e) {
-			printUsage(helpFormatter);
-		}
-		
 	}
 
 }

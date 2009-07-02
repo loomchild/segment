@@ -123,25 +123,41 @@ public class TextManager {
 	 * @return read characters as a string
 	 */
 	private String read(int amount) {
+		char[] charBuffer = new char[amount];
+		int count = read(reader, charBuffer);
+		
+		String result;
+		if (count == amount) {
+			result = new String(charBuffer, 0, count - 1);
+			nextCharacter = charBuffer[count - 1];
+		} else if (count > 0 && count < amount) {
+			result = new String(charBuffer, 0, count);
+			nextCharacter = -1;
+		} else {
+			result = "";
+			nextCharacter = -1;
+		}
+
+		return result;
+	}
+	
+	/**
+	 * Reads specified amount of characters. It is needed because when
+	 * reading from console {@link Reader#read(char[])} it returns 
+	 * after first end of line (probably it checks if characters are available).
+	 * @param reader input
+	 * @param buffer buffer where read characters will be stored
+	 * @return number of read characters
+	 */
+	private int read(Reader reader, char[] buffer) {
 		try {
-			
-			char[] charBuffer = new char[amount];
-			int count = reader.read(charBuffer);
-			
-			String result;
-			if (count == amount) {
-				result = new String(charBuffer, 0, count - 1);
-				nextCharacter = charBuffer[count - 1];
-			} else if (count > 0 && count < amount) {
-				result = new String(charBuffer, 0, count);
-				nextCharacter = -1;
-			} else {
-				result = "";
-				nextCharacter = -1;
+			int start = 0;
+			int count;
+			while (((count = reader.read(buffer, start, buffer.length - start)) != -1)
+					&& start < buffer.length) {
+				start += count;
 			}
-
-			return result;
-
+			return start;
 		} catch (IOException e) {
 			throw new IORuntimeException(e);
 		}
