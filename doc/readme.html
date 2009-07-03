@@ -22,7 +22,12 @@
 		</ul>
 	</li>
 	<li><a href="#algorithm">Algorithm</a></li>
-	<li><a href="#legacyalgorithm">Legacy algorithm</a></li>
+	<li><a href="#legacyalgorithms">Legacy algorithms</a>
+		<ul>
+			<li><a href="#accuratealgorithm">Accurate algorithm</a></li>
+			<li><a href="#fastalgorithm">Fast algorithm</a></li>
+		</ul>
+	</li>
 	<li><a href="#resources">Resources</a></li>
 </ul>
 
@@ -70,7 +75,8 @@ standard end of line character).
 
 <h2><a name="performance">Performance</a></h2>
 <p>
-To evaluate performance bin/segment -p command can be used.
+To evaluate performance bin/segment -p command can be used. It can measure
+segmentation time on any data and it is possible to generate data.
 To generate random text --generate-text option should be used with text length in kilobytes as a parameter. 
 To generate random SRX --generate-srx option should be used with rule count and rule length separated by a comma as a parameter.
 To repeat segmentation process -2 option should be used.
@@ -141,14 +147,82 @@ according to the text language.
 
 <h2><a name="algorithm">Algorithm</a></h2>
 <p>
+The algorithm idea is as follows:
+	<ol>
+		<li>
+			Rule matcher list is created based on SRX file and language. Each rule 
+   			matcher is responsible for matching before break and after break regular 
+   			expressions of one break rule.
+   		</li>
+   		<li>
+   			Each rule matcher is matched to the text. If the rule was not found the 
+   			rule matcher is removed from the list.
+   		</li>
+   		<li>
+   			First rule matcher in terms of its break position in text is selected.
+   		</li>
+   		<li>
+			List of exception rules corresponding to break rule is retrieved.
+		</li>
+		<li>
+			If none of exception rules is matching in break position then 
+   			the text is marked as split and new segment is created. In addition 
+   			all rule matchers are moved so they start after the end of new segment 
+		   (which is the same as break position of the matched rule).
+		</li> 
+		<li>
+			All the rules that have break position behind last matched rule 
+   			break position are moved until they pass it.
+   		</li>
+		<li>
+			If segment was not found the whole process is repeated.
+		</li>
+	</ol>
+</p>
+<p>
+In streaming version of this algorithm character buffer is searched. 
+When the end of it is reached or break position is in the margin 
+(break position > buffer size - margin) and there is more text, 
+the buffer is moved in the text until it starts after last found segment. 
+If this happens rule matchers are reinitialized and the text is searched again.
+Streaming version has a limitation that read buffer must be at least as long 
+as any segment in the text.
+</p>
+As this algorithm uses lookbehind extensively but Java does not permit
+infinite regular expressions in lookbehind, so some patterns must be finitized. 
+For example a* pattern will be changed to something like a{0,100}.
+</p>
+
+<h2><a name="legacyalgorithms">Legacy algorithms</a></h2>
+
+<h3><a name="accuratealgorithm">Accurate algorithm</a></h3>
+<p>
+This is first implemented algorithm to perform segmentation task. It is stable but does 
+not work on text streams and in real-world scenario with few break rules
+and many exception rules it is several times slower than the other algorithms.
+</p>
+<p>
+At the beginning the rule matcher list is created based on SRX file and language. 
+Each rule matcher is responsible for matching before break and after break 
+regular expressions of one rule (break or exception). 
+Then each rule matcher is matched to the text. If the rule was not found the 
+rule matcher is removed from the list. Next first matching rule (in terms of 
+break point position) is selected. If it is break rule text is split. 
+At the end all the rules that are behind last matched rule are matched until 
+they pass it. The whole process is repeated until the matching rule was found
+or there are no more rules on the list.
+</p>
+
+<h3><a name="fastalgorithm">Fast algorithm</a></h3>
+<p>
 This algorithm creates a single large regular expression incorporating all 
-breaking rules. Then this regular expression is matched to the text. Every time
-matching is found, all non-breaking rules corresponding to this breaking rule 
-are checked in this place. If no non-breaking rules match, the text is split.
+break rules. Then this regular expression is matched to the text. Every time
+matching is found, all exception rules corresponding to this break rule 
+are checked in this place. If no exception rules match, the text is split.
 </p>
 <p>
 To create the streaming version of the algorithm ReaderCharacterSequence class 
-was used. 
+was implemented. 
 It implements character sequence interface but reads the text from a stream 
 to the internal buffer. It does not work perfectly - buffer has limited size
 so for example no all subsequences can be read from it.
@@ -157,24 +231,6 @@ so for example no all subsequences can be read from it.
 As this algorithm uses lookbehind extensively but Java does not permit
 infinite regular expressions in lookbehind, so some patterns are finitized. 
 For example a* pattern will be changed to something like a{0,100}.
-</p>
-
-<h2><a name="legacyalgorithm">Legacy algorithm</a></h2>
-<p>
-This is first implemented algorithm to perform segmentation task. It is stable but does 
-not work on text streams and in real-world scenario with few breaking rules
-and many non-breaking rules it is several times slower than the new algorithm.
-</p>
-<p>
-At the beginning the rule matcher list is created based on SRX file and language. 
-Each rule matcher is responsible for matching before break and after break 
-regular expressions of one rule (breaking or non-breaking). 
-Then each rule matcher is matched to the text. If the rule was not found the 
-rule matcher is removed from the list. Next first matching rule (in terms of 
-breaking point position) is selected. If it is breaking rule text is split. 
-At the end all the rules that are behind last matched rule are matched until 
-they pass it. The whole process is repeated until the matching rule was found
-or there are no more rules on the list.
 </p>
 
 <h2><a name="resources">Resources</a></h2>

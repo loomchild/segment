@@ -159,7 +159,7 @@ public abstract class AbstractSrxTextIteratorTest {
 	}
 	
 	/**
-	 * Tests splitting when braking and non-breaking rules are interlaced.
+	 * Tests splitting when break and exception rules are interlaced.
 	 */
 	@Test
 	public void testInterlacedRulesSplit() throws IOException {
@@ -167,14 +167,14 @@ public abstract class AbstractSrxTextIteratorTest {
 	}
 
 
-	public static final String[] NO_BREAKING_RULES_RESULT = new String[] { 
+	public static final String[] NO_BREAK_RULES_RESULT = new String[] { 
 		"abcab"
 		};
 
-	public static final SrxDocument NO_BREAKING_RULES_DOCUMENT = 
-		createNoBreakingRulesDocument();
+	public static final SrxDocument NO_BREAK_RULES_DOCUMENT = 
+		createNoBreakRulesDocument();
 	
-	public static SrxDocument createNoBreakingRulesDocument() {
+	public static SrxDocument createNoBreakRulesDocument() {
 		LanguageRule languageRule = new LanguageRule("");
 		languageRule.addRule(new Rule(false, "a", " "));
 		SrxDocument document = new SrxDocument();
@@ -184,11 +184,11 @@ public abstract class AbstractSrxTextIteratorTest {
 	}
 	
 	/**
-	 * Tests if when there is no breaking rules text will not be splitted.
+	 * Tests if when there is no break rules text will not be splitted.
 	 */
 	@Test
-	public void testNoBreakingRules() {
-		performTest(NO_BREAKING_RULES_RESULT, NO_BREAKING_RULES_DOCUMENT);
+	public void testNoBreakRules() {
+		performTest(NO_BREAK_RULES_RESULT, NO_BREAK_RULES_DOCUMENT);
 	}
 
 
@@ -211,7 +211,7 @@ public abstract class AbstractSrxTextIteratorTest {
 	}
 	
 	/**
-	 * Tests if splitter can work with infinite length non breaking rule.
+	 * Tests if splitter can work with infinite length exception rule.
 	 */
 	@Test
 	public void testInfiniteNegativeRule() {
@@ -220,16 +220,16 @@ public abstract class AbstractSrxTextIteratorTest {
 	}
 
 
-	public static final String[] ONLY_BREAKING_RULES_RESULT = new String[] { 
+	public static final String[] ONLY_BREAK_RULES_RESULT = new String[] { 
 		"Abc 99.", 
 		" Def.", 
 		" Xyz."
 		};
 
-	public static final SrxDocument ONLY_BREAKING_RULES_DOCUMENT = 
-		createOnlyBreakingRulesDocument();
+	public static final SrxDocument ONLY_BREAK_RULES_DOCUMENT = 
+		createOnlyBreakRulesDocument();
 	
-	public static SrxDocument createOnlyBreakingRulesDocument() {
+	public static SrxDocument createOnlyBreakRulesDocument() {
 		LanguageRule languageRule = new LanguageRule("");
 		languageRule.addRule(new Rule(true, "\\.", "\\s"));
 		languageRule.addRule(new Rule(true, "", "\\n"));
@@ -240,11 +240,11 @@ public abstract class AbstractSrxTextIteratorTest {
 	}
 	
 	/**
-	 * Tests if splitter can when there are only breaking rules.
+	 * Tests if splitter can when there are only break rules.
 	 */
 	@Test
-	public void testOnlyBreakingRules() {
-		performTest(ONLY_BREAKING_RULES_RESULT, ONLY_BREAKING_RULES_DOCUMENT);
+	public void testOnlyBreakRules() {
+		performTest(ONLY_BREAK_RULES_RESULT, ONLY_BREAK_RULES_DOCUMENT);
 	}
 
 	
@@ -273,14 +273,14 @@ public abstract class AbstractSrxTextIteratorTest {
 	}
 	
 	
-	public static final String[] EMPTY_NON_BREAKING_RULE_RESULT = new String[] { 
+	public static final String[] EMPTY_EXCEPTION_RULE_RESULT = new String[] { 
 		"a. b. c"
 		};
 
-	public static final SrxDocument EMPTY_NON_BREAKING_RULE_DOCUMENT = 
-		createEmptyNonBreakingRuleDocument();
+	public static final SrxDocument EMPTY_EXCEPTION_RULE_DOCUMENT = 
+		createEmptyExceptionRuleDocument();
 	
-	public static SrxDocument createEmptyNonBreakingRuleDocument() {
+	public static SrxDocument createEmptyExceptionRuleDocument() {
 		LanguageRule languageRule = new LanguageRule("");
 		languageRule.addRule(new Rule(false, "", ""));
 		languageRule.addRule(new Rule(true, "\\.", " "));
@@ -291,27 +291,27 @@ public abstract class AbstractSrxTextIteratorTest {
 	}
 
 	/**
-	 * Tests if when there is empty (matching all) non breaking rule text 
+	 * Tests if when there is empty (matching all) exception rule text 
 	 * will not be split.
 	 */
 	@Test
-	public void testEmptyNonBreakingRule() {
-		performTest(EMPTY_NON_BREAKING_RULE_RESULT, 
-				EMPTY_NON_BREAKING_RULE_DOCUMENT);
+	public void testEmptyExceptionRule() {
+		performTest(EMPTY_EXCEPTION_RULE_RESULT, 
+				EMPTY_EXCEPTION_RULE_DOCUMENT);
 	}
 	
 	
-	public static final String[] EMPTY_BREAKING_RULE_RESULT = new String[] { 
+	public static final String[] EMPTY_BREAK_RULE_RESULT = new String[] { 
 		"a", 
 		" ", 
 		"b", 
 		"c"
 		};
 
-	public static final SrxDocument EMPTY_BREAKING_RULE_DOCUMENT = 
-		createEmptyBreakingRuleDocument();
+	public static final SrxDocument EMPTY_BREAK_RULE_DOCUMENT = 
+		createEmptyBreakRuleDocument();
 	
-	public static SrxDocument createEmptyBreakingRuleDocument() {
+	public static SrxDocument createEmptyBreakRuleDocument() {
 		LanguageRule languageRule = new LanguageRule("");
 		languageRule.addRule(new Rule(true, "", ""));
 		SrxDocument document = new SrxDocument();
@@ -321,12 +321,12 @@ public abstract class AbstractSrxTextIteratorTest {
 	}
 
 	/**
-	 * Tests if when there is empty (matching all) breaking rule text will
+	 * Tests if when there is empty (matching all) break rule text will
 	 * be split after every character.
 	 */
 	@Test
-	public void testEmptyBreakingRule() {
-		performTest(EMPTY_BREAKING_RULE_RESULT, EMPTY_BREAKING_RULE_DOCUMENT);
+	public void testEmptyBreakRule() {
+		performTest(EMPTY_BREAK_RULE_RESULT, EMPTY_BREAK_RULE_DOCUMENT);
 	}
 	
 	public static final String[] WORD_BOUNDARY_RESULT = new String[] { 
@@ -359,15 +359,15 @@ public abstract class AbstractSrxTextIteratorTest {
 				WORD_BOUNDARY_DOCUMENT, WORD_BOUNDARY_LANGUAGE);
 	}
 	
-	public static final String[] NON_BREAKING_LONGER_THAN_BREAKING_RESULT = 
+	public static final String[] EXCEPTION_RULE_LONGER_THAN_BREAK_RULE_RESULT = 
 			new String[] { 
 	    "Ala ma kota.", " "
 	};
 
-	public static final SrxDocument NON_BREAKING_LONGER_THAN_BREAKING_DOCUMENT = 
-		createNonBreakingLongerThanBreakingDocument();
+	public static final SrxDocument EXCEPTION_RULE_LONGER_THAN_BREAK_RULE_DOCUMENT = 
+		createExceptionRuleLongerThanBreakRuleDocument();
 
-	public static SrxDocument createNonBreakingLongerThanBreakingDocument() {
+	public static SrxDocument createExceptionRuleLongerThanBreakRuleDocument() {
 	    LanguageRule languageRule = new LanguageRule("");
 	
 		languageRule.addRule(new Rule(false, "\\.", "\\sa"));
@@ -380,13 +380,13 @@ public abstract class AbstractSrxTextIteratorTest {
 	}
 
 	/**
-	 * Test when non breaking rule is longer than breaking rule everything
+	 * Test when exception rule is longer than break rule everything
 	 * is OK (problems with lookingAt throwing EndOfStreamException).
 	 */
 	@Test
-	public void testNonBreakingLongerThanBreaking() {
-		performTest(NON_BREAKING_LONGER_THAN_BREAKING_RESULT, 
-				NON_BREAKING_LONGER_THAN_BREAKING_DOCUMENT);
+	public void testExceptionRuleLongerThanBreakRule() {
+		performTest(EXCEPTION_RULE_LONGER_THAN_BREAK_RULE_RESULT, 
+				EXCEPTION_RULE_LONGER_THAN_BREAK_RULE_DOCUMENT);
 	}
 	
 	public static final String[] MATCHING_END_RESULT = 
@@ -446,15 +446,15 @@ public abstract class AbstractSrxTextIteratorTest {
 		performTest(MATCHING_ALL_RESULT, MATCHING_ALL_DOCUMENT);
 	}
 
-	public static final String[] OVERLAPPING_BREAKING_RULES_RESULT = 
+	public static final String[] OVERLAPPING_BREAK_RULES_RESULT = 
 		new String[] { 
 		"A..", ".B"
 	};
 
-	public static final SrxDocument OVERLAPPING_BREAKING_RULES_DOCUMENT = 
-		createOverlappingBreakingRulesDocument();
+	public static final SrxDocument OVERLAPPING_BREAK_RULES_DOCUMENT = 
+		createOverlappingBreakRulesDocument();
 
-	public static SrxDocument createOverlappingBreakingRulesDocument() {
+	public static SrxDocument createOverlappingBreakRulesDocument() {
 		LanguageRule languageRule = new LanguageRule("");
 
 		languageRule.addRule(new Rule(true, "\\.\\.\\.", ""));
@@ -467,23 +467,23 @@ public abstract class AbstractSrxTextIteratorTest {
 	}
 
 	/**
-	 * Test if overlapping breaking rules do not interfere with each other.
+	 * Test if overlapping break rules do not interfere with each other.
 	 */
 	@Test
-	public void testOverlappingBreakingRules() {
-		performTest(OVERLAPPING_BREAKING_RULES_RESULT, 
-				OVERLAPPING_BREAKING_RULES_DOCUMENT);
+	public void testOverlappingBreakRules() {
+		performTest(OVERLAPPING_BREAK_RULES_RESULT, 
+				OVERLAPPING_BREAK_RULES_DOCUMENT);
 	}
 
-	public static final String[] MIXED_BREAKING_RULES_RESULT = 
+	public static final String[] MIXED_BREAK_RULES_RESULT = 
 		new String[] { 
 		"xabc", "d"
 	};
 
-	public static final SrxDocument MIXED_BREAKING_RULES_DOCUMENT = 
-		createMixedBreakingRulesDocument();
+	public static final SrxDocument MIXED_BREAK_RULES_DOCUMENT = 
+		createMixedBreakRulesDocument();
 
-	public static SrxDocument createMixedBreakingRulesDocument() {
+	public static SrxDocument createMixedBreakRulesDocument() {
 		LanguageRule languageRule = new LanguageRule("");
 
 		languageRule.addRule(new Rule(false, "b", "c"));
@@ -497,9 +497,9 @@ public abstract class AbstractSrxTextIteratorTest {
 	}
 
 	@Test
-	public void testMixedBreakingRules() {
-		performTest(MIXED_BREAKING_RULES_RESULT, 
-				MIXED_BREAKING_RULES_DOCUMENT);
+	public void testMixedBreakRules() {
+		performTest(MIXED_BREAK_RULES_RESULT, 
+				MIXED_BREAK_RULES_DOCUMENT);
 	}
 	
 	
@@ -562,6 +562,37 @@ public abstract class AbstractSrxTextIteratorTest {
 		performTest(TICKET_1_RESULT, TICKET_1_DOCUMENT);
 	}
 
+
+	public static final String[] SPECIFICATION_EXAMPLE_RESULT = new String[] { 
+		"The U.K. Prime Minister, Mr. Blair, was seen out today."				};
+
+	public static final SrxDocument SPECIFICATION_EXAMPLE_DOCUMENT = 
+		createSpecificationExampleDocument();
+	
+	public static SrxDocument createSpecificationExampleDocument() {
+		LanguageRule languageRule = new LanguageRule("");
+		
+		languageRule.addRule(new Rule(false, "\\sU\\.K\\.", "\\s"));
+		languageRule.addRule(new Rule(false, "Mr\\.", "\\s"));
+		languageRule.addRule(new Rule(true, "[\\.\\?!]+", "\\s"));
+
+		SrxDocument document = new SrxDocument();
+		document.addLanguageMap(".*", languageRule);
+
+		return document;
+	}
+	
+	/**
+	 * Tests situation described in SRX specification as an example.
+	 * The text is slightly shorter to decrease buffer size for tests.
+	 */
+	@Test
+	public void testSpecificationExample() {
+		performTest(SPECIFICATION_EXAMPLE_RESULT, 
+				SPECIFICATION_EXAMPLE_DOCUMENT);
+	}
+	
+	
 	/**
 	 * Create text iterator. This method needs to be implemented by inheriting.
 	 * @param text text to segment

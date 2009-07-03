@@ -23,7 +23,7 @@ public class FastTextIteratorReaderTest extends AbstractSrxTextIteratorTest {
 	
 	@Ignore
 	@Test
-	public void testOverlappingBreakingRules() {
+	public void testOverlappingBreakRules() {
 	}
 
 }

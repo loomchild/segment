@@ -43,7 +43,7 @@ public class MergedPattern {
 		List<List<Rule>> ruleGroupList = groupRules(ruleList);
 
 		for (List<Rule> ruleGroup : ruleGroupList) {
-			if (ruleGroup.get(0).isBreaking()) {
+			if (ruleGroup.get(0).isBreak()) {
 				
 				if (breakingPatternBuilder.length() > 0) {
 					breakingPatternBuilder.append('|');
@@ -137,7 +137,7 @@ public class MergedPattern {
 		
 		for (Rule rule : ruleList) {
 			if (previousRule == null ||
-					rule.isBreaking() != previousRule.isBreaking()) {
+					rule.isBreak() != previousRule.isBreak()) {
 				ruleGroup = new ArrayList<Rule>();
 				ruleGroupList.add(ruleGroup);
 			}

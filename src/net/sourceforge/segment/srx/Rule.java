@@ -1,7 +1,7 @@
 package net.sourceforge.segment.srx;
 
 /**
- * Represents breaking or non breaking rule. Contains after break and before
+ * Represents break or exception rule. Contains after break and before
  * break patterns,
  * 
  * @author loomchild
@@ -17,7 +17,7 @@ public class Rule {
 	/**
 	 * Creates rule.
 	 * 
-	 * @param breaking type of rule; true - breaking, false - non breaking
+	 * @param breaking type of rule; true - break rule, false - exception rule
 	 * @param beforePattern pattern matching text before break
 	 * @param afterPattern pattern matching text after break
 	 */
@@ -28,9 +28,9 @@ public class Rule {
 	}
 
 	/**
-	 * @return type of rule; true - breaking, false - non breaking
+	 * @return type of rule; true - break rule, false - exception rule
 	 */
-	public boolean isBreaking() {
+	public boolean isBreak() {
 		return breaking;
 	}
 

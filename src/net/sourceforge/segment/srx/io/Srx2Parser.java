@@ -75,7 +75,7 @@ public class Srx2Parser implements SrxParser {
 			LanguageRule languageRule = new LanguageRule(lr
 					.getLanguagerulename());
 			for (net.sourceforge.segment.srx.io.bind.Rule r : lr.getRule()) {
-				boolean breaking = !"no".equals(r.getBreak());
+				boolean breakRule = !"no".equals(r.getBreak());
 
 				String before;
 				if (r.getBeforebreak() != null) {
@@ -91,7 +91,7 @@ public class Srx2Parser implements SrxParser {
 					after = "";
 				}
 
-				Rule rule = new Rule(breaking, before, after);
+				Rule rule = new Rule(breakRule, before, after);
 				languageRule.addRule(rule);
 			}
 			languageRuleMap.put(languageRule.getName(), languageRule);

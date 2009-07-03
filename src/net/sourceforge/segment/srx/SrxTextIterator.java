@@ -17,12 +17,12 @@ import net.sourceforge.segment.util.IORuntimeException;
  * The algorithm idea is as follows:
  * 1. Rule matcher list is created based on SRX file and language. Each rule 
  *    matcher is responsible for matching before break and after break regular 
- *    expressions of one breaking rule.
+ *    expressions of one break rule.
  * 2. Each rule matcher is matched to the text. If the rule was not found the 
  *    rule matcher is removed from the list. 
- * 3. First rule matcher in terms of its breaking position in text is selected.
- * 4. List of non breaking rules corresponding to breaking rule is retrieved. 
- * 5. If none of non breaking rules is matching in breaking position then 
+ * 3. First rule matcher in terms of its break position in text is selected.
+ * 4. List of exception rules corresponding to break rule is retrieved. 
+ * 5. If none of exception rules is matching in break position then 
  *    the text is marked as split and new segment is created. In addition 
  *    all rule matchers are moved so they start after the end of new segment 
  *    (which is the same as break position of the matched rule). 
@@ -31,12 +31,16 @@ import net.sourceforge.segment.util.IORuntimeException;
  * 7. If segment was not found the whole process is repeated.
  *
  * In streaming version of this algorithm character buffer is searched. 
- * When the end of it is reached or breaking position is in the margin 
- * (breaking position > buffer size - margin) and there is more text, 
- * the buffer is moved until it starts after last found segment, 
- * rule matchers are reinitialized and the text is searched again.
- * Buffer size must be greater than any segment size, otherwise exception
- * will be thrown. 
+ * When the end of it is reached or break position is in the margin 
+ * (break position > buffer size - margin) and there is more text, 
+ * the buffer is moved in the text until it starts after last found segment. 
+ * If this happens rule matchers are reinitialized and the text is searched again.
+ * Streaming version has a limitation that read buffer must be at least as long 
+ * as any segment in the text.
+ * 
+ * As this algorithm uses lookbehind extensively but Java does not permit
+ * infinite regular expressions in lookbehind, so some patterns are finitized. 
+ * For example a* pattern will be changed to something like a{0,100}.
  *
  * @author loomchild
  */
@@ -208,7 +212,7 @@ public class SrxTextIterator extends AbstractTextIterator {
 					end = minMatcher.getBreakPosition();
 
 					if (end > start) {
-						found = isBreaking(minMatcher);
+						found = isException(minMatcher);
 						if (found) {
 							cutMatchers();
 						}
@@ -244,7 +248,7 @@ public class SrxTextIterator extends AbstractTextIterator {
 	 */
 	private void initMatchers() {
 		this.ruleMatcherList = new LinkedList<RuleMatcher>();
-		for (Rule rule : ruleManager.getBreakingRuleList()) {
+		for (Rule rule : ruleManager.getBreakRuleList()) {
 			RuleMatcher matcher = 
 				new RuleMatcher(document, rule, textManager.getText());
 			matcher.find();
@@ -302,15 +306,15 @@ public class SrxTextIterator extends AbstractTextIterator {
 	}
 	
 	/**
-	 * Returns true if there are no non breaking rules preventing given
+	 * Returns true if there are no exception rules preventing given
 	 * rule matcher from breaking the text.
 	 * @param ruleMatcher rule matcher
 	 * @return true if rule matcher breaks the text
 	 */
-	private boolean isBreaking(RuleMatcher ruleMatcher) {
+	private boolean isException(RuleMatcher ruleMatcher) {
 		
 		Pattern pattern = 
-			ruleManager.getNonBreakingPattern(ruleMatcher.getRule());
+			ruleManager.getExceptionPattern(ruleMatcher.getRule());
 		
 		if (pattern != null) {
 			Matcher matcher = pattern.matcher(textManager.getText());

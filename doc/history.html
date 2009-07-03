@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"><html><head><title>Historia</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"><html><head><title>History</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>
 
 <h1>History</h1>
 
@@ -51,7 +51,7 @@
 	<ul>
 		<li>Changed minimum required Java version from 1.6 to 1.5 to make it work on Macs.</li>
 		<li>Fixed many bugs thanks to Marcin Miłkowski - exception sometimes when text contains space at the end, rule skipping in legacy algorithm, initialization error on Macs and so on.</li>
-		<li>Fixed a bug with breaking rule applying order - now the rule that will break first is applied independent of order.</li>
+		<li>Fixed a bug with break rule applying order - now the rule that will break first is applied independent of order.</li>
 		<li>Changed console interface - now there is just one command named 'segment' to perform all the tasks.</li>
 		<li>Added buildnumber to the version.</li>
 		<li>Added debug information to the sources.</li>
@@ -60,13 +60,13 @@
 	</ul>
 </li>
 <li>
-	<p>version 1.3 2009-06-26</p>
+	<p>version 1.3 2009-07-03</p>
 	<ul>
-		<li>Created brand new text iterator. It does not use have problems with breaking rule order. It combines the ideas from previous algorithms so it is accurate and even faster than the last one.</li>
+		<li>Created brand new text iterator. It applies break rules in correct order (previous version was incorrect according to specification, algorithm pseudocode). It combines the ideas from previous algorithms so it is accurate and fast (even faster than old one).</li>
 		<li>Fully integrated loomchild-util library code to segment package structure.</li>
-		<li>Added preload option to interface.</li>
+		<li>Added preload, algorithm and output options to text interface.</li>
 		<li>Renamed splitters to Fast, Accurate and Ultimate.</li>
-		<li>Updated javadocs and documentation, tried to describe algorithms.</li>
+		<li>Updated javadocs and documentation, described algorithms.</li>
 	</ul>
 </li>
 </ul>

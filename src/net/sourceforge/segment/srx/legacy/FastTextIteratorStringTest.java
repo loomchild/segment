@@ -16,7 +16,7 @@ public class FastTextIteratorStringTest extends AbstractSrxTextIteratorTest {
 	
 	@Ignore
 	@Test
-	public void testOverlappingBreakingRules() {
+	public void testOverlappingBreakRules() {
 	}
 
 }

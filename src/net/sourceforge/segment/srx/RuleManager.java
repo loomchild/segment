@@ -10,7 +10,7 @@ import net.sourceforge.segment.util.Util;
 
 /**
  * Represents segmentation rules manager.
- * Responsible for constructing and storing breaking and non-breaking rules.
+ * Responsible for constructing and storing break and exception rules.
  * 
  * @author loomchild
  */
@@ -18,16 +18,16 @@ public class RuleManager {
 	
 	private SrxDocument document;
 
-	private List<Rule> breakingRuleList;
+	private List<Rule> breakRuleList;
 	
-	private Map<Rule, Pattern> nonBreakingPatternMap;
+	private Map<Rule, Pattern> exceptionPatternMap;
 	
 	/**
 	 * Constructor. Responsible for retrieving rules from SRX document for
 	 * given language code, constructing patterns and storing them in 
 	 * quick accessible format.
-	 * Adds breaking rules to {@link #breakingRuleList} and constructs
-	 * corresponding non breaking patterns in {@link #nonBreakingPatternMap}.  
+	 * Adds break rules to {@link #breakRuleList} and constructs
+	 * corresponding exception patterns in {@link #exceptionPatternMap}.  
 	 * Uses document cache to store rules and patterns. 
 	 * @param document SRX document
 	 * @param languageCode
@@ -44,45 +44,45 @@ public class RuleManager {
 		
 		if (cachedPatterns != null) {
 		
-			this.breakingRuleList = (List<Rule>)cachedPatterns[0];
-			this.nonBreakingPatternMap = (Map<Rule, Pattern>)cachedPatterns[1];
+			this.breakRuleList = (List<Rule>)cachedPatterns[0];
+			this.exceptionPatternMap = (Map<Rule, Pattern>)cachedPatterns[1];
 		
 		} else {
 		
-			this.breakingRuleList = new ArrayList<Rule>();
-			this.nonBreakingPatternMap = new HashMap<Rule, Pattern>();
+			this.breakRuleList = new ArrayList<Rule>();
+			this.exceptionPatternMap = new HashMap<Rule, Pattern>();
 
-			StringBuilder nonBreakingPatternBuilder = new StringBuilder();
+			StringBuilder exceptionPatternBuilder = new StringBuilder();
 			
 			for (LanguageRule languageRule : languageRuleList) {
 				for (Rule rule : languageRule.getRuleList()) {
 
-					if (rule.isBreaking()) {
+					if (rule.isBreak()) {
 					
-						breakingRuleList.add(rule);
+						breakRuleList.add(rule);
 						
-						Pattern nonBreakingPattern;
+						Pattern exceptionPattern;
 						
-						if (nonBreakingPatternBuilder.length() > 0) {
-							String nonBreakingPatternString = 
-								nonBreakingPatternBuilder.toString();
-							nonBreakingPattern = 
-								Util.compile(document, nonBreakingPatternString);
+						if (exceptionPatternBuilder.length() > 0) {
+							String exceptionPatternString = 
+								exceptionPatternBuilder.toString();
+							exceptionPattern = 
+								Util.compile(document, exceptionPatternString);
 						} else {
-							nonBreakingPattern = null;
+							exceptionPattern = null;
 						}
 
-						nonBreakingPatternMap.put(rule, nonBreakingPattern);
+						exceptionPatternMap.put(rule, exceptionPattern);
 					
 					} else {
 					
-						if (nonBreakingPatternBuilder.length() > 0) {
-							nonBreakingPatternBuilder.append('|');
+						if (exceptionPatternBuilder.length() > 0) {
+							exceptionPatternBuilder.append('|');
 						}
 
-						String patternString = createNonBreakingPatternString(rule);
+						String patternString = createExceptionPatternString(rule);
 						
-						nonBreakingPatternBuilder.append(patternString);
+						exceptionPatternBuilder.append(patternString);
 				
 					}
 				
@@ -90,7 +90,7 @@ public class RuleManager {
 			}
 
 			cachedPatterns = new Object[] {
-				this.breakingRuleList, this.nonBreakingPatternMap
+				this.breakRuleList, this.exceptionPatternMap
 			};
 			document.getCache().put(languageRuleList, cachedPatterns);
 			
@@ -99,31 +99,31 @@ public class RuleManager {
 	}
 	
 	/**
-	 * @return breaking rule list
+	 * @return break rule list
 	 */
-	public List<Rule> getBreakingRuleList() {
-		return breakingRuleList;
+	public List<Rule> getBreakRuleList() {
+		return breakRuleList;
 	}
 	
 	/**
-	 * @param breakingRule
-	 * @return non breaking pattern corresponding to give breaking rule
+	 * @param breakRule
+	 * @return exception pattern corresponding to give break rule
 	 */
-	public Pattern getNonBreakingPattern(Rule breakingRule) {
-		return nonBreakingPatternMap.get(breakingRule);
+	public Pattern getExceptionPattern(Rule breakRule) {
+		return exceptionPatternMap.get(breakRule);
 	}
 	
 	/**
-	 * Creates non breaking pattern string that can be matched in the place 
-	 * where breaking rule was matched. Both parts of the rule 
+	 * Creates exception pattern string that can be matched in the place 
+	 * where break rule was matched. Both parts of the rule 
 	 * (beforePattern and afterPattern) are incorporated
 	 * into one pattern.
 	 * beforePattern is used in lookbehind, therefore it needs to be 
 	 * modified so it matches finite string (contains no *, + or {n,}). 
-	 * @param rule non breaking rule
-	 * @return string containing non breaking pattern
+	 * @param rule exception rule
+	 * @return string containing exception pattern
 	 */
-	private String createNonBreakingPatternString(Rule rule) {
+	private String createExceptionPatternString(Rule rule) {
 
 		String patternString = document.getCache().get(rule, String.class);
 		
