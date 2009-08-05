@@ -507,7 +507,7 @@ public abstract class AbstractSrxTextIteratorTest {
 		createTextLongerThanBufferResult();
 	
 	private static String[] createTextLongerThanBufferResult() {
-		int length = SrxTextIterator.DEFAULT_BUFFER_SIZE / 10 + 20;
+		int length = SrxTextIterator.DEFAULT_BUFFER_LENGTH / 10 + 20;
 		String[] result = new String[length];
 		for (int i = 0; i < length; ++i) {
 			result[i] = "AAAAAAAAA.";
@@ -620,7 +620,7 @@ public abstract class AbstractSrxTextIteratorTest {
 		assertListEquals(expectedResult, segmentList);
 	}
 
-	private List<String> segment(TextIterator textIterator) {
+	protected List<String> segment(TextIterator textIterator) {
 		List<String> segmentList = new ArrayList<String>();
 		while (textIterator.hasNext()) {
 			segmentList.add(textIterator.next());
@@ -628,7 +628,7 @@ public abstract class AbstractSrxTextIteratorTest {
 		return segmentList;
 	}
 	
-	private String merge(String[] stringArray) {
+	protected String merge(String[] stringArray) {
 		StringBuilder builder = new StringBuilder();
 		for (String string : stringArray) {
 			builder.append(string);

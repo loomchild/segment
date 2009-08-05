@@ -13,7 +13,7 @@ import net.sourceforge.segment.util.IORuntimeException;
  */
 public class ReaderCharSequence implements CharSequence {
 
-	public static final int DEFAULT_BUFFER_SIZE = 64 * 1024;
+	public static final int DEFAULT_BUFFER_LENGTH = 64 * 1024;
 	
 	public static final int DEFAULT_LOOKAHEAD = 1;
 
@@ -32,24 +32,24 @@ public class ReaderCharSequence implements CharSequence {
 	 * 
 	 * @param reader reader from which char sequence will be read
 	 * @param length length of the input. When it cannot be determined it can be set to infinity
-	 * @param bufferSize size of the character buffer
+	 * @param bufferLength size of the character buffer
 	 */
-	public ReaderCharSequence(Reader reader, int length, int bufferSize, 
+	public ReaderCharSequence(Reader reader, int length, int bufferLength, 
 			int lookahead) {
 		this.reader = reader;
 		this.lookahead = lookahead;
-		this.buffer = new Buffer(bufferSize);
+		this.buffer = new Buffer(bufferLength);
 		this.position = 0;
 		this.length = length;
 		fillBuffer(-1);
 	}
 
-	public ReaderCharSequence(Reader reader, int length, int bufferSize) {
-		this(reader, length, bufferSize, DEFAULT_LOOKAHEAD);
+	public ReaderCharSequence(Reader reader, int length, int bufferLength) {
+		this(reader, length, bufferLength, DEFAULT_LOOKAHEAD);
 	}
 
 	public ReaderCharSequence(Reader reader, int length) {
-		this(reader, length, DEFAULT_BUFFER_SIZE);
+		this(reader, length, DEFAULT_BUFFER_LENGTH);
 	}
 
 	public ReaderCharSequence(Reader reader) {

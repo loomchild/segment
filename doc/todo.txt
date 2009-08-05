@@ -1,3 +1,8 @@
+Passing extra segmentation parameters as Map<String, Object> but take care 
+to use only expected type in parameters. Define keys as constants in interested classes.
+- Add user interface parameters.
+- Write documentation. 
+
 Write automatic test with real data. It can measure performance and accuracy 
 in real-life uses. Problem: Need to obtain SRX and text.
 

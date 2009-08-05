@@ -1,12 +1,17 @@
 package net.sourceforge.segment.srx.legacy;
 
+import static net.sourceforge.segment.util.Util.getParameter;
+
 import java.io.Reader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import net.sourceforge.segment.AbstractTextIterator;
 import net.sourceforge.segment.srx.LanguageRule;
 import net.sourceforge.segment.srx.SrxDocument;
+import net.sourceforge.segment.srx.SrxTextIterator;
 
 /**
  * Represents fast text iterator that splits text according to SRX rules.
@@ -18,7 +23,7 @@ public class FastTextIterator extends AbstractTextIterator {
 	private CharSequence text;
 
 	private String segment;
-	
+
 	private MergedPattern mergedPattern;
 
 	private ReaderMatcher breakingMatcher;
@@ -28,35 +33,61 @@ public class FastTextIterator extends AbstractTextIterator {
 	/**
 	 * Creates text iterator that obtains language rules form given document
 	 * using given language code. To retrieve language rules calls
-	 * {@link SrxDocument#getLanguageRuleList(String)}.
+	 * {@link SrxDocument#getLanguageRuleList(String)}. 
+	 * Supported parameters: 
+	 * {@link SrxTextIterator#MAX_LOOKBEHIND_CONSTRUCT_LENGTH_PARAMETER}.
 	 * 
-	 * @param document document containing language rules
-	 * @param languageCode language code to select the rules
+	 * @param document
+	 *            document containing language rules
+	 * @param languageCode
+	 *            language code to select the rule
 	 * @param text
+	 * @param parameterMap
+	 *            additional segmentation parameters
 	 */
 	public FastTextIterator(SrxDocument document, String languageCode,
-			CharSequence text) {
-		
+			CharSequence text, Map<String, Object> parameterMap) {
+
 		this.text = text;
 		this.segment = null;
 		this.startPosition = 0;
 		this.endPosition = 0;
 
-		List<LanguageRule> languageRuleList = 
-			document.getLanguageRuleList(languageCode);
-		
-		this.mergedPattern = 
-			document.getCache().get(languageRuleList, MergedPattern.class);
+		int maxLookbehindConstructLength = getParameter(parameterMap
+				.get(SrxTextIterator.MAX_LOOKBEHIND_CONSTRUCT_LENGTH_PARAMETER),
+				SrxTextIterator.DEFAULT_MAX_LOOKBEHIND_CONSTRUCT_LENGTH);
+		List<LanguageRule> languageRuleList = document
+				.getLanguageRuleList(languageCode);
+		Object[] key = new Object[] { languageRuleList,
+				maxLookbehindConstructLength };
+
+		this.mergedPattern = document.getCache().get(key, MergedPattern.class);
 		if (mergedPattern == null) {
-			mergedPattern = new MergedPattern(languageRuleList);
-			document.getCache().put(languageRuleList, mergedPattern);
+			mergedPattern = new MergedPattern(languageRuleList,
+					maxLookbehindConstructLength);
+			document.getCache().put(key, mergedPattern);
 		}
-		
+
 		if (mergedPattern.getBreakingPattern() != null) {
-			this.breakingMatcher = new ReaderMatcher(
-					mergedPattern.getBreakingPattern(), text);
+			this.breakingMatcher = new ReaderMatcher(mergedPattern
+					.getBreakingPattern(), text);
 		}
-		
+
+	}
+
+	/**
+	 * Creates text iterator with no additional parameters.
+	 * 
+	 * @see #FastTextIterator(SrxDocument, String, CharSequence, Map)
+	 * @param document
+	 *            document containing language rules
+	 * @param languageCode
+	 *            language code to select the rule
+	 * @param text
+	 */
+	public FastTextIterator(SrxDocument document, String languageCode,
+			CharSequence text) {
+		this(document, languageCode, text, new HashMap<String, Object>());
 	}
 
 	/**
@@ -64,36 +95,43 @@ public class FastTextIterator extends AbstractTextIterator {
 	 * document using given language code. To retrieve language rules calls
 	 * {@link SrxDocument#getLanguageRuleList(String)}. To handle streams uses
 	 * ReaderCharSequence, so not all possible regular expressions are accepted.
-	 * See {@link ReaderCharSequence} for details.
+	 * See {@link ReaderCharSequence} for details. 
+	 * Supported parameters:
+	 * {@link SrxTextIterator#BUFFER_LENGTH_PARAMETER}, 
+	 * {@link SrxTextIterator#MAX_LOOKBEHIND_CONSTRUCT_LENGTH_PARAMETER}.
 	 * 
-	 * @param document document containing language rules
-	 * @param languageCode language code to select the rules
-	 * @param reader reader from which text will be read
-	 * @param length length of stream in reader
-	 * @param bufferSize Reader buffer size. Segments cannot be longer than this value
+	 * @param document
+	 *            document containing language rules
+	 * @param languageCode
+	 *            language code to select the rules
+	 * @param reader
+	 *            reader from which text will be read
+	 * @param parameterMap
+	 *            additional segmentation parameters
 	 */
 	public FastTextIterator(SrxDocument document, String languageCode,
-			Reader reader, int length, int bufferSize) {
-		this(document, languageCode, new ReaderCharSequence(reader, length, 
-				bufferSize));
+			Reader reader, Map<String, Object> parameterMap) {
+		this(document, languageCode, new ReaderCharSequence(reader,
+				Integer.MAX_VALUE, 
+				getParameter(parameterMap
+						.get(SrxTextIterator.BUFFER_LENGTH_PARAMETER),
+						SrxTextIterator.DEFAULT_BUFFER_LENGTH)), parameterMap);
 	}
 
 	/**
-	 * Creates streaming text iterator with default buffer size 
-	 * ({@link ReaderCharSequence#DEFAULT_BUFFER_SIZE}). 
-	 */
-	public FastTextIterator(SrxDocument document, String languageCode,
-			Reader reader, int length) {
-		this(document, languageCode, 
-				new ReaderCharSequence(reader, length));
-	}
-
-	/**
-	 * Creates streaming text iterator with unknown stream length. 
+	 * Creates streaming text iterator with no additional parameters.
+	 * 
+	 * @see #FastTextIterator(SrxDocument, String, Reader, Map)
+	 * @param document
+	 *            document containing language rules
+	 * @param languageCode
+	 *            language code to select the rules
+	 * @param reader
+	 *            reader from which text will be read
 	 */
 	public FastTextIterator(SrxDocument document, String languageCode,
 			Reader reader) {
-		this(document, languageCode, new ReaderCharSequence(reader));
+		this(document, languageCode, reader, new HashMap<String, Object>());
 	}
 
 	/**
@@ -112,10 +150,10 @@ public class FastTextIterator extends AbstractTextIterator {
 					while (breakingMatcher.group(breakingRuleIndex) == null) {
 						++breakingRuleIndex;
 					}
-					
+
 					// Breaking position is at the end of the group.
 					endPosition = breakingMatcher.end(breakingRuleIndex);
-					
+
 					// When there's more than one breaking rule at the given
 					// place only the first is matched, the rest is skipped.
 					// So if position is not increasing the new rules are
@@ -124,19 +162,17 @@ public class FastTextIterator extends AbstractTextIterator {
 
 						found = true;
 
-						// Get non breaking patterns that are applicable 
+						// Get non breaking patterns that are applicable
 						// to breaking rule just matched.
-						List<Pattern> activeNonBreakingPatternList =
-							mergedPattern.getNonBreakingPatternList(
-									breakingRuleIndex);
-						
-						for (Pattern nonBreakingPattern : 
-							activeNonBreakingPatternList) {
+						List<Pattern> activeNonBreakingPatternList = mergedPattern
+								.getNonBreakingPatternList(breakingRuleIndex);
+
+						for (Pattern nonBreakingPattern : activeNonBreakingPatternList) {
 
 							// Null non breaking pattern does not match anything
 							if (nonBreakingPattern != null) {
-								ReaderMatcher nonBreakingMatcher = 
-									new ReaderMatcher(nonBreakingPattern, text);
+								ReaderMatcher nonBreakingMatcher = new ReaderMatcher(
+										nonBreakingPattern, text);
 								nonBreakingMatcher.useTransparentBounds(true);
 								// When using transparent bound the upper bound
 								// is not important?
@@ -150,13 +186,13 @@ public class FastTextIterator extends AbstractTextIterator {
 							if (!found) {
 								break;
 							}
-							
+
 						}
 
 					}
 				}
 				// Breaking matcher cannot match text behind segment start in
-				// the future. 
+				// the future.
 				if (found && endPosition < text.length()) {
 					breakingMatcher.region(endPosition, text.length());
 				}

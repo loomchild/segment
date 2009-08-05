@@ -12,7 +12,7 @@ public class TextManagerTest {
 	public void testCharSequence() {
 		TextManager manager = new TextManager("text");
 		assertEquals("text", manager.getText().toString());
-		assertEquals(4, manager.getBufferSize());
+		assertEquals(4, manager.getBufferLength());
 		assertEquals(false, manager.hasMoreText());
 	}
 	
@@ -20,7 +20,7 @@ public class TextManagerTest {
 	public void testEmptyString() {
 		TextManager manager = new TextManager("");
 		assertEquals("", manager.getText().toString());
-		assertEquals(0, manager.getBufferSize());
+		assertEquals(0, manager.getBufferLength());
 		assertEquals(false, manager.hasMoreText());
 	}
 
@@ -35,7 +35,7 @@ public class TextManagerTest {
 		
 		StringReader reader = new StringReader("text");
 		TextManager manager = new TextManager(reader, 2);
-		assertEquals(2, manager.getBufferSize());
+		assertEquals(2, manager.getBufferLength());
 
 		assertEquals("te", manager.getText().toString());
 		assertEquals(true, manager.hasMoreText());		
@@ -55,7 +55,7 @@ public class TextManagerTest {
 		StringReader reader = new StringReader("");
 		TextManager manager = new TextManager(reader, 2);
 		assertEquals("", manager.getText().toString());
-		assertEquals(2, manager.getBufferSize());
+		assertEquals(2, manager.getBufferLength());
 		assertEquals(false, manager.hasMoreText());
 	}
 

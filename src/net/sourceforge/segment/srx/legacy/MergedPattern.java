@@ -17,13 +17,18 @@ import net.sourceforge.segment.util.Util;
  */
 public class MergedPattern {
 
+	private int maxLookbehindConstructLength;
+	
 	private Pattern breakingPattern;
 
 	private List<Pattern> nonBreakingPatternList;
 	
 	private List<Integer> breakingRuleIndexList;
 
-	public MergedPattern(List<LanguageRule> languageRuleList) {
+	public MergedPattern(List<LanguageRule> languageRuleList, 
+			int maxLookbehindConstructLength) {
+		
+		this.maxLookbehindConstructLength = maxLookbehindConstructLength;
 		
 		StringBuilder breakingPatternBuilder = new StringBuilder();
 		
@@ -205,7 +210,8 @@ public class MergedPattern {
 			}
 			// As Java does not allow infinite length patterns
 			// in lookbehind, before pattern need to be shortened.
-			String beforePattern = Util.finitize(rule.getBeforePattern());
+			String beforePattern = 
+				Util.finitize(rule.getBeforePattern(), maxLookbehindConstructLength);
 			String afterPattern = rule.getAfterPattern();
 			patternBuilder.append("(?:");
 			if (beforePattern.length() > 0) {

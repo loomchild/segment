@@ -1,6 +1,8 @@
 package net.sourceforge.segment.srx;
 
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sourceforge.segment.TextIterator;
 
@@ -13,8 +15,10 @@ public class SrxTextIteratorReaderTest extends AbstractSrxTextIteratorTest {
 	protected TextIterator getTextIterator(String text,
 			SrxDocument document, String languageCode) {
 		StringReader reader = new StringReader(text);
-		return new SrxTextIterator(document, languageCode, 
-				reader, BUFFER_SIZE, MARGIN);
+		Map<String, Object> parameterMap = new HashMap<String, Object>();
+		parameterMap.put(SrxTextIterator.BUFFER_LENGTH_PARAMETER, BUFFER_SIZE);
+		parameterMap.put(SrxTextIterator.MARGIN_PARAMETER, MARGIN);
+		return new SrxTextIterator(document, languageCode, reader, parameterMap);
 	}
 	
 }

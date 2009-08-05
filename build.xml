@@ -1,6 +1,6 @@
 <project default="compile" basedir=".">
 
-	<description>Program dzielący tekst na segmenty</description>
+	<description>This program divides a text into segments.</description>
 
 
 	<property file="build.number" />

@@ -17,6 +17,8 @@ import net.sourceforge.segment.util.Util;
 public class RuleManager {
 	
 	private SrxDocument document;
+	
+	private int maxLookbehindConstructLength;
 
 	private List<Rule> breakRuleList;
 	
@@ -30,70 +32,53 @@ public class RuleManager {
 	 * corresponding exception patterns in {@link #exceptionPatternMap}.  
 	 * Uses document cache to store rules and patterns. 
 	 * @param document SRX document
-	 * @param languageCode
+	 * @param languageRuleList list of language rules
+	 * @param maxLookbehindConstructLength Maximum length of regular expression in lookbehind (see {@link Util#finitize(String, int)}).
 	 */
-	@SuppressWarnings("unchecked")
-	public RuleManager(SrxDocument document, String languageCode) {
+	public RuleManager(SrxDocument document, List<LanguageRule> languageRuleList, 
+			int maxLookbehindConstructLength) {
+		
 		this.document = document;
+		this.maxLookbehindConstructLength = maxLookbehindConstructLength;
 		
-		List<LanguageRule> languageRuleList = 
-			document.getLanguageRuleList(languageCode);
-		
-		Object[] cachedPatterns = 
-			document.getCache().get(languageRuleList, Object[].class);
-		
-		if (cachedPatterns != null) {
-		
-			this.breakRuleList = (List<Rule>)cachedPatterns[0];
-			this.exceptionPatternMap = (Map<Rule, Pattern>)cachedPatterns[1];
-		
-		} else {
-		
-			this.breakRuleList = new ArrayList<Rule>();
-			this.exceptionPatternMap = new HashMap<Rule, Pattern>();
+		this.breakRuleList = new ArrayList<Rule>();
+		this.exceptionPatternMap = new HashMap<Rule, Pattern>();
 
-			StringBuilder exceptionPatternBuilder = new StringBuilder();
-			
-			for (LanguageRule languageRule : languageRuleList) {
-				for (Rule rule : languageRule.getRuleList()) {
+		StringBuilder exceptionPatternBuilder = new StringBuilder();
+		
+		for (LanguageRule languageRule : languageRuleList) {
+			for (Rule rule : languageRule.getRuleList()) {
 
-					if (rule.isBreak()) {
+				if (rule.isBreak()) {
+				
+					breakRuleList.add(rule);
 					
-						breakRuleList.add(rule);
-						
-						Pattern exceptionPattern;
-						
-						if (exceptionPatternBuilder.length() > 0) {
-							String exceptionPatternString = 
-								exceptionPatternBuilder.toString();
-							exceptionPattern = 
-								Util.compile(document, exceptionPatternString);
-						} else {
-							exceptionPattern = null;
-						}
-
-						exceptionPatternMap.put(rule, exceptionPattern);
+					Pattern exceptionPattern;
 					
+					if (exceptionPatternBuilder.length() > 0) {
+						String exceptionPatternString = 
+							exceptionPatternBuilder.toString();
+						exceptionPattern = 
+							Util.compile(document, exceptionPatternString);
 					} else {
-					
-						if (exceptionPatternBuilder.length() > 0) {
-							exceptionPatternBuilder.append('|');
-						}
-
-						String patternString = createExceptionPatternString(rule);
-						
-						exceptionPatternBuilder.append(patternString);
-				
+						exceptionPattern = null;
 					}
-				
-				}
-			}
 
-			cachedPatterns = new Object[] {
-				this.breakRuleList, this.exceptionPatternMap
-			};
-			document.getCache().put(languageRuleList, cachedPatterns);
+					exceptionPatternMap.put(rule, exceptionPattern);
+				
+				} else {
+				
+					if (exceptionPatternBuilder.length() > 0) {
+						exceptionPatternBuilder.append('|');
+					}
+
+					String patternString = createExceptionPatternString(rule);
+					
+					exceptionPatternBuilder.append(patternString);
 			
+				}
+			
+			}
 		}
 		
 	}
@@ -133,7 +118,8 @@ public class RuleManager {
 			
 			// As Java does not allow infinite length patterns
 			// in lookbehind, before pattern need to be shortened.
-			String beforePattern = Util.finitize(rule.getBeforePattern());
+			String beforePattern = 
+				Util.finitize(rule.getBeforePattern(), maxLookbehindConstructLength);
 			String afterPattern = rule.getAfterPattern();
 			
 			patternBuilder.append("(?:");

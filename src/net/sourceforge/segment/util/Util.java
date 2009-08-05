@@ -55,8 +55,6 @@ public class Util {
 
 	public static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
 
-	public static final int DEFAULT_FINITE_INFINITY = 100;
-
 	private static final Pattern STAR_PATTERN = Pattern
 			.compile("(?<=(?<!\\\\)(?:\\\\\\\\){0,100})\\*");
 
@@ -464,8 +462,9 @@ public class Util {
 
 	/**
 	 * Changes unlimited length pattern to limited length pattern. It is done by
-	 * replacing "*" and "+" symbols with their finite counterparts - "{0,n}"
-	 * and {1,n}. As a side effect block quotes are replaced with normal quotes
+	 * replacing constructs with "*" and "+" symbols with their finite 
+	 * counterparts - "{0,n}" and {1,n}. 
+	 * As a side effect block quotes are replaced with normal quotes
 	 * by using {@link #removeBlockQuotes(String)}.
 	 * 
 	 * @param pattern pattern to be finitized
@@ -487,16 +486,6 @@ public class Util {
 		return finitePattern;
 	}
 
-	/**
-	 * Finitizes pattern with default infinity. {@link #finitize(String, int)}
-	 * 
-	 * @param pattern pattern to be finitized
-	 * @return finite pattern
-	 */
-	public static String finitize(String pattern) {
-		return finitize(pattern, DEFAULT_FINITE_INFINITY);
-	}
-	
 	public static Pattern compile(SrxDocument document, String regex) {
 		Pattern pattern = document.getCache().get(regex, Pattern.class);
 		if (pattern == null) {
@@ -522,6 +511,25 @@ public class Util {
 		return newPattern;
 	}
 	
+	/**
+	 * Returns value if it is not null or default value if it is null.
+	 * Automatically cast value to the same type as default value.
+	 * @param value object
+	 * @param defaultValue default value.
+	 * @return object value or default value if object value is null
+	 * @throws ClassCastException when value cannot be cast to default value type
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T getParameter(Object value, T defaultValue) {
+		T result;
+		if (value != null) {
+			result = (T)value;
+		} else {
+			result = defaultValue;
+		}
+		return result;
+	}
+
 	/**
 	 * Asserts that list has given contents. Otherwise throws exception. To be
 	 * used in testing.

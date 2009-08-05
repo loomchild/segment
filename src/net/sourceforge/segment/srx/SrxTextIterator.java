@@ -1,10 +1,14 @@
 package net.sourceforge.segment.srx;
 
 
+import static net.sourceforge.segment.util.Util.getParameter;
+
 import java.io.Reader;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,17 +51,40 @@ import net.sourceforge.segment.util.IORuntimeException;
 public class SrxTextIterator extends AbstractTextIterator {
 	
 	/**
-	 * Default size of read buffer when using streaming version of this class.
-	 * Any segment cannot be longer than buffer size.
+	 * Margin size. Used in streaming splitter.
+	 * If rule is matched but its position is in the margin 
+	 * (position > bufferLength - margin) then the matching is ignored, 
+	 * and more text is read and rule is matched again.
 	 */
-	public static final int DEFAULT_BUFFER_SIZE = 65536;
+	public static final String MARGIN_PARAMETER = "margin";
 	
 	/**
-	 * Default margin value. 
+	 * 	Reader buffer size. Segments cannot be longer than this value.
+	 */
+	public static final String BUFFER_LENGTH_PARAMETER = "bufferLength";
+
+	/**
+	 * Maximum length of a regular expression construct that occurs in lookbehind. 
+	 */
+	public static final String MAX_LOOKBEHIND_CONSTRUCT_LENGTH_PARAMETER = 
+		"maxLookbehindConstructLength";
+	
+	/**
+	 * Default margin size. 
 	 */
 	public static final int DEFAULT_MARGIN = 128;
 	
+	/**
+	 * Default size of read buffer when using streaming version of this class.
+	 * Any segment cannot be longer than buffer size.
+	 */
+	public static final int DEFAULT_BUFFER_LENGTH = 64 * 1024;
 
+	/** 
+	 * Default max lookbehind construct length parameter.
+	 */
+	public static final int DEFAULT_MAX_LOOKBEHIND_CONSTRUCT_LENGTH = 100;
+	
 	private SrxDocument document;
 
 	private String segment;
@@ -74,44 +101,32 @@ public class SrxTextIterator extends AbstractTextIterator {
 	
 	
 	/**
-	 * Private constructor used internally by other constructors.
-	 *  
-	 * @param document SRX document
-	 * @param languageCode text language code
-	 * @param textManager text manager containing the text
-	 * @param margin margin size
-	 */
-	private SrxTextIterator(SrxDocument document, String languageCode, 
-			TextManager textManager, int margin) {
-
-		if (textManager.getBufferSize() > 0 &&
-				textManager.getBufferSize() <= margin) {
-			throw new IllegalArgumentException("Margin: " + margin +
-					" must be smaller than buffer itself: " + 
-					textManager.getBufferSize() + ".");
-		}
-		
-		this.document = document;
-		this.segment = null;
-		this.start = 0;
-		this.end = 0;
-		this.textManager = textManager;
-		this.ruleManager = new RuleManager(document, languageCode);
-		this.margin = margin;
-	}
-		
-	/**
 	 * Creates text iterator that obtains language rules form given document
 	 * using given language code. This constructor version is not streaming 
 	 * because it receives whole text as a string. 
+	 * Supported parameters: {@link #MAX_LOOKBEHIND_CONSTRUCT_LENGTH_PARAMETER}.
 	 * 
+	 * @param document SRX document
+	 * @param languageCode text language code of text used to retrieve the rules
+	 * @param text
+	 * @param parameterMap additional segmentation parameters
+	 */
+	public SrxTextIterator(SrxDocument document, String languageCode, 
+			CharSequence text, Map<String, Object> parameterMap) {
+		parameterMap.put(MARGIN_PARAMETER, 0);
+		init(document, languageCode, new TextManager(text), parameterMap);
+	}
+
+	/**
+	 * Creates text iterator with no additional parameters.
+	 * @see #SrxTextIterator(SrxDocument, String, CharSequence, Map)
 	 * @param document SRX document
 	 * @param languageCode text language code of text used to retrieve the rules
 	 * @param text
 	 */
 	public SrxTextIterator(SrxDocument document, String languageCode, 
 			CharSequence text) {
-		this(document, languageCode, new TextManager(text), 0);
+		this(document, languageCode, text, new HashMap<String, Object>());
 	}
 
 	/**
@@ -120,51 +135,38 @@ public class SrxTextIterator extends AbstractTextIterator {
 	 * text from reader using buffer with given size and margin. Single
 	 * segment cannot be longer than buffer size.
 	 * If rule is matched but its position is in the margin 
-	 * (position > bufferSize - margin) then the matching is ignored, 
+	 * (position > bufferLength - margin) then the matching is ignored, 
 	 * and more text is read and rule is matched again.
 	 * This is needed because incomplete rule can be located at the end of the 
 	 * buffer and never matched. 
+	 * Supported parameters: {@link #BUFFER_LENGTH_PARAMETER}, 
+	 * {@link #MARGIN_PARAMETER}, 
+	 * {@link #MAX_LOOKBEHIND_CONSTRUCT_LENGTH_PARAMETER}.
 	 * 
 	 * @param document SRX document
 	 * @param languageCode text language code of text used to retrieve the rules
 	 * @param reader reader from which read the text
-	 * @param bufferSize read buffer size
-	 * @param margin margin size
+	 * @param parameterMap additional segmentation parameters
 	 */
 	public SrxTextIterator(SrxDocument document, String languageCode, 
-			Reader reader, int bufferSize, int margin) {
-		this(document, languageCode, new TextManager(reader, bufferSize), margin);
+			Reader reader, Map<String, Object> parameterMap) {
+		int bufferLength = getParameter(parameterMap.get(BUFFER_LENGTH_PARAMETER), 
+				DEFAULT_BUFFER_LENGTH);
+		init(document, languageCode, new TextManager(reader, bufferLength), parameterMap);
 	}
 
 	/**
-	 * Creates streaming text iterator with default margin 
-	 * ({@link #DEFAULT_MARGIN}).
-	 * @see #SrxTextIterator(SrxDocument, String, Reader, int, int)
-	 * 
+	 * Creates streaming text iterator with no additional parameters.
+	 * @see SrxTextIterator#SrxTextIterator(SrxDocument, String, Reader, Map)
 	 * @param document SRX document
-	 * @param languageCode text language code
-	 * @param reader reader from which read the text
-	 * @param bufferSize read buffer size
-	 */
-	public SrxTextIterator(SrxDocument document, String languageCode, 
-			Reader reader, int bufferSize) {
-		this(document, languageCode, reader, bufferSize, DEFAULT_MARGIN);
-	}
-		
-	/**
-	 * Creates streaming text iterator with default buffer size
-	 * ({@link #DEFAULT_BUFFER_SIZE}) and margin ({@link #DEFAULT_MARGIN}).
-	 * @see #SrxTextIterator(SrxDocument, String, Reader, int, int)
-	 *
-	 * @param document SRX document
-	 * @param languageCode text language code
+	 * @param languageCode text language code of text used to retrieve the rules
 	 * @param reader reader from which read the text
 	 */
 	public SrxTextIterator(SrxDocument document, String languageCode, 
 			Reader reader) {
-		this(document, languageCode, reader, DEFAULT_BUFFER_SIZE);
+		this(document, languageCode, reader, new HashMap<String, Object>());
 	}
-		
+
 	/**
 	 * Finds the next segment in the text and returns it.
 	 * 
@@ -196,7 +198,7 @@ public class SrxTextIterator extends AbstractTextIterator {
 					if (textManager.hasMoreText() && 
 							(minMatcher == null || 
 							minMatcher.getBreakPosition() > 
-							textManager.getBufferSize() - margin)) {
+							textManager.getBufferLength() - margin)) {
 						
 						if (start == 0) {
 							throw new IllegalStateException("Buffer too short");
@@ -242,6 +244,50 @@ public class SrxTextIterator extends AbstractTextIterator {
 				start < textManager.getText().length());
 	}
 	
+	/**
+	 * Initializes splitter.
+	 *  
+	 * @param document SRX document
+	 * @param languageCode text language code
+	 * @param textManager text manager containing the text
+	 * @param parameterMap additional segmentation parameters
+	 */
+	private void init(SrxDocument document, String languageCode, 
+			TextManager textManager, Map<String, Object> parameterMap) {
+		
+		int margin = getParameter(parameterMap.get(MARGIN_PARAMETER), 
+				DEFAULT_MARGIN);
+		int maxLookbehindConstructLength = getParameter(parameterMap.get(
+				MAX_LOOKBEHIND_CONSTRUCT_LENGTH_PARAMETER), 
+					DEFAULT_MAX_LOOKBEHIND_CONSTRUCT_LENGTH);
+
+		if (textManager.getBufferLength() > 0 &&
+				textManager.getBufferLength() <= margin) {
+			throw new IllegalArgumentException("Margin: " + margin +
+					" must be smaller than buffer itself: " + 
+					textManager.getBufferLength() + ".");
+		}
+		
+		this.document = document;
+		this.segment = null;
+		this.start = 0;
+		this.end = 0;
+		this.textManager = textManager;
+		this.margin = margin;
+
+		List<LanguageRule> languageRuleList = 
+			document.getLanguageRuleList(languageCode);
+		Object[] key = new Object[]{languageRuleList, maxLookbehindConstructLength};
+		this.ruleManager = document.getCache().get(key, RuleManager.class);
+		
+		if (ruleManager == null) {
+			this.ruleManager = new RuleManager(document, languageRuleList, 
+					maxLookbehindConstructLength);
+			document.getCache().put(key, ruleManager);
+		}
+
+	}
+		
 	/**
 	 * Initializes matcher list according to rules from ruleManager and 
 	 * text from textManager.

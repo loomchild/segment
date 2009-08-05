@@ -19,7 +19,7 @@ public class TextManager {
 	
 	private Reader reader;
 	
-	private int bufferSize;
+	private int bufferLength;
 	
 	/** 
 	 * Creates text manager containing given text. Reading more text is not 
@@ -30,7 +30,7 @@ public class TextManager {
 		this.text = text;
 		this.nextCharacter = -1;
 		this.reader = null;
-		this.bufferSize = text.length();
+		this.bufferLength = text.length();
 	}
 
 	/**
@@ -39,21 +39,21 @@ public class TextManager {
 	 * be longer than given buffer size. 
 	 * Text is not actually read until required (lazy initialization). 
 	 * @param reader
-	 * @param bufferSize read buffer size
+	 * @param bufferLength read buffer size
 	 */
-	public TextManager(Reader reader, int bufferSize) {
-		if (bufferSize <= 0) {
-			throw new IllegalArgumentException("Buffer size: " + bufferSize + 
+	public TextManager(Reader reader, int bufferLength) {
+		if (bufferLength <= 0) {
+			throw new IllegalArgumentException("Buffer size: " + bufferLength + 
 					" must be positive.");
 		}
 		
 		this.text = null;
 		this.reader = reader;
-		this.bufferSize = bufferSize;
+		this.bufferLength = bufferLength;
 	}
 
-	public int getBufferSize() {
-		return bufferSize;
+	public int getBufferLength() {
+		return bufferLength;
 	}
 	
 	/**
@@ -86,7 +86,7 @@ public class TextManager {
 		if (amount <= 0) {
 			throw new IllegalArgumentException("Amount must be positive.");
 		}
-		if (amount > bufferSize) {
+		if (amount > bufferLength) {
 			throw new IllegalArgumentException("Amount to read is larger than buffer size.");
 		}
 		if (!hasMoreText()) {
@@ -112,7 +112,7 @@ public class TextManager {
 	 */
 	private void initText() {
 		if (text == null) {
-			text = read(bufferSize + 1);
+			text = read(bufferLength + 1);
 		}
 	}
 	

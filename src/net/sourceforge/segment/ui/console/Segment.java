@@ -103,6 +103,8 @@ public class Segment {
 
 		} catch (ParseException e) {
 			printUsage(helpFormatter);
+		} catch (IllegalArgumentException e) {
+			System.out.println(e.getMessage());
 		}
 		
 	}
@@ -110,21 +112,23 @@ public class Segment {
 	private Options createOptions() {
 		Options options = new Options();
 		options.addOption("s", "srx", true, "SRX file.");
-		options.addOption("l", "lang", true, "Language code.");
+		options.addOption("l", "language", true, "Language code.");
 		options.addOption("m", "map", true, "Map rule name in SRX 1.0.");
 		options.addOption("b", "begin", true, "Output segment prefix.");
 		options.addOption("e", "end", true, "Output segment suffix.");
 		options.addOption("a", "algorithm", true, "Algorithm. Can be accurate, fast or ultimate (default).");
-		options.addOption("u", "ultimate", false, "Use utlimate algorithm.");
 		options.addOption("i", "input", true, "Use given input file instead of standard input.");
 		options.addOption("o", "output", true, "Use given output file instead of standard output.");
 		options.addOption("t", "transform", false, "Convert old SRX to current version.");
 		options.addOption("p", "profile", false, "Print profile information.");
 		options.addOption("r", "preload", false, "Preload document into memory before segmentation.");
 		options.addOption("2", "twice", false, "Repeat the whole process twice.");
-		options.addOption("x", "generate-text", true, "Generate random input with given length in KB.");
-		options.addOption("y", "generate-srx", true, "Generate random segmentation rules with given rule count and rule length separated by a comma.");
 		options.addOption("z", "test", false, "Test the application by running a test suite.");
+		options.addOption(null, "lookbehind", true, "Maximum length of a regular expression construct that occurs in lookbehind. Default: " + SrxTextIterator.DEFAULT_MAX_LOOKBEHIND_CONSTRUCT_LENGTH + ".");
+		options.addOption(null, "buffer-length", true, "Length of a buffer when reading text as a stream. Default: " + SrxTextIterator.DEFAULT_BUFFER_LENGTH + ".");
+		options.addOption(null, "margin", true, "If rule is matched but its position is in the margin (position > bufferLength - margin) then the matching is ignored. Default " + SrxTextIterator.DEFAULT_MARGIN + ".");
+		options.addOption(null, "generate-text", true, "Generate random input with given length in KB.");
+		options.addOption(null, "generate-srx", true, "Generate random segmentation rules with given rule count and rule length separated by a comma.");
 		options.addOption("h", "help", false, "Print this help.");
 		return options;
 	}
@@ -205,8 +209,8 @@ public class Segment {
 			boolean twice, boolean preload) throws IOException {
 		Reader reader;
 
-		if (commandLine.hasOption('x')) {
-			reader = createRandomTextReader(commandLine.getOptionValue('x'), 
+		if (commandLine.hasOption("generate-text")) {
+			reader = createRandomTextReader(commandLine.getOptionValue("generate-text"), 
 					profile);
 		} else if (commandLine.hasOption('i')) {
 			reader = createFileReader(commandLine.getOptionValue('i'));
@@ -320,11 +324,11 @@ public class Segment {
 
 		long start = System.currentTimeMillis();
 
-		if (commandLine.hasOption('y')) {
+		if (commandLine.hasOption("generate-srx")) {
 			if (profile) {
 				System.out.print("Generating rules... ");
 			}
-			String generateSrxOption = commandLine.getOptionValue('y');
+			String generateSrxOption = commandLine.getOptionValue("generate-srx");
 			document = generateSrxDocument(generateSrxOption);
 		} else {
 			String fileName = commandLine.getOptionValue('s');
@@ -457,6 +461,32 @@ public class Segment {
 			algorithm = Algorithm.valueOf(algorithmString);
 		}
 		
+		Map<String, Object> parameterMap = new HashMap<String, Object>();
+		if (commandLine.hasOption("lookbehind")) {
+			if (algorithm != Algorithm.ultimate && algorithm != Algorithm.fast) {
+				throw new IllegalArgumentException("--lookbehind parameter can be only used with ultimate or fast algorithm.");
+			}
+			parameterMap.put(
+					SrxTextIterator.MAX_LOOKBEHIND_CONSTRUCT_LENGTH_PARAMETER, 
+					Integer.parseInt(commandLine.getOptionValue("lookbehind")));
+		}
+		if (commandLine.hasOption("buffer-length")) {
+			if (commandLine.hasOption('r')) {
+				throw new IllegalArgumentException("--buffer-length can be only used when reading text from a stream (--preload option not allowed).");
+			}
+			parameterMap.put(
+					SrxTextIterator.BUFFER_LENGTH_PARAMETER, 
+					Integer.parseInt(commandLine.getOptionValue("buffer-length")));
+		}
+		if (commandLine.hasOption("margin")) {
+			if (algorithm != Algorithm.ultimate) {
+				throw new IllegalArgumentException("--margin parameter can be only used with ultimate algorithm.");
+			}
+			parameterMap.put(
+					SrxTextIterator.MARGIN_PARAMETER, 
+					Integer.parseInt(commandLine.getOptionValue("margin")));
+		}
+		
 		if (profile) {
 			System.out.print("    Creating text iterator... ");
 		}
@@ -471,15 +501,15 @@ public class Segment {
 			}
 		} else if (algorithm == Algorithm.ultimate) {
 			if (text != null) {
-				textIterator = new SrxTextIterator(document, languageCode, text);
+				textIterator = new SrxTextIterator(document, languageCode, text, parameterMap);
 			} else {
-				textIterator = new SrxTextIterator(document, languageCode, reader);
+				textIterator = new SrxTextIterator(document, languageCode, reader, parameterMap);
 			}
 		} else if (algorithm == Algorithm.fast) {
 			if (text != null) {
-				textIterator = new FastTextIterator(document, languageCode, text);
+				textIterator = new FastTextIterator(document, languageCode, text, parameterMap);
 			} else {
-				textIterator = new FastTextIterator(document, languageCode, reader);
+				textIterator = new FastTextIterator(document, languageCode, reader, parameterMap);
 			}
 		} else {
 			throw new IllegalArgumentException("Unknown algorithm: " + algorithm + ".");
