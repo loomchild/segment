@@ -1,6 +1,6 @@
 package net.sourceforge.segment.srx;
 
-import static net.sourceforge.segment.util.Util.assertListEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +47,9 @@ public class SrxTextIteratorStringTest extends AbstractSrxTextIteratorTest {
 			new SrxTextIterator(MAX_LOOKBEHIND_CONSTRUCT_LENGTH_DOCUMENT, 
 					"", text, parameterMap);
 		List<String> segmentList = segment(textIterator);
-		assertListEquals(MAX_LOOKBEHIND_CONSTRUCT_LENGTH_RESULT, segmentList);
+		String[] segmentArray = segmentList.toArray(new String[segmentList.size()]); 
+
+		assertEquals(MAX_LOOKBEHIND_CONSTRUCT_LENGTH_RESULT, segmentArray);
 	}
 	
 }

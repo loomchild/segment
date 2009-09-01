@@ -1,6 +1,6 @@
 package net.sourceforge.segment.srx;
 
-import static net.sourceforge.segment.util.Util.assertListEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -617,7 +617,9 @@ public abstract class AbstractSrxTextIteratorTest {
 		
 		textIterator = getTextIterator(text, document, languageCode);
 		segmentList = segment(textIterator);
-		assertListEquals(expectedResult, segmentList);
+		
+		String[] segmentArray = segmentList.toArray(new String[segmentList.size()]); 
+		assertEquals(expectedResult, segmentArray);
 	}
 
 	protected List<String> segment(TextIterator textIterator) {

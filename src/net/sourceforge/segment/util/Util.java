@@ -1,7 +1,5 @@
 package net.sourceforge.segment.util;
 
-import static junit.framework.Assert.assertEquals;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -16,8 +14,6 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URL;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
@@ -42,7 +38,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import junit.framework.AssertionFailedError;
 import net.sourceforge.segment.srx.SrxDocument;
 
 import org.xml.sax.InputSource;
@@ -528,37 +523,6 @@ public class Util {
 			result = defaultValue;
 		}
 		return result;
-	}
-
-	/**
-	 * Asserts that list has given contents. Otherwise throws exception. To be
-	 * used in testing.
-	 * 
-	 * @param <T> list type
-	 * @param message message to be shown if check fails
-	 * @param expectedArray expected list contents
-	 * @param actualList list to be checked
-	 * @throws AssertionFailedError if list and array are not equal
-	 */
-	public static <T> void assertListEquals(String message, T[] expectedArray,
-			List<T> actualList) {
-		assertEquals(message, expectedArray.length, actualList.size());
-		Iterator<T> actualIterator = actualList.iterator();
-		for (T expected : expectedArray) {
-			T actual = actualIterator.next();
-			assertEquals(message, expected, actual);
-		}
-	}
-
-	/**
-	 * @see #assertListEquals(String, Object[], List)
-	 * @param <T> list type
-	 * @param expectedArray expected list contents
-	 * @param actualList List to be checked
-	 */
-	public static <T> void assertListEquals(T[] expectedArray,
-			List<T> actualList) {
-		assertListEquals("", expectedArray, actualList);
 	}
 
 }
