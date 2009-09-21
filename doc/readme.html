@@ -75,12 +75,14 @@ standard end of line character).
 
 <h2><a name="performance">Performance</a></h2>
 <p>
-To evaluate performance bin/segment -p command can be used. It can measure
+To evaluate performance bin/segment -p option can be used. It can measure
 segmentation time on any data and it is possible to generate data.
 To generate random text --generate-text option should be used with text length in kilobytes as a parameter. 
 To generate random SRX --generate-srx option should be used with rule count and rule length separated by a comma as a parameter.
 To repeat segmentation process -2 option should be used.
-As a result split time is displayed. Common usage example:<br/>
+Other option which controls how the text is handled is -r which instructs the application to preload the whole text into memory before segmentation (some algorithms require it). 
+Size of read buffer and therefore memory usage can be controlled by setting --buffer-length option.  
+As a result of performance analysis segmentation time is displayed. Common usage example:<br/>
 <code>bin/segment -p -2 --generate-text 100 --generate-srx 10,10</code><br/>
 </p>
 

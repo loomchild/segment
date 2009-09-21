@@ -1,7 +1,4 @@
-Passing extra segmentation parameters as Map<String, Object> but take care 
-to use only expected type in parameters. Define keys as constants in interested classes.
-- Add user interface parameters.
-- Write documentation. 
+Add Jimmy's email to authors
 
 Write automatic test with real data. It can measure performance and accuracy 
 in real-life uses. Problem: Need to obtain SRX and text.
@@ -9,3 +6,11 @@ in real-life uses. Problem: Need to obtain SRX and text.
 Maybe expand TextIterator interface by adding next(Writer) method. It can save
 memory. Implementation can read next fragments in loop instead of doing this 
 just once.
+
+
+WON'T DO ----------------------------------------------------------------------
+
+Maybe add initialize method to TextIterator interface. But then object is not 
+fully initialized after construction. Probably then also would need two methods:
+initialize() and initialize(parameterMap).
+
