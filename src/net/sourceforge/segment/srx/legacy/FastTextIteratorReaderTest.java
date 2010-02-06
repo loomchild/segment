@@ -16,8 +16,7 @@ public class FastTextIteratorReaderTest extends AbstractSrxTextIteratorTest {
 	protected TextIterator getTextIterator(String text,
 			SrxDocument document, String languageCode) {
 		StringReader reader = new StringReader(text);
-		CharSequence charSequence = new ReaderCharSequence(reader, 
-				Integer.MAX_VALUE, BUFFER_SIZE);
+		CharSequence charSequence = new ReaderCharSequence(reader, BUFFER_SIZE);
 		return new FastTextIterator(document, languageCode, charSequence);
 	}
 	

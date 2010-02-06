@@ -112,7 +112,6 @@ public class FastTextIterator extends AbstractTextIterator {
 	public FastTextIterator(SrxDocument document, String languageCode,
 			Reader reader, Map<String, Object> parameterMap) {
 		this(document, languageCode, new ReaderCharSequence(reader,
-				Integer.MAX_VALUE, 
 				getParameter(parameterMap
 						.get(SrxTextIterator.BUFFER_LENGTH_PARAMETER),
 						SrxTextIterator.DEFAULT_BUFFER_LENGTH)), parameterMap);

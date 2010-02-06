@@ -17,7 +17,7 @@ public class ReaderCharSequenceTest {
 	@Before
 	public void setUp() {
 		StringReader reader = new StringReader(DATA);
-		this.sequence = new ReaderCharSequence(reader, DATA.length(), 3);
+		this.sequence = new ReaderCharSequence(reader, 3, DATA.length());
 	}
 
 	@Test
@@ -81,8 +81,8 @@ public class ReaderCharSequenceTest {
 	@Test
 	public void testInfiniteStream() {
 		StringReader reader = new StringReader(DATA);
-		ReaderCharSequence infiniteSequence = 
-			new ReaderCharSequence(reader, Integer.MAX_VALUE, 3, 2);
+		ReaderCharSequence infiniteSequence = new ReaderCharSequence(
+				reader, 3, ReaderCharSequence.INFINITE_LENGTH, 2);
 		assertEquals('c', infiniteSequence.charAt(2));
 		assertEquals('e', infiniteSequence.charAt(4));
 		assertEquals(5, infiniteSequence.length());
@@ -97,8 +97,8 @@ public class ReaderCharSequenceTest {
 	@Test
 	public void testAllSubsequence() {
 		StringReader reader = new StringReader(DATA);
-		ReaderCharSequence infiniteSequence = 
-			new ReaderCharSequence(reader, Integer.MAX_VALUE, 5, 2);
+		ReaderCharSequence infiniteSequence = new ReaderCharSequence(
+				reader, 5, ReaderCharSequence.INFINITE_LENGTH, 2);
 		CharSequence subsequence = 
 			infiniteSequence.subSequence(0, infiniteSequence.length()); 
 		assertEquals(DATA, subsequence.toString());
@@ -107,8 +107,7 @@ public class ReaderCharSequenceTest {
 	@Test
 	public void testIterate() {
 		StringReader reader = new StringReader(DATA);
-		ReaderCharSequence infiniteSequence = 
-			new ReaderCharSequence(reader, Integer.MAX_VALUE, 3);
+		ReaderCharSequence infiniteSequence = new ReaderCharSequence(reader, 3);
 		for (int i = 0; i < infiniteSequence.length(); ++i) {
 			assertEquals(DATA.charAt(i), infiniteSequence.charAt(i));
 		}

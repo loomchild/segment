@@ -16,6 +16,12 @@ public class ReaderCharSequence implements CharSequence {
 	public static final int DEFAULT_BUFFER_LENGTH = 64 * 1024;
 	
 	public static final int DEFAULT_LOOKAHEAD = 1;
+	
+	/**
+	 * Value to be used as length when it is unknown. It must be less than
+	 * {@link Integer#MAX_VALUE} because some code may add something to length.
+	 */
+	public static final int INFINITE_LENGTH = Integer.MAX_VALUE - 8;
 
 	private Reader reader;
 	
@@ -31,11 +37,21 @@ public class ReaderCharSequence implements CharSequence {
 	 * Create.
 	 * 
 	 * @param reader reader from which char sequence will be read
-	 * @param length length of the input. When it cannot be determined it can be set to infinity
 	 * @param bufferLength size of the character buffer
+	 * @param length length of the input; when it cannot be determined it can 
+	 * 		be set to {@link #INFINITE_LENGTH} (max value); cannot be set to 
+	 * 		{@link Integer#MAX_VALUE} because it may cause overflow.
+	 * @param lookahead number of characters to read after current position
 	 */
-	public ReaderCharSequence(Reader reader, int length, int bufferLength, 
+	public ReaderCharSequence(Reader reader, int bufferLength, int length, 
 			int lookahead) {
+		if (length > INFINITE_LENGTH) {
+			throw new IllegalArgumentException("Length cannot be greater " +
+					"than infinity (" + INFINITE_LENGTH + ") bacause it may " +
+					"cause overflow (when matching regular expression " +
+					"for example). Use " + ReaderCharSequence.class.getName() +
+					".INFINITE_LENGTH constant instead.");
+		}
 		this.reader = reader;
 		this.lookahead = lookahead;
 		this.buffer = new Buffer(bufferLength);
@@ -44,16 +60,16 @@ public class ReaderCharSequence implements CharSequence {
 		fillBuffer(-1);
 	}
 
-	public ReaderCharSequence(Reader reader, int length, int bufferLength) {
-		this(reader, length, bufferLength, DEFAULT_LOOKAHEAD);
+	public ReaderCharSequence(Reader reader, int bufferLength, int length) {
+		this(reader, bufferLength, length, DEFAULT_LOOKAHEAD);
 	}
 
-	public ReaderCharSequence(Reader reader, int length) {
-		this(reader, length, DEFAULT_BUFFER_LENGTH);
+	public ReaderCharSequence(Reader reader, int bufferLength) {
+		this(reader, bufferLength, INFINITE_LENGTH);
 	}
 
 	public ReaderCharSequence(Reader reader) {
-		this(reader, Integer.MAX_VALUE);
+		this(reader, DEFAULT_BUFFER_LENGTH);
 	}
 
 	public int length() {
