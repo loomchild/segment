@@ -38,7 +38,7 @@ public enum SrxVersion {
 				return version;
 			}
 		}
-		throw new IllegalArgumentException("Unrecognized version: "
+		throw new IllegalArgumentException("Unrecognized SRX version: "
 				+ versionString + ".");
 	}
 

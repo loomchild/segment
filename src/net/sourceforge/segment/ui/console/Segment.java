@@ -39,6 +39,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.internal.runners.TextListener;
 import org.junit.runner.JUnitCore;
 
@@ -49,6 +51,8 @@ import org.junit.runner.JUnitCore;
  * @author loomchild
  */
 public class Segment {
+	
+	private static final Log log = LogFactory.getLog(Segment.class);
 	
 	private enum Algorithm {
 		accurate, fast, ultimate;
@@ -67,6 +71,8 @@ public class Segment {
 	
 	private Random random;
 	private String text;
+	private boolean stdinReader;
+	private boolean stdoutWriter;
 
 	public static void main(String[] args) {
 		try {
@@ -104,7 +110,7 @@ public class Segment {
 		} catch (ParseException e) {
 			printUsage(helpFormatter);
 		} catch (IllegalArgumentException e) {
-			System.out.println(e.getMessage());
+			System.out.println(e);
 		}
 		
 	}
@@ -174,7 +180,7 @@ public class Segment {
 			reader = createTextReader(commandLine, profile, twice, preload);
 
 			writer = createTextWriter(commandLine);
-
+			
 			if (preload) {
 				preloadText(reader, profile);
 			}
@@ -192,15 +198,8 @@ public class Segment {
 			}
 
 		} finally {
-			
-			if (reader != null) {
-				reader.close();
-			}
-
-			if (writer != null) {
-				writer.close();
-			}
-			
+			cleanupReader(reader);
+			cleanupWriter(writer);
 		}
 		
 	}
@@ -227,6 +226,8 @@ public class Segment {
 
 	private Reader createStandardInputReader() {
 		Reader reader = getReader(System.in);
+		// Indicate that our reader is standard input to avoid closing it.
+		stdinReader = true;
 		return reader;
 	}
 
@@ -307,6 +308,8 @@ public class Segment {
 	
 	private Writer createStandardOutputWriter() {
 		Writer writer = getWriter(System.out);
+		// Indicate that our writer is standard output to avoid closing it.
+		stdoutWriter = true;
 		return writer;
 	}
 
@@ -596,11 +599,47 @@ public class Segment {
 
 			transformer.transform(reader, writer, parameterMap);
 		} finally {
-			reader.close();
-			writer.close();
-			
+			cleanupReader(reader);
+			cleanupWriter(writer);
 		}
 	}
 
+	/** 
+	 * Cleans up reader, which means closing it if it is not standard input.
+	 * Does nothing if reader is null.
+	 * Catches any exceptions and writes them to the log.
+	 * 
+	 * @param reader
+	 */
+	private void cleanupReader(Reader reader) {
+		try {
+			if (reader != null && !stdinReader) {
+				reader.close();
+			}
+		} catch (IOException e) {
+			log.error("Error cleaning up reader.", e);
+		}
+	}
+	
+	/** 
+	 * Cleans up writer, which means flushing it and closing it if 
+	 * it is not standard input.
+	 * Does nothing if writer is null. 
+	 * Catches any exceptions and writes them to the log.
+	 * 
+	 * @param writer
+	 */
+	private void cleanupWriter(Writer writer) {
+		try {
+			if (writer != null) {
+				writer.flush();
+				if (!stdoutWriter) {
+					writer.close();
+				}
+			}
+		} catch (IOException e) {
+			log.error("Error cleaning up writer.", e);
+		}
+	}
+	
 }
-

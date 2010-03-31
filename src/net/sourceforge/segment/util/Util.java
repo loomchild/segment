@@ -83,7 +83,7 @@ public class Util {
 	 */
 	public static Writer getWriter(OutputStream outputStream) {
 		try {
-			Writer writer = new OutputStreamWriter((outputStream), "utf-8");
+			Writer writer = new OutputStreamWriter(outputStream, "utf-8");
 			return writer;
 		} catch (UnsupportedEncodingException e) {
 			throw new IORuntimeException(e);
