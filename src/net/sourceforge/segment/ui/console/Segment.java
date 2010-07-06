@@ -31,6 +31,7 @@ import net.sourceforge.segment.srx.io.SrxAnyParser;
 import net.sourceforge.segment.srx.io.SrxAnyTransformer;
 import net.sourceforge.segment.srx.legacy.AccurateSrxTextIterator;
 import net.sourceforge.segment.srx.legacy.FastTextIterator;
+import net.sourceforge.segment.srx.legacy.ScannerSrxTextIterator;
 import net.sourceforge.segment.util.NullWriter;
 
 import org.apache.commons.cli.CommandLine;
@@ -55,7 +56,7 @@ public class Segment {
 	private static final Log log = LogFactory.getLog(Segment.class);
 	
 	private enum Algorithm {
-		accurate, fast, ultimate;
+		accurate, fast, ultimate, scanner;
 	}
 
 	public static final String DEFAULT_SRX = "net/sourceforge/segment/res/xml/default.srx";
@@ -513,6 +514,12 @@ public class Segment {
 				textIterator = new FastTextIterator(document, languageCode, text, parameterMap);
 			} else {
 				textIterator = new FastTextIterator(document, languageCode, reader, parameterMap);
+			}
+		} else if (algorithm == Algorithm.scanner) {
+			if (text != null) {
+				textIterator = new ScannerSrxTextIterator(document, languageCode, text, parameterMap);
+			} else {
+				textIterator = new ScannerSrxTextIterator(document, languageCode, reader, parameterMap);
 			}
 		} else {
 			throw new IllegalArgumentException("Unknown algorithm: " + algorithm + ".");

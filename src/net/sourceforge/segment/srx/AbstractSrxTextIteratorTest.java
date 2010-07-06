@@ -13,7 +13,7 @@ import org.junit.Test;
 /**
  * Segmentation text used in all text iterator tests. 
  * Inheriting tests must implement 
- * {@link #getTextIterator(String, SrxDocument, String)} abstract method.
+ * {@link #getTextIterator(SrxDocument, String, String)} abstract method.
  * @author loomchild
  */
 public abstract class AbstractSrxTextIteratorTest {
@@ -595,13 +595,13 @@ public abstract class AbstractSrxTextIteratorTest {
 	
 	/**
 	 * Create text iterator. This method needs to be implemented by inheriting.
-	 * @param text text to segment
 	 * @param document SRX document
 	 * @param languageCode language code of text
+	 * @param text text to segment
 	 * @return newly created text iterator
 	 */
-	protected abstract TextIterator getTextIterator(String text, 
-			SrxDocument document, String languageCode);
+	protected abstract TextIterator getTextIterator(SrxDocument document, 
+			String languageCode, String text);
 
 	private void performTest(String[] expectedResult, SrxDocument document) {
 		performTest(expectedResult, document, "");
@@ -615,7 +615,7 @@ public abstract class AbstractSrxTextIteratorTest {
 		TextIterator textIterator;
 		List<String> segmentList;
 		
-		textIterator = getTextIterator(text, document, languageCode);
+		textIterator = getTextIterator(document, languageCode, text);
 		segmentList = segment(textIterator);
 		
 		String[] segmentArray = segmentList.toArray(new String[segmentList.size()]); 

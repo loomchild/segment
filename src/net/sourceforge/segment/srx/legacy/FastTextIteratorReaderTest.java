@@ -13,8 +13,8 @@ public class FastTextIteratorReaderTest extends AbstractSrxTextIteratorTest {
 
 	private static final int BUFFER_SIZE = 60;
 	
-	protected TextIterator getTextIterator(String text,
-			SrxDocument document, String languageCode) {
+	protected TextIterator getTextIterator(SrxDocument document,
+			String languageCode, String text) {
 		StringReader reader = new StringReader(text);
 		CharSequence charSequence = new ReaderCharSequence(reader, BUFFER_SIZE);
 		return new FastTextIterator(document, languageCode, charSequence);

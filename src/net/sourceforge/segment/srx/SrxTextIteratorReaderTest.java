@@ -12,8 +12,8 @@ public class SrxTextIteratorReaderTest extends AbstractSrxTextIteratorTest {
 	
 	private static final int MARGIN = 10;
 	
-	protected TextIterator getTextIterator(String text,
-			SrxDocument document, String languageCode) {
+	protected TextIterator getTextIterator(SrxDocument document,
+			String languageCode, String text) {
 		StringReader reader = new StringReader(text);
 		Map<String, Object> parameterMap = new HashMap<String, Object>();
 		parameterMap.put(SrxTextIterator.BUFFER_LENGTH_PARAMETER, BUFFER_SIZE);
