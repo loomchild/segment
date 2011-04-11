@@ -66,8 +66,6 @@ To ja dziękuję - samemu by mi się nie chciało bawić w implementację standa
 Coś wspominałeś o rozwalonym thinkpadzie i pozostałych kościach sdram? Chętnie odkupię :)
 
 
-Add Jimmy's email to authors
-
 Write automatic test with real data. It can measure performance and accuracy 
 in real-life uses. Problem: Need to obtain SRX and text.
 

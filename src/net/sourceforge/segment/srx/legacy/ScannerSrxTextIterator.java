@@ -1,7 +1,6 @@
 package net.sourceforge.segment.srx.legacy;
 
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,15 +16,36 @@ import net.sourceforge.segment.srx.SrxDocument;
 import net.sourceforge.segment.util.Util;
 
 /** 
+ * <p>
  * Quick and Dirty implementation of {@link TextIterator} using {@link Scanner}.
+ * </p>
  * 
- * Preliminary tests showed that it is two times slower than default 
- * text iterator. Probably the reason is slow matching of exception rules,
- * but also splitting break-rule-only is slower than default solution.
+ * <p>
+ * Preliminary tests showed that it requires between 50% and 100% more time
+ * to complete than default text iterator. 
+ * Probably the reason is slow matching of exception rules,
+ * but also splitting break-rule-only is slower.
+ * </p>
  * 
+ * <p>
  * This implementation is also not able to solve overlapping rules
  * {@link AbstractSrxTextIteratorTest#testOverlappingBreakRules()}, like 
- * other one-big-pattern-scan iterators and there seems to easy solution to this.
+ * other one-big-pattern-scan iterators and there seems to be no easy solution.
+ * Although this should not happen in input patterns, in large SRX file 
+ * using cascading it is very easy to miss this.
+ * </p>
+ * 
+ * <p>
+ * One solution could be sorting patterns by length, but this is sometimes 
+ * impossible to do. For example:<br/>
+ * Rules are "(ab)+" and "a(b)+"<br/>
+ * Inputs are "ababx" and "abbbx"<br/>
+ * For first input order of exception rules should be reversed for the text
+ * to be split as early as possible, but for the second input it shouldn't.
+ * The solution could be to use reluctant quantifiers instead of greedy ones, 
+ * but that is changing the input patterns provided by user and therefore 
+ * is undesirable.
+ * </p>
  *  
  * @author loomchild
  */
@@ -33,7 +53,7 @@ public class ScannerSrxTextIterator extends AbstractTextIterator {
 
 	private Scanner scanner;
 	
-	private Map<Pattern, List<Pattern>> exceptionMap;
+	private Map<Pattern, Pattern> exceptionMap;
 	
 	private boolean noBreakRules;
 	
@@ -81,19 +101,32 @@ public class ScannerSrxTextIterator extends AbstractTextIterator {
 		}
 	}
 	
-	private Map<Pattern, List<Pattern>> createExceptions(
+	private Map<Pattern, Pattern> createExceptions(
 			List<LanguageRule> languageRuleList) {
-		Map<Pattern, List<Pattern>> result = 
-			new LinkedHashMap<Pattern, List<Pattern>>();
-		List<Pattern> exceptionList = new ArrayList<Pattern>();
+		Map<Pattern, Pattern> result = 
+			new LinkedHashMap<Pattern, Pattern>();
+		// Needs to be null first to distinguish empty rule (matching everything)
+		// from no rules (matching nothing).
+		StringBuilder exception = null;
 		for (LanguageRule languageRule : languageRuleList) {
 			for (Rule rule : languageRule.getRuleList()) {
 				if (rule.isBreak()) {
 					Pattern pattern = Pattern.compile(createBreakRegexNoLookahead(rule));
-					result.put(pattern, new ArrayList<Pattern>(exceptionList));
+					
+					Pattern exceptionPattern;
+					if (exception != null) {
+						exceptionPattern = Pattern.compile(exception.toString());
+					} else {
+						exceptionPattern = null;
+					}
+					result.put(pattern, exceptionPattern);
 				} else {
-					Pattern pattern = Pattern.compile(createExceptionRegex(rule));
-					exceptionList.add(pattern);
+					if (exception == null) {
+						exception = new StringBuilder();
+					} else if (exception.length() > 0) {
+						exception.append("|");
+					}
+					exception.append(createExceptionRegex(rule));
 				}
 			}
 		}
@@ -137,7 +170,7 @@ public class ScannerSrxTextIterator extends AbstractTextIterator {
 		StringBuilder regex = new StringBuilder();
 		if (rule.getAfterPattern().length() > 0 || 
 				rule.getBeforePattern().length() > 0) {
-			regex.append("(?<=");
+			regex.append("(?:(?<=");
 			if (rule.getBeforePattern().length() > 0) {
 				regex.append(Util.finitize(rule.getBeforePattern(), 100));
 			}
@@ -145,7 +178,7 @@ public class ScannerSrxTextIterator extends AbstractTextIterator {
 			if (rule.getAfterPattern().length() > 0) {
 				regex.append(rule.getAfterPattern()); 
 			}
-			regex.append(")");
+			regex.append("))");
 		}
 		return regex.toString();
 	}
@@ -166,16 +199,20 @@ public class ScannerSrxTextIterator extends AbstractTextIterator {
 
 	private boolean isException(StringBuilder segment) {
 		if (exceptionMap.size() > 0) {
-			for (Map.Entry<Pattern, List<Pattern>> entry : exceptionMap.entrySet()) {
+			for (Map.Entry<Pattern, Pattern> entry : exceptionMap.entrySet()) {
 				String result = scanner.findWithinHorizon(entry.getKey(), 100);
 				if (result != null) {
 					segment.append(result);
-					for (Pattern pattern : entry.getValue()) {
+					Pattern pattern = entry.getValue();
+					if (pattern != null) {
 						if (scanner.findWithinHorizon(pattern, 1) != null) {
 							return true;
+						} else {
+							return false;
 						}
+					} else {
+						return false;
 					}
-					return false;
 				}
 			}
 			throw new IllegalStateException("No matching rule found.");
