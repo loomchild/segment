@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import net.sourceforge.segment.AbstractTextIterator;
 import net.sourceforge.segment.util.IORuntimeException;
+import net.sourceforge.segment.util.Util;
 
 /**
  * Represents text iterator splitting text according to rules in SRX file.
@@ -113,8 +114,9 @@ public class SrxTextIterator extends AbstractTextIterator {
 	 */
 	public SrxTextIterator(SrxDocument document, String languageCode, 
 			CharSequence text, Map<String, Object> parameterMap) {
-		parameterMap.put(MARGIN_PARAMETER, 0);
-		init(document, languageCode, new TextManager(text), parameterMap);
+		Map<String, Object> newParameterMap = new HashMap<String, Object>(parameterMap);
+		newParameterMap.put(MARGIN_PARAMETER, 0);
+		init(document, languageCode, new TextManager(text), newParameterMap);
 	}
 
 	/**
@@ -126,7 +128,7 @@ public class SrxTextIterator extends AbstractTextIterator {
 	 */
 	public SrxTextIterator(SrxDocument document, String languageCode, 
 			CharSequence text) {
-		this(document, languageCode, text, new HashMap<String, Object>());
+		this(document, languageCode, text, Util.getEmptyParameterMap());
 	}
 
 	/**

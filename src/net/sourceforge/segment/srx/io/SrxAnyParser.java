@@ -2,9 +2,12 @@ package net.sourceforge.segment.srx.io;
 
 import java.io.BufferedReader;
 import java.io.Reader;
+import java.util.Collections;
+import java.util.Map;
 
 import net.sourceforge.segment.srx.SrxDocument;
 import net.sourceforge.segment.srx.SrxParser;
+import net.sourceforge.segment.srx.SrxTransformer;
 import net.sourceforge.segment.util.XmlException;
 
 /**
@@ -14,7 +17,24 @@ import net.sourceforge.segment.util.XmlException;
  * @author loomchild
  */
 public class SrxAnyParser implements SrxParser {
+	
+	private SrxParser parser;
 
+	/**
+	 * Creates SRX any parser using given SRX 2.0 parser.
+	 * @param parser
+	 */
+	public SrxAnyParser(SrxParser parser) {
+		this.parser = parser;
+	}
+	
+	/**
+	 * Creates SRX any parser using default SRX 2.0 parser.
+	 */
+	public SrxAnyParser() {
+		this(new Srx2Parser());
+	}
+	
 	/**
 	 * Parses SRX document from reader. Selects appropriate SRX parser for
 	 * document version.
@@ -23,20 +43,20 @@ public class SrxAnyParser implements SrxParser {
 	 * @return Return initialized document
 	 */
 	public SrxDocument parse(Reader reader) {
-		SrxParser parser;
 		BufferedReader bufferedReader = new BufferedReader(reader);
+		reader = bufferedReader;
 
 		SrxVersion version = SrxVersion.parse(bufferedReader);
 		if (version == SrxVersion.VERSION_1_0) {
-			parser = new Srx1Parser();
-		} else if (version == SrxVersion.VERSION_2_0) {
-			parser = new Srx2Parser();
-		} else {
+			SrxTransformer transformer = new Srx1Transformer();
+			Map<String, Object> parameterMap = Collections.emptyMap();
+			reader = transformer.transform(bufferedReader, parameterMap);
+		} else if (version != SrxVersion.VERSION_2_0) {
 			throw new XmlException("Unsupported SRX version: \"" + version
 					+ "\".");
 		}
 
-		return parser.parse(bufferedReader);
+		return parser.parse(reader);
 	}
 
 }

@@ -525,5 +525,9 @@ public class Util {
 		}
 		return result;
 	}
+	
+	public static Map<String, Object> getEmptyParameterMap() {
+		return Collections.emptyMap();
+	}
 
 }

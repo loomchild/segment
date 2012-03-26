@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sourceforge.segment.util.IORuntimeException;
+import net.sourceforge.segment.util.XmlException;
 
 /**
  * Represents SRX version.
@@ -38,7 +39,7 @@ public enum SrxVersion {
 				return version;
 			}
 		}
-		throw new IllegalArgumentException("Unrecognized SRX version: "
+		throw new XmlException("Unrecognized SRX version: "
 				+ versionString + ".");
 	}
 

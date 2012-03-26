@@ -6,6 +6,7 @@ import static net.sourceforge.segment.util.Util.getResourceStream;
 import java.io.BufferedReader;
 
 import junit.framework.TestCase;
+import net.sourceforge.segment.util.XmlException;
 
 public class SrxVersionTest extends TestCase {
 
@@ -30,7 +31,7 @@ public class SrxVersionTest extends TestCase {
 					getReader(getResourceStream(NO_SRX_DOCUMENT_NAME)));
 			SrxVersion.parse(reader);
 			fail("Recognized version of non SRX document.");
-		} catch (IllegalArgumentException e) {
+		} catch (XmlException e) {
 			// OK
 		}
 
@@ -39,7 +40,7 @@ public class SrxVersionTest extends TestCase {
 					getReader(getResourceStream(SRX_NOVERSION_DOCUMENT_NAME)));
 			SrxVersion.parse(reader);
 			fail("Recognized version of SRX document without version.");
-		} catch (IllegalArgumentException e) {
+		} catch (XmlException e) {
 			// OK
 		}
 	}

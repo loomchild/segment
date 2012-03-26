@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Represents SRX 2.0 document parser. Responsible for creating and initializing
- * Document according to given SRX.
+ * Document according to given SRX. Uses JAXB. Can validate.
  * 
  * @author loomchild
  */

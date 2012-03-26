@@ -27,6 +27,9 @@ import net.sourceforge.segment.srx.SrxParser;
 import net.sourceforge.segment.srx.SrxTextIterator;
 import net.sourceforge.segment.srx.SrxTransformer;
 import net.sourceforge.segment.srx.io.Srx1Transformer;
+import net.sourceforge.segment.srx.io.Srx2Parser;
+import net.sourceforge.segment.srx.io.Srx2SaxParser;
+import net.sourceforge.segment.srx.io.Srx2StaxParser;
 import net.sourceforge.segment.srx.io.SrxAnyParser;
 import net.sourceforge.segment.srx.io.SrxAnyTransformer;
 import net.sourceforge.segment.srx.legacy.AccurateSrxTextIterator;
@@ -57,6 +60,10 @@ public class Segment {
 	
 	private enum Algorithm {
 		accurate, fast, ultimate, scanner;
+	}
+	
+	private enum Parser {
+		jaxb, sax, stax;
 	}
 
 	public static final String DEFAULT_SRX = "net/sourceforge/segment/res/xml/default.srx";
@@ -124,6 +131,7 @@ public class Segment {
 		options.addOption("b", "begin", true, "Output segment prefix.");
 		options.addOption("e", "end", true, "Output segment suffix.");
 		options.addOption("a", "algorithm", true, "Algorithm. Can be accurate, fast or ultimate (default).");
+		options.addOption("b", "parser", true, "Parser. Can be sax, stax or jaxb (default).");
 		options.addOption("i", "input", true, "Use given input file instead of standard input.");
 		options.addOption("o", "output", true, "Use given output file instead of standard output.");
 		options.addOption("t", "transform", false, "Convert old SRX to current version.");
@@ -326,34 +334,27 @@ public class Segment {
 			boolean profile) throws IOException {
 		SrxDocument document;
 
-		long start = System.currentTimeMillis();
-
 		if (commandLine.hasOption("generate-srx")) {
-			if (profile) {
-				System.out.print("Generating rules... ");
-			}
-			String generateSrxOption = commandLine.getOptionValue("generate-srx");
-			document = generateSrxDocument(generateSrxOption);
+			document = generateSrxDocument(commandLine, profile);
 		} else {
-			String fileName = commandLine.getOptionValue('s');
-			String mapRule = commandLine.getOptionValue('m');
-			if (profile) {
-				System.out.print("Reading rules... ");
-			}
-			document = readSrxDocument(fileName, mapRule);
+			document = readSrxDocument(commandLine, profile);
 		}
 
-		if (profile) {
-			System.out.println(System.currentTimeMillis() - start + " ms.");
-		}
-		
 		return document;
 	}
 
-	private SrxDocument readSrxDocument(String fileName, String mapRule) 
+	private SrxDocument readSrxDocument(CommandLine commandLine, boolean profile) 
 			throws IOException {
+
+		if (profile) {
+			System.out.print("Reading rules... ");
+		}
+
+		long start = System.currentTimeMillis();
+
 		Reader srxReader;
 
+		String fileName = commandLine.getOptionValue('s');
 		if (fileName != null) {
 			srxReader = getReader(getFileInputStream(fileName));
 		} else {
@@ -362,6 +363,7 @@ public class Segment {
 
 		Map<String, Object> parameterMap = new HashMap<String, Object>();
 
+		String mapRule = commandLine.getOptionValue('m');
 		if (mapRule != null) {
 			parameterMap.put(Srx1Transformer.MAP_RULE_NAME, mapRule);
 		}
@@ -372,16 +374,55 @@ public class Segment {
 			SrxTransformer transformer = new SrxAnyTransformer();
 			srxReader = transformer.transform(srxReader, parameterMap);
 		}
+		
+		SrxParser srxParser = createParser(commandLine, profile);
 
-		SrxParser srxParser = new SrxAnyParser();
 		SrxDocument document = srxParser.parse(srxReader);
 		srxReader.close();
 
+		if (profile) {
+			System.out.println(System.currentTimeMillis() - start + " ms.");
+		}
+		
 		return document;
 	}
 
+	private SrxParser createParser(CommandLine commandLine, boolean profile) {
+		Parser parser = Parser.jaxb;
+		String parserString = commandLine.getOptionValue('b');
+		if (parserString != null) {
+			parser = Parser.valueOf(parserString);
+		}
 
-	private SrxDocument generateSrxDocument(String generateSrxOption) {
+		SrxParser srxParser;
+		switch (parser) {
+		case jaxb:
+			srxParser = new Srx2Parser();
+			break;
+		case sax:
+			srxParser = new Srx2SaxParser();
+			break;
+		case stax:
+			srxParser = new Srx2StaxParser();
+			break;			
+		default:
+			throw new IllegalArgumentException("Unknown parser: " + parser + ".");
+		}
+		
+		srxParser = new SrxAnyParser(srxParser);
+		
+		return srxParser;
+	}
+	
+
+	private SrxDocument generateSrxDocument(CommandLine commandLine, boolean profile) {
+		if (profile) {
+			System.out.print("Generating rules... ");
+		}
+		
+		long start = System.currentTimeMillis();
+
+		String generateSrxOption = commandLine.getOptionValue("generate-srx");
 		String[] parts = generateSrxOption.split(",");
 		if (parts.length != 2) {
 			throw new RuntimeException("Cannot parse rule count and length.");
@@ -398,6 +439,11 @@ public class Segment {
 		SrxDocument srxDocument = new SrxDocument();
 		LanguageRule languageRule = generateLanguageRule(ruleCount, ruleLength);
 		srxDocument.addLanguageMap(".*", languageRule);
+		
+		if (profile) {
+			System.out.println(System.currentTimeMillis() - start + " ms.");
+		}
+		
 		return srxDocument;
 	}
 

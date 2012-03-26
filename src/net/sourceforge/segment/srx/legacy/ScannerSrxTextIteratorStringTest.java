@@ -3,12 +3,12 @@ package net.sourceforge.segment.srx.legacy;
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
 import net.sourceforge.segment.TextIterator;
 import net.sourceforge.segment.srx.AbstractSrxTextIteratorTest;
 import net.sourceforge.segment.srx.SrxDocument;
+
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * Test for @link {@link ScannerSrxTextIterator}.

@@ -18,62 +18,27 @@ import net.sourceforge.segment.util.XmlException;
 import org.junit.Test;
 
 public class SrxParsersTest {
-
-	public static final String SRX_1_DOCUMENT_NAME = "net/sourceforge/segment/res/test/example1.srx";
-
-	public static final String SRX_2_DOCUMENT_NAME = "net/sourceforge/segment/res/test/example.srx";
-
-	public static final String TICKET_1_DOCUMENT_NAME = "net/sourceforge/segment/res/test/ticket1.srx";
-
-	public static final String INVALID_DOCUMENT_NAME = "net/sourceforge/segment/res/test/invalid.srx";
-
-	@Test
-	public void testSrx1Parse() {
-		testSrx1Parse(new Srx1Parser());
-	}
-
-	@Test
-	public void testSrx2Parse() {
-		testSrx2Parse(new Srx2Parser());
-	}
-
-	@Test
-	public void testAnyParse() {
-		testSrx1Parse(new SrxAnyParser());
-		testSrx2Parse(new SrxAnyParser());
-	}
 	
-	@Test(expected = XmlException.class)
-	public void testSrx2ParseInvalid() {
-	    Reader reader = getReader(getResourceStream(INVALID_DOCUMENT_NAME));
-	    SrxParser parser = new Srx2Parser();
-	    parser.parse(reader);
+	private static final SrxParser ONE = new Srx1Parser();
+	private static final SrxParser TWO = new Srx2Parser();
+	private static final SrxParser ANY = new SrxAnyParser();
+	private static final SrxParser SAX = new Srx2SaxParser();
+	private static final SrxParser STAX = new Srx2StaxParser();
+	
+
+	@Test
+	public void testSrx1One() {
+		testSrx1(ONE);
 	}
 
 	@Test
-	public void testSrx2ParseTicket1() {
-	    Reader reader = getReader(getResourceStream(TICKET_1_DOCUMENT_NAME));
-
-	    SrxParser parser = new Srx2Parser();
-	    SrxDocument document = parser.parse(reader);
-
-	    assertTrue(document.getCascade());
-
-	    List<LanguageRule> languageRuleList = document
-	    .getLanguageRuleList("en");
-	    
-	    LanguageRule languageRule = languageRuleList.get(0);
-	    assertEquals("Default", languageRule.getName());
-
-	    List<Rule> ruleList = languageRule.getRuleList();
-	    assertEquals(1, ruleList.size());    
-
-	    Rule rule = ruleList.get(0);
-	    assertEquals("[\\.!?…]['»\"”\\)\\]\\}]?\\u0002?\\s", rule.getBeforePattern());
-	    assertEquals("", rule.getAfterPattern());
+	public void testSrx1Any() {
+		testSrx1(ANY);
 	}
 
-	public void testSrx1Parse(SrxParser parser) {
+	private static final String SRX_1_DOCUMENT_NAME = "net/sourceforge/segment/res/test/example1.srx";
+
+	private void testSrx1(SrxParser parser) {
 		Reader reader = getReader(getResourceStream(SRX_1_DOCUMENT_NAME));
 
 		SrxDocument document = parser.parse(reader);
@@ -94,8 +59,31 @@ public class SrxParsersTest {
 		assertEquals("[Ee][Tt][Cc]\\.", rule.getBeforePattern());
 		assertEquals("\\s[a-z]", rule.getAfterPattern());
 	}
+	
+	
+	@Test
+	public void testSrx2Two() {
+		testSrx2(TWO);
+	}
 
-	public void testSrx2Parse(SrxParser parser) {
+	@Test
+	public void testSrx2Sax() {
+		testSrx2(SAX);
+	}
+
+	@Test
+	public void testSrx2Stax() {
+		testSrx2(STAX);
+	}
+
+	@Test
+	public void testSrx2Any() {
+		testSrx2(ANY);
+	}
+	
+	private static final String SRX_2_DOCUMENT_NAME = "net/sourceforge/segment/res/test/example.srx";
+
+	private void testSrx2(SrxParser parser) {
 		Reader reader = getReader(getResourceStream(SRX_2_DOCUMENT_NAME));
 
 		SrxDocument document = parser.parse(reader);
@@ -115,6 +103,68 @@ public class SrxParsersTest {
 		Rule rule = ruleList.get(1);
 		assertEquals("\\s[Mm]lles\\.", rule.getBeforePattern());
 		assertEquals("\\s", rule.getAfterPattern());
+	}
+
+
+	@Test(expected = XmlException.class)
+	public void testSrx2InvalidTwo() {
+		testSrx2Invalid(TWO);
+	}
+
+	@Test(expected = XmlException.class)
+	public void testSrx2InvalidSax() {
+		testSrx2Invalid(SAX);
+	}
+
+	@Test(expected = XmlException.class)
+	public void testSrx2InvalidAny() {
+		testSrx2Invalid(ANY);
+	}
+		
+	public static final String INVALID_DOCUMENT_NAME = "net/sourceforge/segment/res/test/invalid.srx";
+
+	private void testSrx2Invalid(SrxParser parser) {
+	    Reader reader = getReader(getResourceStream(INVALID_DOCUMENT_NAME));
+	    parser.parse(reader);
+	}
+
+	
+	@Test
+	public void testSrx2Ticket1Two() {
+		testSrx2Ticket1(TWO);
+	}
+
+	@Test
+	public void testSrx2Ticket1Sax() {
+		testSrx2Ticket1(SAX);
+	}
+
+	@Test
+	public void testSrx2Ticket1Stax() {
+		testSrx2Ticket1(STAX);
+	}
+	
+	public static final String TICKET_1_DOCUMENT_NAME = "net/sourceforge/segment/res/test/ticket1.srx";
+
+	private void testSrx2Ticket1(SrxParser parser) {
+	    Reader reader = getReader(getResourceStream(TICKET_1_DOCUMENT_NAME));
+
+	    SrxDocument document = parser.parse(reader);
+
+	    assertTrue(document.getCascade());
+
+	    List<LanguageRule> languageRuleList = document
+	    .getLanguageRuleList("en");
+	    
+	    LanguageRule languageRule = languageRuleList.get(0);
+	    assertEquals("Default", languageRule.getName());
+
+	    List<Rule> ruleList = languageRule.getRuleList();
+	    assertEquals(1, ruleList.size());    
+
+	    Rule rule = ruleList.get(0);
+	    assertEquals("[\\.!?…]['»\"”\\)\\]\\}]?\\u0002?\\s", rule.getBeforePattern());
+	    assertEquals("", rule.getAfterPattern());
 	}
 
 }
