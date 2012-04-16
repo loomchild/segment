@@ -110,7 +110,7 @@ public class RuleManager {
 	 */
 	private String createExceptionPatternString(Rule rule) {
 
-		String patternString = document.getCache().get(rule, String.class);
+		String patternString = document.getCache().get(String.class, rule);
 		
 		if (patternString == null) {
 
@@ -133,7 +133,7 @@ public class RuleManager {
 			
 			patternString = patternBuilder.toString();
 			
-			document.getCache().put(rule, patternString);
+			document.getCache().put(patternString, String.class, rule);
 			
 		}
 		

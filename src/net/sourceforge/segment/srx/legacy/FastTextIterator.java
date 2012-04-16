@@ -56,16 +56,15 @@ public class FastTextIterator extends AbstractTextIterator {
 		int maxLookbehindConstructLength = getParameter(parameterMap
 				.get(SrxTextIterator.MAX_LOOKBEHIND_CONSTRUCT_LENGTH_PARAMETER),
 				SrxTextIterator.DEFAULT_MAX_LOOKBEHIND_CONSTRUCT_LENGTH);
-		List<LanguageRule> languageRuleList = document
-				.getLanguageRuleList(languageCode);
-		Object[] key = new Object[] { languageRuleList,
-				maxLookbehindConstructLength };
+		List<LanguageRule> languageRuleList = document.getLanguageRuleList(languageCode);
 
-		this.mergedPattern = document.getCache().get(key, MergedPattern.class);
+		this.mergedPattern = document.getCache().get(MergedPattern.class, languageRuleList,
+				maxLookbehindConstructLength);
 		if (mergedPattern == null) {
 			mergedPattern = new MergedPattern(languageRuleList,
 					maxLookbehindConstructLength);
-			document.getCache().put(key, mergedPattern);
+			document.getCache().put(mergedPattern, MergedPattern.class, languageRuleList,
+					maxLookbehindConstructLength);
 		}
 
 		if (mergedPattern.getBreakingPattern() != null) {

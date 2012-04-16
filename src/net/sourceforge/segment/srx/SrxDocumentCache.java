@@ -1,7 +1,8 @@
 package net.sourceforge.segment.srx;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Represents SRX document cache.
@@ -12,10 +13,10 @@ import java.util.Map;
  */
 public class SrxDocumentCache {
 
-	private Map<Class<?>, Map<Object, Object>> map;
+	private Map<Object, Object> map;
 	
 	public SrxDocumentCache() {
-		this.map = new HashMap<Class<?>, Map<Object, Object>>();
+		this.map = new ConcurrentHashMap<Object, Object>();
 	}
 	
 	/**
@@ -25,13 +26,9 @@ public class SrxDocumentCache {
 	 * @param valueClass class of value object
 	 * @return value object
 	 */
-	@SuppressWarnings("unchecked")
-	public <T> T get(Object key, Class<T> valueClass) {
-		T value = null;
-		Map<Object, Object> klassMap = map.get(valueClass);
-		if (klassMap != null) {
-			value = (T)klassMap.get(key);
-		}
+	public <T> T get(Class<T> valueClass, Object... key) {
+		@SuppressWarnings("unchecked")
+		T value = (T)map.get(getKey(valueClass, key));
 		return value;
 	}
 
@@ -41,13 +38,14 @@ public class SrxDocumentCache {
 	 * @param key
 	 * @param value value object
 	 */
-	public <T> void put(Object key, T value) {
-		Map<Object, Object> klassMap = map.get(value.getClass());
-		if (klassMap == null) {
-			klassMap = new HashMap<Object, Object>();
-			map.put(value.getClass(), klassMap);
-		}
-		klassMap.put(key, value);
+	public <T> void put(T value, Class<T> valueClass, Object... key) {
+		map.put(getKey(valueClass, key), value);
+	}
+	
+	private Object getKey(Class<?> valueClass, Object... key) {
+		Object[] fullKey = Arrays.copyOf(key, key.length + 1);
+		fullKey[key.length] = valueClass;
+		return fullKey;
 	}
 	
 }
