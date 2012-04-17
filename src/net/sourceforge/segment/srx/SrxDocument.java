@@ -67,6 +67,10 @@ public class SrxDocument {
 		languageMapList.add(languageMap);
 	}
 
+	public List<LanguageMap> getLanguageMapList() {
+		return languageMapList;
+	}	
+
 	/**
 	 * If cascade is true then returns all language rules matching given
 	 * language code. If cascade is false returns first language rule matching

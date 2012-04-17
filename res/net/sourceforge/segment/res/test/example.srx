@@ -42,7 +42,7 @@
             <languagerule languagerulename="French">
                 <!-- Some French abbreviations -->
                 <rule break="no">
-                    <beforebreak>\s[Mm]lle\.</beforebreak>
+                    <beforebreak> [Mm]lle\.</beforebreak>
                     <afterbreak>\s</afterbreak>
                 </rule>
                 <rule break="no">

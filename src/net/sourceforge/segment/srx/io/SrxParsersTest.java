@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.Reader;
 import java.util.List;
 
+import net.sourceforge.segment.srx.LanguageMap;
 import net.sourceforge.segment.srx.LanguageRule;
 import net.sourceforge.segment.srx.Rule;
 import net.sourceforge.segment.srx.SrxDocument;
@@ -34,6 +35,11 @@ public class SrxParsersTest {
 	@Test
 	public void testSrx1Any() {
 		testSrx1(ANY);
+	}
+	
+	@Test
+	public void testSrx1Compare() {
+		testCompare(SRX_1_DOCUMENT_NAME, new SrxParser[] {ONE, ANY});
 	}
 
 	private static final String SRX_1_DOCUMENT_NAME = "net/sourceforge/segment/res/test/example1.srx";
@@ -80,7 +86,12 @@ public class SrxParsersTest {
 	public void testSrx2Any() {
 		testSrx2(ANY);
 	}
-	
+
+	@Test
+	public void testSrx2Compare() {
+		testCompare(SRX_2_DOCUMENT_NAME, new SrxParser[] {TWO, SAX, STAX, ANY});
+	}
+
 	private static final String SRX_2_DOCUMENT_NAME = "net/sourceforge/segment/res/test/example.srx";
 
 	private void testSrx2(SrxParser parser) {
@@ -100,9 +111,13 @@ public class SrxParsersTest {
 		List<Rule> ruleList = languageRule.getRuleList();
 		assertEquals(4, ruleList.size());
 
-		Rule rule = ruleList.get(1);
-		assertEquals("\\s[Mm]lles\\.", rule.getBeforePattern());
-		assertEquals("\\s", rule.getAfterPattern());
+		Rule rule0 = ruleList.get(0);
+		assertEquals(" [Mm]lle\\.", rule0.getBeforePattern());
+		assertEquals("\\s", rule0.getAfterPattern());
+
+		Rule rule1 = ruleList.get(1);
+		assertEquals("\\s[Mm]lles\\.", rule1.getBeforePattern());
+		assertEquals("\\s", rule1.getAfterPattern());
 	}
 
 
@@ -143,6 +158,16 @@ public class SrxParsersTest {
 	public void testSrx2Ticket1Stax() {
 		testSrx2Ticket1(STAX);
 	}
+
+	@Test
+	public void testSrx2Ticket1Any() {
+		testSrx2Ticket1(ANY);
+	}
+
+	@Test
+	public void testSrx2Ticket1Compare() {
+		testCompare(TICKET_1_DOCUMENT_NAME, new SrxParser[] {TWO, SAX, STAX, ANY});
+	}
 	
 	public static final String TICKET_1_DOCUMENT_NAME = "net/sourceforge/segment/res/test/ticket1.srx";
 
@@ -165,6 +190,58 @@ public class SrxParsersTest {
 	    Rule rule = ruleList.get(0);
 	    assertEquals("[\\.!?…]['»\"”\\)\\]\\}]?\\u0002?\\s", rule.getBeforePattern());
 	    assertEquals("", rule.getAfterPattern());
+	}
+	
+	
+	public void testCompare(String documentName, SrxParser[] parsers) {
+		SrxDocument previousDocument = null;
+		for (SrxParser parser : parsers) {
+		    Reader reader = getReader(getResourceStream(documentName));
+		    SrxDocument document = parser.parse(reader);
+		    
+			if (previousDocument != null) {
+				assertSrxDocumentEquals(previousDocument, document);
+			}
+			
+			previousDocument = document;
+		}
+	}
+	
+	private void assertSrxDocumentEquals(SrxDocument leftDocument, SrxDocument rightDocument) {
+		assertEquals(leftDocument.getCascade(), rightDocument.getCascade());
+		
+		List<LanguageMap> leftLanguageMapList = leftDocument.getLanguageMapList();
+		List<LanguageMap> rightLanguageMapList = rightDocument.getLanguageMapList();
+		assertEquals(leftLanguageMapList.size(), rightLanguageMapList.size());
+		
+		for (int i = 0; i < leftLanguageMapList.size(); ++i) {
+			LanguageMap leftLanguageMap = leftLanguageMapList.get(i);
+			LanguageMap rightLanguageMap = rightLanguageMapList.get(i);
+			
+			assertEquals(leftLanguageMap.getLanguagePattern().pattern(), 
+					rightLanguageMap.getLanguagePattern().pattern());
+			
+			LanguageRule leftLanguageRule = leftLanguageMap.getLanguageRule();
+			LanguageRule rightLanguageRule = rightLanguageMap.getLanguageRule();
+			
+			assertEquals(leftLanguageRule.getName(), rightLanguageRule.getName());
+			
+			List<Rule> leftRuleList = leftLanguageRule.getRuleList();
+			List<Rule> rightRuleList = rightLanguageRule.getRuleList();
+			
+			assertEquals(leftRuleList.size(), rightRuleList.size());
+			
+			for (int k = 0; k < leftRuleList.size(); ++ k) {
+				Rule leftRule = leftRuleList.get(k);
+				Rule rightRule = rightRuleList.get(k);
+				
+				assertEquals(leftRule.isBreak(), rightRule.isBreak());
+				assertEquals(leftRule.getBeforePattern(), rightRule.getBeforePattern());
+				assertEquals(leftRule.getAfterPattern(), rightRule.getAfterPattern());
+			}
+			
+		}
+		
 	}
 
 }

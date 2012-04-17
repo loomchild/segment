@@ -31,6 +31,10 @@ public class LanguageMap {
 	public boolean matches(String languageCode) {
 		return languagePattern.matcher(languageCode).matches();
 	}
+	
+	public Pattern getLanguagePattern() {
+		return languagePattern;
+	}
 
 	/**
 	 * @return language rule
