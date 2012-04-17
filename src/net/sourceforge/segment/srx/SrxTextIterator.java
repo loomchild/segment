@@ -279,14 +279,16 @@ public class SrxTextIterator extends AbstractTextIterator {
 
 		List<LanguageRule> languageRuleList = 
 			document.getLanguageRuleList(languageCode);
-		this.ruleManager = document.getCache().get(RuleManager.class, 
-				languageRuleList, maxLookbehindConstructLength);
+		
+		String key = "RULE_MANAGER_" + toString(languageRuleList) 
+				+ "_" + maxLookbehindConstructLength;
+		
+		this.ruleManager = (RuleManager)document.getCache().get(key);
 		
 		if (ruleManager == null) {
 			this.ruleManager = new RuleManager(document, languageRuleList, 
 					maxLookbehindConstructLength);
-			document.getCache().put(ruleManager, RuleManager.class, 
-					languageRuleList, maxLookbehindConstructLength);
+			document.getCache().put(key, ruleManager);
 		}
 
 	}

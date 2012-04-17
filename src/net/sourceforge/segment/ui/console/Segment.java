@@ -131,7 +131,7 @@ public class Segment {
 		options.addOption("b", "begin", true, "Output segment prefix.");
 		options.addOption("e", "end", true, "Output segment suffix.");
 		options.addOption("a", "algorithm", true, "Algorithm. Can be accurate, fast or ultimate (default).");
-		options.addOption("b", "parser", true, "Parser. Can be sax, stax or jaxb (default).");
+		options.addOption("d", "parser", true, "Parser. Can be sax, stax or jaxb (default).");
 		options.addOption("i", "input", true, "Use given input file instead of standard input.");
 		options.addOption("o", "output", true, "Use given output file instead of standard output.");
 		options.addOption("t", "transform", false, "Convert old SRX to current version.");
@@ -389,7 +389,7 @@ public class Segment {
 
 	private SrxParser createParser(CommandLine commandLine, boolean profile) {
 		Parser parser = Parser.jaxb;
-		String parserString = commandLine.getOptionValue('b');
+		String parserString = commandLine.getOptionValue('d');
 		if (parserString != null) {
 			parser = Parser.valueOf(parserString);
 		}

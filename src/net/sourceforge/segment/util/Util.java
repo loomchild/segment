@@ -483,10 +483,11 @@ public class Util {
 	}
 
 	public static Pattern compile(SrxDocument document, String regex) {
-		Pattern pattern = document.getCache().get(Pattern.class, regex);
+		String key = "PATTERN_" + regex;
+		Pattern pattern = (Pattern)document.getCache().get(key);
 		if (pattern == null) {
 			pattern = Pattern.compile(regex);
-			document.getCache().put(pattern, Pattern.class, regex);
+			document.getCache().put(key, pattern);
 		}
 		return pattern;
 	}

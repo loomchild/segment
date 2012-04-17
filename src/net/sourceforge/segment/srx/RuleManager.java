@@ -109,35 +109,25 @@ public class RuleManager {
 	 * @return string containing exception pattern
 	 */
 	private String createExceptionPatternString(Rule rule) {
-
-		String patternString = document.getCache().get(String.class, rule);
 		
-		if (patternString == null) {
-
-			StringBuilder patternBuilder = new StringBuilder();
-			
-			// As Java does not allow infinite length patterns
-			// in lookbehind, before pattern need to be shortened.
-			String beforePattern = 
-				Util.finitize(rule.getBeforePattern(), maxLookbehindConstructLength);
-			String afterPattern = rule.getAfterPattern();
-			
-			patternBuilder.append("(?:");
-			if (beforePattern.length() > 0) {
-				patternBuilder.append("(?<=" + beforePattern + ")");
-			}
-			if (afterPattern.length() > 0) {
-				patternBuilder.append("(?=" + afterPattern + ")");
-			}
-			patternBuilder.append(")");
-			
-			patternString = patternBuilder.toString();
-			
-			document.getCache().put(patternString, String.class, rule);
-			
+		StringBuilder patternBuilder = new StringBuilder();
+		
+		// As Java does not allow infinite length patterns
+		// in lookbehind, before pattern need to be shortened.
+		String beforePattern = 
+			Util.finitize(rule.getBeforePattern(), maxLookbehindConstructLength);
+		String afterPattern = rule.getAfterPattern();
+		
+		patternBuilder.append("(?:");
+		if (beforePattern.length() > 0) {
+			patternBuilder.append("(?<=" + beforePattern + ")");
 		}
+		if (afterPattern.length() > 0) {
+			patternBuilder.append("(?=" + afterPattern + ")");
+		}
+		patternBuilder.append(")");
 		
-		return patternString;
+		return patternBuilder.toString();
 		
 	}
 	
