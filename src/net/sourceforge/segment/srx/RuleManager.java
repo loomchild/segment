@@ -16,6 +16,7 @@ import net.sourceforge.segment.util.Util;
  */
 public class RuleManager {
 	
+	@SuppressWarnings("unused")
 	private SrxDocument document;
 	
 	private int maxLookbehindConstructLength;

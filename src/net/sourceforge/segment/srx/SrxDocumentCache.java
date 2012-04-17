@@ -29,7 +29,6 @@ public class SrxDocumentCache {
 
 	/**
 	 * Puts an object in cache.
-	 * @param value object type
 	 * @param key
 	 * @param value value object
 	 */
