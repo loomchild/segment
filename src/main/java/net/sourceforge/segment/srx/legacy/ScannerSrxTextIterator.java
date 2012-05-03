@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 
 import net.sourceforge.segment.AbstractTextIterator;
 import net.sourceforge.segment.TextIterator;
-import net.sourceforge.segment.srx.AbstractSrxTextIteratorTest;
 import net.sourceforge.segment.srx.LanguageRule;
 import net.sourceforge.segment.srx.Rule;
 import net.sourceforge.segment.srx.SrxDocument;
@@ -28,8 +27,7 @@ import net.sourceforge.segment.util.Util;
  * </p>
  * 
  * <p>
- * This implementation is also not able to solve overlapping rules
- * {@link AbstractSrxTextIteratorTest#testOverlappingBreakRules()}, like 
+ * This implementation is also not able to solve overlapping rules, like 
  * other one-big-pattern-scan iterators and there seems to be no easy solution.
  * Although this should not happen in input patterns, in large SRX file 
  * using cascading it is very easy to miss this.
