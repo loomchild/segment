@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import net.sourceforge.segment.SegmentTestSuite;
 import net.sourceforge.segment.TextIterator;
 import net.sourceforge.segment.Version;
 import net.sourceforge.segment.srx.LanguageRule;
@@ -45,8 +44,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.internal.runners.TextListener;
-import org.junit.runner.JUnitCore;
 
 
 /**
@@ -107,8 +104,6 @@ public class Segment {
 
 			if (commandLine.hasOption('h')) {
 				printHelp(options, helpFormatter);
-			} else if (commandLine.hasOption('z')) {
-				test();
 			} else if (commandLine.hasOption('t')) {
 				transform(commandLine);
 			} else {
@@ -138,7 +133,6 @@ public class Segment {
 		options.addOption("p", "profile", false, "Print profile information.");
 		options.addOption("r", "preload", false, "Preload document into memory before segmentation.");
 		options.addOption("2", "twice", false, "Repeat the whole process twice.");
-		options.addOption("z", "test", false, "Test the application by running a test suite.");
 		options.addOption(null, "lookbehind", true, "Maximum length of a regular expression construct that occurs in lookbehind. Default: " + SrxTextIterator.DEFAULT_MAX_LOOKBEHIND_CONSTRUCT_LENGTH + ".");
 		options.addOption(null, "buffer-length", true, "Length of a buffer when reading text as a stream. Default: " + SrxTextIterator.DEFAULT_BUFFER_LENGTH + ".");
 		options.addOption(null, "margin", true, "If rule is matched but its position is in the margin (position > bufferLength - margin) then the matching is ignored. Default " + SrxTextIterator.DEFAULT_MARGIN + ".");
@@ -163,12 +157,6 @@ public class Segment {
 		signature += ".";
 		System.out.println(signature);
 		helpFormatter.printHelp("segment", options);
-	}
-	
-	private void test() {
-        JUnitCore core = new JUnitCore();
-        core.addListener(new TextListener());
-        core.run(SegmentTestSuite.class);
 	}
 	
 	private void segment(CommandLine commandLine) throws IOException {
