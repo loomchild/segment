@@ -22,6 +22,10 @@
 		<url>scm:git:ssh://segment.git.sourceforge.net/gitroot/segment/segment</url>
 	</scm>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
 	<dependencies>
 
 		<dependency>
@@ -51,6 +55,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
 				<executions>
 					<execution>
 						<goals>
@@ -58,6 +63,16 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>bin</descriptorRef>
+					</descriptorRefs>
+				</configuration>
 			</plugin>
 
 		</plugins>
