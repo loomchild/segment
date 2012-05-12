@@ -1,7 +1,3 @@
-replace strings in doc
-bindist
-
-
 Compare splitting with Marcin Milkowski, add Poleng scripts, compare:
 
 Hej,

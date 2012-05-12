@@ -5,7 +5,7 @@
 
 	<groupId>net.sourceforge.segment</groupId>
 	<artifactId>segment</artifactId>
-	<version>1.4.0-SNAPSHOT</version>
+	<version>1.4.0</version>
 	<packaging>jar</packaging>
 
 	<name>segment</name>
@@ -118,6 +118,33 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>replacer</artifactId>
+				<version>1.5.0</version>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<file>target/site/docs/readme.html</file>
+					<replacements>
+						<replacement>
+							<token>@build.date@</token>
+							<value>${maven.build.timestamp}</value>
+						</replacement>
+						<replacement>
+							<token>@project.fullversion@</token>
+							<value>${project.version}</value>
+						</replacement>
+					</replacements>
+				</configuration>
 			</plugin>
 
 			<plugin>
