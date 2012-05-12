@@ -44,7 +44,8 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.internal.runners.TextListener;
+import org.junit.runner.JUnitCore;
 
 /**
  * Text user interface to splitter.
@@ -52,13 +53,13 @@ import org.apache.commons.logging.LogFactory;
  * @author loomchild
  */
 public class Segment {
-	
+
 	private static final Log log = LogFactory.getLog(Segment.class);
-	
+
 	private enum Algorithm {
 		accurate, fast, ultimate, scanner;
 	}
-	
+
 	private enum Parser {
 		jaxb, sax, stax;
 	}
@@ -66,14 +67,16 @@ public class Segment {
 	public static final String DEFAULT_SRX = "net/sourceforge/segment/res/xml/default.srx";
 
 	public static final String EOLN = System.getProperty("line.separator");
-	
+
 	public static final String DEFAULT_BEGIN_SEGMENT = "";
 	public static final String DEFAULT_END_SEGMENT = EOLN;
-	
+
 	/* These constants apply to text / SRX generation */
 	public static final int WORD_LENGTH = 2;
 	public static final int SENTENCE_LENGTH = 5;
-	
+
+	public static final String TEST_SUITE_CLASS_NAME = "net.sourceforge.segment.SegmentTestSuite";
+
 	private Random random;
 	private String text;
 	private boolean stdinReader;
@@ -87,7 +90,7 @@ public class Segment {
 			e.printStackTrace(System.err);
 		}
 	}
-	
+
 	public Segment() {
 		this.random = new Random();
 	}
@@ -104,6 +107,8 @@ public class Segment {
 
 			if (commandLine.hasOption('h')) {
 				printHelp(options, helpFormatter);
+			} else if (commandLine.hasOption('z')) {
+				test();
 			} else if (commandLine.hasOption('t')) {
 				transform(commandLine);
 			} else {
@@ -115,9 +120,9 @@ public class Segment {
 		} catch (IllegalArgumentException e) {
 			System.out.println(e);
 		}
-		
+
 	}
-	
+
 	private Options createOptions() {
 		Options options = new Options();
 		options.addOption("s", "srx", true, "SRX file.");
@@ -133,6 +138,7 @@ public class Segment {
 		options.addOption("p", "profile", false, "Print profile information.");
 		options.addOption("r", "preload", false, "Preload document into memory before segmentation.");
 		options.addOption("2", "twice", false, "Repeat the whole process twice.");
+		options.addOption("z", "test", false, "Test the application by running a test suite.");
 		options.addOption(null, "lookbehind", true, "Maximum length of a regular expression construct that occurs in lookbehind. Default: " + SrxTextIterator.DEFAULT_MAX_LOOKBEHIND_CONSTRUCT_LENGTH + ".");
 		options.addOption(null, "buffer-length", true, "Length of a buffer when reading text as a stream. Default: " + SrxTextIterator.DEFAULT_BUFFER_LENGTH + ".");
 		options.addOption(null, "margin", true, "If rule is matched but its position is in the margin (position > bufferLength - margin) then the matching is ignored. Default " + SrxTextIterator.DEFAULT_MARGIN + ".");
@@ -141,11 +147,11 @@ public class Segment {
 		options.addOption("h", "help", false, "Print this help.");
 		return options;
 	}
-	
+
 	private void printUsage(HelpFormatter helpFormatter) {
 		System.out.println("Unknown command. Use segment -h for help.");
 	}
-	
+
 	private void printHelp(Options options, HelpFormatter helpFormatter) {
 		String signature = "Segment";
 		if (Version.getInstance().getVersion() != null) {
@@ -158,18 +164,18 @@ public class Segment {
 		System.out.println(signature);
 		helpFormatter.printHelp("segment", options);
 	}
-	
+
 	private void segment(CommandLine commandLine) throws IOException {
 
 		Reader reader = null;
 		Writer writer = null;
-		
+
 		try {
 
 			boolean profile = commandLine.hasOption('p');
 			boolean twice = commandLine.hasOption('2');
 			boolean preload = commandLine.hasOption('r');
-			
+
 			if (twice && !profile) {
 				throw new RuntimeException("Can only repeat segmentation twice in profile mode.");
 			}
@@ -177,7 +183,7 @@ public class Segment {
 			reader = createTextReader(commandLine, profile, twice, preload);
 
 			writer = createTextWriter(commandLine);
-			
+
 			if (preload) {
 				preloadText(reader, profile);
 			}
@@ -187,37 +193,49 @@ public class Segment {
 			createAndSegment(commandLine, document, reader, writer, profile);
 
 			if (twice) {
-				
+
 				reader = createTextReader(commandLine, profile, twice, preload);
-				
+
 				createAndSegment(commandLine, document, reader, writer, profile);
-				
+
 			}
 
 		} finally {
 			cleanupReader(reader);
 			cleanupWriter(writer);
 		}
-		
+
 	}
-	
-	private Reader createTextReader(CommandLine commandLine, boolean profile, 
+
+	private void test() {
+		JUnitCore core = new JUnitCore();
+		core.addListener(new TextListener());
+		try {
+			Class<?> klass = Class.forName(TEST_SUITE_CLASS_NAME);
+			core.run(klass);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("Unable to find test suite class: "
+					+ TEST_SUITE_CLASS_NAME
+					+ ". Check that you have tests JAR in your classpath.", e);
+		}
+	}
+
+	private Reader createTextReader(CommandLine commandLine, boolean profile,
 			boolean twice, boolean preload) throws IOException {
 		Reader reader;
 
 		if (commandLine.hasOption("generate-text")) {
-			reader = createRandomTextReader(commandLine.getOptionValue("generate-text"), 
-					profile);
+			reader = createRandomTextReader(commandLine.getOptionValue("generate-text"), profile);
 		} else if (commandLine.hasOption('i')) {
 			reader = createFileReader(commandLine.getOptionValue('i'));
 		} else {
 			if (twice && !preload) {
-				throw new RuntimeException("Cannot read standard input twice. " +
-						"Preload text (-r), provide an input file (-i) or generate input text (-x).");
+				throw new RuntimeException("Cannot read standard input twice. "
+						+ "Preload text (-r), provide an input file (-i) or generate input text (-x).");
 			}
 			reader = createStandardInputReader();
 		}
-		
+
 		return reader;
 	}
 
@@ -231,11 +249,11 @@ public class Segment {
 	private Reader createFileReader(String fileName) throws IOException {
 		InputStream inputStream = getFileInputStream(fileName);
 		Reader reader = getReader(inputStream);
-		
+
 		return reader;
 	}
-	
-	private Reader createRandomTextReader(String generateTextOption, 
+
+	private Reader createRandomTextReader(String generateTextOption,
 			boolean profile) {
 
 		if (text == null) {
@@ -245,12 +263,12 @@ public class Segment {
 			}
 
 			this.text = generateText(generateTextOption);
-			
+
 			if (profile) {
 				System.out.println(System.currentTimeMillis() - start + " ms.");
 			}
 		}
-		
+
 		Reader reader = new StringReader(text);
 		return reader;
 	}
@@ -283,15 +301,15 @@ public class Segment {
 		}
 		return word.toString();
 	}
-	
+
 	private char generateCharacter() {
 		int character = random.nextInt('Z' - 'A' + 1) + 'A';
 		return (char)character;
 	}
-	
+
 	private Writer createTextWriter(CommandLine commandLine) {
 		Writer writer;
-		
+
 		if (commandLine.hasOption('p')) {
 			writer = new NullWriter();
 		} else if (commandLine.hasOption('o')) {
@@ -302,7 +320,7 @@ public class Segment {
 
 		return writer;
 	}
-	
+
 	private Writer createStandardOutputWriter() {
 		Writer writer = getWriter(System.out);
 		// Indicate that our writer is standard output to avoid closing it.
@@ -313,12 +331,11 @@ public class Segment {
 	private Writer createFileWriter(String fileName) {
 		OutputStream outputStream = getFileOutputStream(fileName);
 		Writer writer = getWriter(outputStream);
-		
+
 		return writer;
 	}
-	
 
-	private SrxDocument createSrxDocument(CommandLine commandLine, 
+	private SrxDocument createSrxDocument(CommandLine commandLine,
 			boolean profile) throws IOException {
 		SrxDocument document;
 
@@ -331,7 +348,7 @@ public class Segment {
 		return document;
 	}
 
-	private SrxDocument readSrxDocument(CommandLine commandLine, boolean profile) 
+	private SrxDocument readSrxDocument(CommandLine commandLine, boolean profile)
 			throws IOException {
 
 		if (profile) {
@@ -362,7 +379,7 @@ public class Segment {
 			SrxTransformer transformer = new SrxAnyTransformer();
 			srxReader = transformer.transform(srxReader, parameterMap);
 		}
-		
+
 		SrxParser srxParser = createParser(commandLine, profile);
 
 		SrxDocument document = srxParser.parse(srxReader);
@@ -371,7 +388,7 @@ public class Segment {
 		if (profile) {
 			System.out.println(System.currentTimeMillis() - start + " ms.");
 		}
-		
+
 		return document;
 	}
 
@@ -392,22 +409,21 @@ public class Segment {
 			break;
 		case stax:
 			srxParser = new Srx2StaxParser();
-			break;			
+			break;
 		default:
 			throw new IllegalArgumentException("Unknown parser: " + parser + ".");
 		}
-		
+
 		srxParser = new SrxAnyParser(srxParser);
-		
+
 		return srxParser;
 	}
-	
 
 	private SrxDocument generateSrxDocument(CommandLine commandLine, boolean profile) {
 		if (profile) {
 			System.out.print("Generating rules... ");
 		}
-		
+
 		long start = System.currentTimeMillis();
 
 		String generateSrxOption = commandLine.getOptionValue("generate-srx");
@@ -427,11 +443,11 @@ public class Segment {
 		SrxDocument srxDocument = new SrxDocument();
 		LanguageRule languageRule = generateLanguageRule(ruleCount, ruleLength);
 		srxDocument.addLanguageMap(".*", languageRule);
-		
+
 		if (profile) {
 			System.out.println(System.currentTimeMillis() - start + " ms.");
 		}
-		
+
 		return srxDocument;
 	}
 
@@ -462,50 +478,49 @@ public class Segment {
 		return rule;
 	}
 
-	private void createAndSegment(CommandLine commandLine, 
-			SrxDocument document, Reader reader, Writer writer, 
-			boolean profile) throws IOException {
-		
+	private void createAndSegment(CommandLine commandLine,
+			SrxDocument document, Reader reader, Writer writer, boolean profile) 
+			throws IOException {
+
 		if (profile) {
 			System.out.println("Segmenting... ");
 		}
 
 		long start = System.currentTimeMillis();
 
-		TextIterator textIterator = createTextIterator(commandLine, 
-				document, reader, profile);
+		TextIterator textIterator = createTextIterator(commandLine, document, reader, profile);
 
 		performSegment(commandLine, textIterator, writer, profile);
-		
+
 		if (profile) {
 			System.out.println(System.currentTimeMillis() - start + " ms.");
 		}
-		
+
 	}
-	
-	private TextIterator createTextIterator(CommandLine commandLine, 
+
+	private TextIterator createTextIterator(CommandLine commandLine,
 			SrxDocument document, Reader reader, boolean profile) {
-		
+
 		TextIterator textIterator;
-		
+
 		String languageCode = commandLine.getOptionValue('l');
 		if (languageCode == null) {
 			languageCode = "";
 		}
-		
+
 		String algorithmString = commandLine.getOptionValue('a');
 		Algorithm algorithm = Algorithm.ultimate;
 		if (algorithmString != null) {
 			algorithm = Algorithm.valueOf(algorithmString);
 		}
-		
+
 		Map<String, Object> parameterMap = new HashMap<String, Object>();
 		if (commandLine.hasOption("lookbehind")) {
 			if (algorithm != Algorithm.ultimate && algorithm != Algorithm.fast) {
 				throw new IllegalArgumentException("--lookbehind parameter can be only used with ultimate or fast algorithm.");
 			}
 			parameterMap.put(
-					SrxTextIterator.MAX_LOOKBEHIND_CONSTRUCT_LENGTH_PARAMETER, 
+					SrxTextIterator.MAX_LOOKBEHIND_CONSTRUCT_LENGTH_PARAMETER,
 					Integer.parseInt(commandLine.getOptionValue("lookbehind")));
 		}
 		if (commandLine.hasOption("buffer-length")) {
@@ -521,16 +536,16 @@ public class Segment {
 				throw new IllegalArgumentException("--margin parameter can be only used with ultimate algorithm.");
 			}
 			parameterMap.put(
-					SrxTextIterator.MARGIN_PARAMETER, 
+					SrxTextIterator.MARGIN_PARAMETER,
 					Integer.parseInt(commandLine.getOptionValue("margin")));
 		}
-		
+
 		if (profile) {
 			System.out.print("    Creating text iterator... ");
 		}
 
 		long start = System.currentTimeMillis();
-		
+
 		if (algorithm == Algorithm.accurate) {
 			if (text != null) {
 				textIterator = new AccurateSrxTextIterator(document, languageCode, text);
@@ -565,9 +580,9 @@ public class Segment {
 
 		return textIterator;
 	}
-	
-	private void performSegment(CommandLine commandLine, 
-			TextIterator textIterator, Writer writer, boolean profile) 
+
+	private void performSegment(CommandLine commandLine,
+			TextIterator textIterator, Writer writer, boolean profile)
 			throws IOException {
 
 		String beginSegment = commandLine.getOptionValue('b');
@@ -597,7 +612,7 @@ public class Segment {
 		}
 
 	}
-	
+
 	private String preloadText(Reader reader, boolean profile) {
 		if (text == null) {
 			if (profile) {
@@ -613,23 +628,23 @@ public class Segment {
 	}
 
 	private void transform(CommandLine commandLine) throws IOException {
-		
+
 		Reader reader;
 		if (commandLine.hasOption('i')) {
 			reader = createFileReader(commandLine.getOptionValue('i'));
 		} else {
 			reader = createStandardInputReader();
 		}
-		
+
 		Writer writer;
 		if (commandLine.hasOption('o')) {
 			writer = createFileWriter(commandLine.getOptionValue('o'));
 		} else {
 			writer = createStandardOutputWriter();
 		}
-		
+
 		String mapRule = commandLine.getOptionValue("m");
-		
+
 		try {
 			SrxTransformer transformer = new SrxAnyTransformer();
 			Map<String, Object> parameterMap = new HashMap<String, Object>();
@@ -645,10 +660,10 @@ public class Segment {
 		}
 	}
 
-	/** 
+	/**
 	 * Cleans up reader, which means closing it if it is not standard input.
-	 * Does nothing if reader is null.
-	 * Catches any exceptions and writes them to the log.
+	 * Does nothing if reader is null. Catches any exceptions and writes them to
+	 * the log.
 	 * 
 	 * @param reader
 	 */
@@ -661,12 +676,11 @@ public class Segment {
 			log.error("Error cleaning up reader.", e);
 		}
 	}
-	
-	/** 
-	 * Cleans up writer, which means flushing it and closing it if 
-	 * it is not standard input.
-	 * Does nothing if writer is null. 
-	 * Catches any exceptions and writes them to the log.
+
+	/**
+	 * Cleans up writer, which means flushing it and closing it if it is not
+	 * standard input. Does nothing if writer is null. Catches any exceptions
+	 * and writes them to the log.
 	 * 
 	 * @param writer
 	 */
@@ -682,5 +696,5 @@ public class Segment {
 			log.error("Error cleaning up writer.", e);
 		}
 	}
-	
+
 }

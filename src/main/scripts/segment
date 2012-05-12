@@ -5,4 +5,4 @@ PROJECT_HOME=$SCRIPT_DIR/..
 JARS=$PROJECT_HOME/lib/*
 CLASS=net.sourceforge.segment.ui.console.Segment
 
-exec java -cp "$CLASSPATH:$PROJECT_HOME/build/classes:$JARS" $CLASS $*
+exec java -cp "$JARS" $CLASS $*
