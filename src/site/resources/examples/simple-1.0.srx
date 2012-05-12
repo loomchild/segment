@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!DOCTYPE srx PUBLIC "-//SRX//DTD SRX//EN" "srx.dtd">
+
+<srx version="1.0">
+
+	<header segmentsubflows="yes">
+		<formathandle type="start" include="no"/>
+		<formathandle type="end" include="yes"/>
+		<formathandle type="isolated" include="yes"/>
+	</header>
+	
+	<body>
+	
+		<languagerules>
+		
+			<languagerule languagerulename="Polish">
+				<rule break="no">
+					<beforebreak>\bp\.</beforebreak>
+					<afterbreak>\s</afterbreak>
+				</rule>
+				<rule break="yes">
+					<beforebreak>[\.\?!]+</beforebreak>
+					<afterbreak>\s+\p{Lu}</afterbreak>
+				</rule>
+				<rule break="yes">
+					<beforebreak></beforebreak>
+					<afterbreak>\n</afterbreak>
+				</rule>
+			</languagerule>
+
+			<languagerule languagerulename="English">
+				<rule break="no">
+					<beforebreak>\bMr\.</beforebreak>
+					<afterbreak>\s</afterbreak>
+				</rule>
+				<rule break="yes">
+					<beforebreak>[\.\?!]+</beforebreak>
+					<afterbreak>\s+\p{Lu}</afterbreak>
+				</rule>
+				<rule break="yes">
+					<beforebreak></beforebreak>
+					<afterbreak>\n</afterbreak>
+				</rule>
+			</languagerule>
+		   
+			<languagerule languagerulename="Default">
+				<rule break="yes">
+					<beforebreak>[\.\?!]+</beforebreak>
+					<afterbreak>\s+\p{Lu}</afterbreak>
+				</rule>
+				<rule break="yes">
+					<beforebreak></beforebreak>
+					<afterbreak>\n</afterbreak>
+				</rule>
+			</languagerule>
+			
+		</languagerules>
+
+		<maprules>
+
+			<maprule maprulename="Default">
+				<languagemap languagepattern="(PL|pl).*" languagerulename="Polish"/>
+				<languagemap languagepattern="(EN|en).*" languagerulename="English"/>
+				<languagemap languagepattern=".*" languagerulename="Default"/>
+			</maprule>
+
+		</maprules>
+
+	</body>
+
+</srx>
