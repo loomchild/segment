@@ -13,6 +13,9 @@
 			<includes>
 				<include>*.jar</include>
 			</includes>
+			<excludes>
+				<exclude>*-javadoc.jar</exclude>
+			</excludes>
 		</fileSet>
 		<fileSet>
 			<directory>${basedir}/src/main/scripts</directory>
