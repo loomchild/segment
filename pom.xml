@@ -31,6 +31,12 @@
 		<developerConnection>scm:git:ssh://segment.git.sourceforge.net/gitroot/segment/segment</developerConnection>
 	</scm>
 
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
