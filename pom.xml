@@ -4,7 +4,7 @@
 
 	<groupId>net.sourceforge.segment</groupId>
 	<artifactId>segment</artifactId>
-	<version>1.4.0</version>
+	<version>1.4.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>segment</name>
@@ -27,7 +27,7 @@
 	<scm>
 		<url>http://segment.git.sourceforge.net/git/gitweb.cgi?p=segment/segment</url>
 		<connection>scm:git:git://segment.git.sourceforge.net/gitroot/segment/segment</connection>
-		<developerConnection>scm:git:ssh://segment.git.sourceforge.net/gitroot/segment/segment</developerConnection>
+		<developerConnection>scm:git:ssh://jarekl@segment.git.sourceforge.net/gitroot/segment/segment</developerConnection>
 	</scm>
 
 	<parent>
