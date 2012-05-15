@@ -27,7 +27,7 @@
 	<scm>
 		<url>http://segment.git.sourceforge.net/git/gitweb.cgi?p=segment/segment</url>
 		<connection>scm:git:git://segment.git.sourceforge.net/gitroot/segment/segment</connection>
-		<developerConnection>scm:git:ssh://jarekl@segment.git.sourceforge.net/gitroot/segment/segment</developerConnection>
+		<developerConnection>scm:git:ssh://segment.git.sourceforge.net/gitroot/segment/segment</developerConnection>
 	</scm>
 
 	<parent>
