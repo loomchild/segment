@@ -4,7 +4,7 @@
 
 	<groupId>net.sourceforge.segment</groupId>
 	<artifactId>segment</artifactId>
-	<version>1.4.1</version>
+	<version>1.4.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>segment</name>
@@ -99,6 +99,7 @@
 							<version>2.4</version>
 						</plugin>
 					</reportPlugins>
+					<generateReports>false</generateReports>
 				</configuration>
 				<executions>
 					<execution>
