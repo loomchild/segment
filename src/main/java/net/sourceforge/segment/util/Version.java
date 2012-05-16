@@ -1,4 +1,4 @@
-package net.sourceforge.segment;
+package net.sourceforge.segment.util;
 
 import static net.sourceforge.segment.util.Util.getJarManifest;
 
