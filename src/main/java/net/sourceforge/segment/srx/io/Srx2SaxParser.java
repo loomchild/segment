@@ -106,6 +106,8 @@ public class Srx2SaxParser implements SrxParser {
 	    
 	    public void endElement(String uri, String localName, String qName)
 	    		throws SAXException {
+	    	elementName = null;
+	    	
 	    	if ("rule".equals(localName)) {
 	    		String beforeBreakString = beforeBreak.toString();
 	    		String afterBreakString = afterBreak.toString();
