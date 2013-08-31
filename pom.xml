@@ -26,9 +26,9 @@
 	</licenses>
 
 	<scm>
-		<url>http://segment.git.sourceforge.net/git/gitweb.cgi?p=segment/segment</url>
-		<connection>scm:git:git://segment.git.sourceforge.net/gitroot/segment/segment</connection>
-		<developerConnection>scm:git:ssh://segment.git.sourceforge.net/gitroot/segment/segment</developerConnection>
+		<url>https://sourceforge.net/p/segment/segment</url>
+		<connection>scm:git:git://git.code.sf.net/p/segment/segment</connection>
+		<developerConnection>scm:git:ssh://git.code.sf.net/p/segment/segment</developerConnection>
 	</scm>
 
 	<parent>
