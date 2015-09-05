@@ -1,0 +1,8 @@
+#!/bin/bash
+
+SCRIPT_DIR=`dirname $0`
+PROJECT_HOME=$SCRIPT_DIR/..
+JARS=$PROJECT_HOME/lib/*
+CLASS=net.sourceforge.segment.ui.console.Segment
+
+exec java -cp "$JARS" $CLASS $*

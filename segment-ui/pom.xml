@@ -1,0 +1,151 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>net.sourceforge.segment</groupId>
+	<artifactId>segment-ui</artifactId>
+	<version>${segment.version}</version>
+	<packaging>jar</packaging>
+
+	<name>segment-ui</name>
+	<url>http://sourceforge.net/projects/segment/</url>
+	<description>Program used to split text into segments.</description>
+
+	<developers>
+		<developer>
+			<name>Jarek Lipski</name>
+			<email>pub@loomchild.net</email>
+		</developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>http://segment.git.sourceforge.net/git/gitweb.cgi?p=segment/segment-ui</url>
+		<connection>scm:git:git://segment.git.sourceforge.net/gitroot/segment/segment-ui</connection>
+		<developerConnection>scm:git:ssh://segment.git.sourceforge.net/gitroot/segment/segment-ui</developerConnection>
+	</scm>
+
+	<properties>
+		<segment.version>1.4.3-SNAPSHOT</segment.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>net.sourceforge.segment</groupId>
+			<artifactId>segment</artifactId>
+			<version>${segment.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sourceforge.segment</groupId>
+			<artifactId>segment</artifactId>
+			<version>${segment.version}</version>
+			<type>test-jar</type>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-cli</groupId>
+			<artifactId>commons-cli</artifactId>
+			<version>1.2</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<reportPlugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-project-info-reports-plugin</artifactId>
+							<version>2.4</version>
+						</plugin>
+					</reportPlugins>
+					<generateReports>false</generateReports>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>site</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>replacer</artifactId>
+				<version>1.5.0</version>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<file>target/site/docs/readme.html</file>
+					<replacements>
+						<replacement>
+							<token>@build.date@</token>
+							<value>${maven.build.timestamp}</value>
+						</replacement>
+						<replacement>
+							<token>@project.fullversion@</token>
+							<value>${project.version}</value>
+						</replacement>
+					</replacements>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<finalName>segment-${project.version}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+					<archiverConfig>
+						<defaultDirectoryMode>0755</defaultDirectoryMode>
+					</archiverConfig>
+					<descriptors>
+						<descriptor>src/main/assembly/bin.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+</project>
