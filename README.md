@@ -3,8 +3,7 @@
 ## Introduction
 
 Segment program is used to split text into segments, for example sentences.
-Splitting rules are read from SRX file, which is standard format for this task
-(see [Resources](#resources)). 
+Splitting rules are read from SRX file, which is standard format for this task. 
 
 ## Requirements
 
@@ -92,8 +91,7 @@ and suffixed with string set with -e option (new line character by default).
 
 ### SRX file
 
-Valid SRX document as defined in SRX specification 
-(see [Resources](#resources")). 
+Valid SRX document as defined in SRX specification. 
 Both version 1.0 and 2.0 are supported, although version 2.0 is preferred. 
 Currently input is treated as plain text, formatting is not handled specially 
 (contrary to specification). Example SRX files can be found in examples/ directory.

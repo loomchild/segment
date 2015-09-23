@@ -1,4 +1,4 @@
-# Changelog
+# ChangeLog
 
 ## version 0.0 2006-02
 
@@ -60,7 +60,7 @@
 * Started using Maven, reorganized project directory structure.
 * Started using git.
 
-## version 2.0 2015-09
+## version 2.0 TBD
 
 * Renamed root package from new.sourceforge.segment to net.loomchild.segment.
 * Migrated to Github
