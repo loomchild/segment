@@ -30,7 +30,7 @@
 			<outputDirectory>.</outputDirectory>
 		</fileSet>
 		<fileSet>
-			<directory>${project.build.directory}/examples</directory>
+			<directory>${project.basedir}/examples</directory>
 			<outputDirectory>examples</outputDirectory>
 		</fileSet>
 	</fileSets>

@@ -3,6 +3,6 @@
 SCRIPT_DIR=`dirname $0`
 PROJECT_HOME=$SCRIPT_DIR/..
 JARS=$PROJECT_HOME/lib/*
-CLASS=Segment
+CLASS=net.loomchild.segment.ui.console.Segment
 
 exec java -cp "$JARS" $CLASS $*
