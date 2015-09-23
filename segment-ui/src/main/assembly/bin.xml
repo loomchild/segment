@@ -22,16 +22,16 @@
 			<outputDirectory>/bin</outputDirectory>
 		</fileSet>
 		<fileSet>
-			<directory>${project.build.directory}/site/docs</directory>
-			<outputDirectory>docs</outputDirectory>
+			<directory>${project.basedir}/..</directory>
+			<includes>
+				<include>README*</include>
+				<include>LICENSE*</include>
+			</includes>
+			<outputDirectory>.</outputDirectory>
 		</fileSet>
 		<fileSet>
-			<directory>${project.build.directory}/site/examples</directory>
+			<directory>${project.build.directory}/examples</directory>
 			<outputDirectory>examples</outputDirectory>
-		</fileSet>
-		<fileSet>
-			<directory>${project.build.directory}/apidocs</directory>
-			<outputDirectory>apidocs</outputDirectory>
 		</fileSet>
 	</fileSets>
 	<dependencySets>

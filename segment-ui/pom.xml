@@ -32,7 +32,7 @@
 	</scm>
 
 	<properties>
-		<segment.version>1.4.3-SNAPSHOT</segment.version>
+		<segment.version>2.0.0-SNAPSHOT</segment.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 	</properties>
@@ -69,57 +69,6 @@
 	<build>
 
 		<plugins>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<reportPlugins>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-project-info-reports-plugin</artifactId>
-							<version>2.4</version>
-						</plugin>
-					</reportPlugins>
-					<generateReports>false</generateReports>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>site</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>com.google.code.maven-replacer-plugin</groupId>
-				<artifactId>replacer</artifactId>
-				<version>1.5.0</version>
-				<executions>
-					<execution>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>replace</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<file>target/site/docs/readme.html</file>
-					<replacements>
-						<replacement>
-							<token>@build.date@</token>
-							<value>${maven.build.timestamp}</value>
-						</replacement>
-						<replacement>
-							<token>@project.fullversion@</token>
-							<value>${project.version}</value>
-						</replacement>
-					</replacements>
-				</configuration>
-			</plugin>
 
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
