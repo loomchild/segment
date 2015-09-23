@@ -1,1 +1,0 @@
-Documentation can be found in binary package, that can be downloaded from http://sourceforge.net/projects/segment/. 

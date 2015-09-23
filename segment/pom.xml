@@ -2,14 +2,14 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>net.sourceforge.segment</groupId>
+	<groupId>net.sourceforge</groupId>
 	<artifactId>segment</artifactId>
 	<version>2.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>segment</name>
-	<url>http://sourceforge.net/projects/segment/</url>
-	<description>Program / library used to split text into segments.</description>
+	<url>https://github.com/loomchild/segment</url>
+	<description>Library used to split text into segments.</description>
 	
 	<developers>
 		<developer>
@@ -26,9 +26,9 @@
 	</licenses>
 
 	<scm>
-		<url>https://sourceforge.net/p/segment/segment</url>
-		<connection>scm:git:git://git.code.sf.net/p/segment/segment</connection>
-		<developerConnection>scm:git:ssh://git.code.sf.net/p/segment/segment</developerConnection>
+		<url>https://github.com/loomchild/segment</url>
+		<connection>scm:git:ssh:git@github.com:loomchild/segment.git</connection>
+		<developerConnection>scm:git:ssh:git@github.com:loomchild/segment.git</developerConnection>
 	</scm>
 
 	<parent>
