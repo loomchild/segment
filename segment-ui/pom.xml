@@ -2,7 +2,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>net.sourceforge.segment</groupId>
+	<groupId>net.loomchild</groupId>
 	<artifactId>segment-ui</artifactId>
 	<version>${segment.version}</version>
 	<packaging>jar</packaging>
@@ -40,13 +40,13 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>net.sourceforge.segment</groupId>
+			<groupId>net.loomchild</groupId>
 			<artifactId>segment</artifactId>
 			<version>${segment.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>net.sourceforge.segment</groupId>
+			<groupId>net.loomchild</groupId>
 			<artifactId>segment</artifactId>
 			<version>${segment.version}</version>
 			<type>test-jar</type>

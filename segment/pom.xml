@@ -2,7 +2,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>net.sourceforge.segment</groupId>
+	<groupId>net.loomchild</groupId>
 	<artifactId>segment</artifactId>
 	<version>2.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -69,9 +69,9 @@
 				<version>0.8.1</version>
 				<configuration>
 					<schemaIncludes>
-						<include>net/sourceforge/segment/res/xml/srx20.xsd</include>
+						<include>net/loomchild/segment/res/xml/srx20.xsd</include>
 					</schemaIncludes>
-					<generatePackage>net.sourceforge.segment.srx.io.bind</generatePackage>
+					<generatePackage>net.loomchild.segment.srx.io.bind</generatePackage>
 					<cleanPackageDirectories>true</cleanPackageDirectories>
 				</configuration>
 				<executions>
@@ -89,7 +89,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.8.1</version>
 				<configuration>
-					<excludePackageNames>net.sourceforge.segment.srx.io.bind</excludePackageNames>
+					<excludePackageNames>net.loomchild.segment.srx.io.bind</excludePackageNames>
 				</configuration>
 				<executions>
 					<execution>
