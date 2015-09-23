@@ -4,7 +4,7 @@
 
 Segment program is used to split text into segments, for example sentences.
 Splitting rules are read from SRX file, which is standard format for this task
-(see [Resources](#resources")>). 
+(see [Resources](#resources)). 
 
 ## Requirements
 
@@ -44,7 +44,7 @@ To control output format useful parameters are -b and -e which define
 string that will be written before and after the segment (this replaces the 
 standard end of line character).
 
-# Performance
+## Performance
 
 To evaluate performance bin/segment -p option can be used. It can measure
 segmentation time on any data and it is possible to generate data.
@@ -192,5 +192,6 @@ For example a* pattern will be changed to something like a{0,100}.
 ## Thanks
 This project was written for Poleng company, but now is distributed as Free / Open Source Software. 
 Results were used to write my Master's Thesis. Happy using:)
- -- Jarek Lipski
+
+&nbsp;&nbsp;&nbsp;&nbsp;-- Jarek Lipski
 
