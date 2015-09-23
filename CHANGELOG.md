@@ -62,6 +62,6 @@
 
 ## version 2.0 TBD
 
-* Renamed root package from new.sourceforge.segment to net.loomchild.segment.
+* Renamed root package from net.sourceforge.segment to net.loomchild.segment.
 * Migrated to Github
 * Library and UI in the same repository
