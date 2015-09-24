@@ -8,7 +8,7 @@
 	<packaging>jar</packaging>
 
 	<name>segment-ui</name>
-	<url>http://sourceforge.net/projects/segment/</url>
+	<url>https://github.com/loomchild/segment</url>
 	<description>Program used to split text into segments.</description>
 
 	<developers>
@@ -26,9 +26,9 @@
 	</licenses>
 
 	<scm>
-		<url>http://segment.git.sourceforge.net/git/gitweb.cgi?p=segment/segment-ui</url>
-		<connection>scm:git:git://segment.git.sourceforge.net/gitroot/segment/segment-ui</connection>
-		<developerConnection>scm:git:ssh://segment.git.sourceforge.net/gitroot/segment/segment-ui</developerConnection>
+		<url>https://github.com/loomchild/segment</url>
+		<connection>scm:git:ssh:git@github.com:loomchild/segment.git</connection>
+		<developerConnection>scm:git:ssh:git@github.com:loomchild/segment.git</developerConnection>
 	</scm>
 
 	<properties>
