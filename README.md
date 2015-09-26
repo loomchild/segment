@@ -12,6 +12,10 @@ To build the project from source Java Software Development Kit (JDK) 1.5 and Ant
 Program should run on any operating system supported by Java. 
 The helper startup scripts were written for Unix and Windows.
 
+## Library
+
+Segment library is available on Maven central. See [pom.xml](segment/pom.xml) for details.
+
 ## Running
 
 To run the program bin/segment script is used. 
@@ -184,10 +188,12 @@ infinite regular expressions in lookbehind, so some patterns are finitized.
 For example a* pattern will be changed to something like a{0,100}.
 
 ## Authors
+
 * Jarek Lipski - creation of the project, design and programming
 * Marcin Miłkowski - integration with LanguageTool, bugfixing
 
 ## Thanks
+
 This project was written for Poleng company, but now is distributed as Free / Open Source Software. 
 Results were used to write my Master's Thesis. Happy using:)
 
