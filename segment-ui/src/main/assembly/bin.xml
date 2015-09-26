@@ -26,6 +26,7 @@
 			<includes>
 				<include>README*</include>
 				<include>LICENSE*</include>
+				<include>CHANGELOG*</include>
 			</includes>
 			<outputDirectory>.</outputDirectory>
 		</fileSet>
