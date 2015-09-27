@@ -29,8 +29,8 @@
 		<url>https://github.com/loomchild/segment</url>
 		<connection>scm:git:ssh://git@github.com/loomchild/segment.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/loomchild/segment.git</developerConnection>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
