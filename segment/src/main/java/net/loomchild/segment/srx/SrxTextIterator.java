@@ -20,6 +20,8 @@ import net.loomchild.segment.util.Util;
  * Represents text iterator splitting text according to rules in SRX file.
  * 
  * The algorithm idea is as follows:
+ *
+ * <pre>
  * 1. Rule matcher list is created based on SRX file and language. Each rule 
  *    matcher is responsible for matching before break and after break regular 
  *    expressions of one break rule.
@@ -34,6 +36,7 @@ import net.loomchild.segment.util.Util;
  * 6. All the rules that have break position behind last matched rule 
  *    break position are moved until they pass it.
  * 7. If segment was not found the whole process is repeated.
+ * </pre>
  *
  * In streaming version of this algorithm character buffer is searched. 
  * When the end of it is reached or break position is in the margin 
