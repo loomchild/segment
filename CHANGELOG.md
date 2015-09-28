@@ -60,7 +60,7 @@
 * Started using Maven, reorganized project directory structure.
 * Started using git.
 
-## version 2.0 TBD
+## version 2.0 2015-09-28
 
 * Renamed root package from net.sourceforge.segment to net.loomchild.segment.
 * Migrated to Github
