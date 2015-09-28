@@ -14,7 +14,8 @@ The helper startup scripts were written for Unix and Windows.
 
 ## Library
 
-Segment library is available on Maven central. See [pom.xml](segment/pom.xml) for details.
+Segment library is available on [Maven central](http://search.maven.org/#search|ga|1|net.loomchild.segment).
+See [pom.xml](segment/pom.xml) for details.
 
 ## Running
 
