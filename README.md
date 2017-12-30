@@ -17,6 +17,14 @@ The helper startup scripts were written for Unix and Windows.
 Segment library is available on [Maven central](http://search.maven.org/#search|ga|1|net.loomchild.segment).
 See [pom.xml](segment/pom.xml) for details.
 
+## Development
+
+In order to compile the project clone the repository and run Maven in both segment and segment-ui subdirectiories:
+
+    mvn clean install
+
+This will generate the binary ZIP version in segment-ui/target/.
+
 ## Running
 
 To run the program bin/segment script is used. 
