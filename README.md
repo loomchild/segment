@@ -27,6 +27,8 @@ This will generate the binary ZIP version in segment-ui/target/.
 
 ## Running
 
+First download a binary [release](https://github.com/loomchild/segment/releases) or build the binary as described above and unpack it.
+
 To run the program bin/segment script is used. 
 For example on Linux, from main project directory, execute:
 
