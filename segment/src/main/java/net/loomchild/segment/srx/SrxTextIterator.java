@@ -206,7 +206,10 @@ public class SrxTextIterator extends AbstractTextIterator {
 							textManager.getBufferLength() - margin)) {
 						
 						if (start == 0) {
-							throw new IllegalStateException("Buffer too short");
+							throw new IllegalStateException("Buffer too short" +
+									" - it must be at least as long as the" +
+									" longest segment in the text; " +
+									"try using the bufferLength option");
 						}
 						
 						textManager.readText(start);
