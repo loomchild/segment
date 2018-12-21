@@ -82,7 +82,7 @@ public class SrxTextIterator extends AbstractTextIterator {
 	 * Default size of read buffer when using streaming version of this class.
 	 * Any segment cannot be longer than buffer size.
 	 */
-	public static final int DEFAULT_BUFFER_LENGTH = 64 * 1024;
+	public static final int DEFAULT_BUFFER_LENGTH = 1024 * 1024;
 
 	/** 
 	 * Default max lookbehind construct length parameter.
