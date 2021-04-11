@@ -13,6 +13,9 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -44,7 +47,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.internal.runners.TextListener;
+import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 
 /**
@@ -209,7 +212,8 @@ public class Segment {
 
 	private void test() {
 		JUnitCore core = new JUnitCore();
-		core.addListener(new TextListener());
+    PrintStream writer = new PrintStream(new FileOutputStream(FileDescriptor.out));
+		core.addListener(new TextListener(writer));
 		try {
 			Class<?> klass = Class.forName(TEST_SUITE_CLASS_NAME);
 			core.run(klass);
