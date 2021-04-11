@@ -13,9 +13,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
-import java.io.FileDescriptor;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -212,8 +209,7 @@ public class Segment {
 
 	private void test() {
 		JUnitCore core = new JUnitCore();
-    PrintStream writer = new PrintStream(new FileOutputStream(FileDescriptor.out));
-		core.addListener(new TextListener(writer));
+		core.addListener(new TextListener(System.out));
 		try {
 			Class<?> klass = Class.forName(TEST_SUITE_CLASS_NAME);
 			core.run(klass);
