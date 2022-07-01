@@ -35,9 +35,9 @@ import net.loomchild.segment.util.Util;
  * 
  * <p>
  * One solution could be sorting patterns by length, but this is sometimes 
- * impossible to do. For example:<br/>
- * Rules are "(ab)+" and "a(b)+"<br/>
- * Inputs are "ababx" and "abbbx"<br/>
+ * impossible to do. For example:<br>
+ * Rules are "(ab)+" and "a(b)+"<br>
+ * Inputs are "ababx" and "abbbx"<br>
  * For first input order of exception rules should be reversed for the text
  * to be split as early as possible, but for the second input it shouldn't.
  * The solution could be to use reluctant quantifiers instead of greedy ones, 

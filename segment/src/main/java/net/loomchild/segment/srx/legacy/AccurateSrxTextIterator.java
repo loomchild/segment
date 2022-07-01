@@ -11,6 +11,8 @@ import net.loomchild.segment.srx.RuleMatcher;
 import net.loomchild.segment.srx.SrxDocument;
 import net.loomchild.segment.srx.Rule;
 
+import net.loomchild.segment.util.IORuntimeException;
+
 /**
  * Reprezentuje splitter dzielący na podstawie reguł zawartych w pliku srx.
  *
@@ -58,7 +60,7 @@ public class AccurateSrxTextIterator extends AbstractTextIterator {
 	/**
 	 * Wyszukuje następne dopasowanie.
 	 * @return Zwraca następny segment albo null jeśli nie istnieje
-	 * @throws IOSRuntimeException Zgłaszany gdy nastąpi błąd przy odczycie strumienia
+	 * @throws IORuntimeException Zgłaszany gdy nastąpi błąd przy odczycie strumienia
 	 */
 	public String next() {
 		if (hasNext()) {

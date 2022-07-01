@@ -207,7 +207,7 @@ public class Util {
 	 * The reader ignores DTD defined in XML file.
 	 * @param schema
 	 * @return XMLReader
-	 * @throws XMLException when SAX error occurs
+	 * @throws XmlException when SAX error occurs
 	 */
 	public static XMLReader getXmlReader(Schema schema) {
 		try {
@@ -231,7 +231,7 @@ public class Util {
 	/**
 	 * @see Util#getXmlReader(Schema)
 	 * @return XMLReader without XML schema associated with it
-	 * @throws XMLException when SAX error occurs
+	 * @throws XmlException when SAX error occurs
 	 */
 	public static XMLReader getXmlReader() {
 		return getXmlReader(null);
@@ -241,7 +241,7 @@ public class Util {
 	 * Reads a XML schema from given reader. 
 	 * @param reader
 	 * @return XML Schema
-	 * @throws XMLException when XML schema parsing error occurs
+	 * @throws XmlException when XML schema parsing error occurs
 	 */
 	public static Schema getSchema(Reader reader) {
 		return getSchema(new Reader[] { reader });
@@ -252,7 +252,7 @@ public class Util {
 	 * one another.
 	 * @param readerArray readers containing XML schemas
 	 * @return XML Schema object
-	 * @throws XMLException when XML schema parsing error occurs
+	 * @throws XmlException when XML schema parsing error occurs
 	 */
 	public static Schema getSchema(Reader[] readerArray) {
 		try {
@@ -285,7 +285,7 @@ public class Util {
 	/**
 	 * @param context context package name
 	 * @return JAXB context
-	 * @throws XMLException if JAXB error occurs
+	 * @throws XmlException if JAXB error occurs
 	 */
 	public static JAXBContext getContext(String context) {
 		try {
@@ -300,7 +300,7 @@ public class Util {
 	 * @param context context package name
 	 * @param classLoader class loader used to load classes from the context
 	 * @return JAXB context; loads the classes using given classloader
-	 * @throws XMLException if JAXB error occurs
+	 * @throws XmlException if JAXB error occurs
 	 */
 	public static JAXBContext getContext(String context, 
 			ClassLoader classLoader) {
@@ -316,7 +316,7 @@ public class Util {
 	 * @param classesToBeBound
 	 * @return JAXBContext according to classes to bind 
 	 * Dependency classes are also loaded automatically.
-	 * @throws XMLException if JAXB error occurs
+	 * @throws XmlException if JAXB error occurs
 	 */
 	public static JAXBContext getContext(Class<?>... classesToBeBound) {
 		try {
@@ -332,7 +332,7 @@ public class Util {
 	 * stylesheet.
 	 * @param reader
 	 * @return templates; they can be reused many times to perform the transformation
-	 * @throws XMLException if XML parsing error occurs
+	 * @throws XmlException if XML parsing error occurs
 	 */
 	public static Templates getTemplates(Reader reader) {
 		try {
@@ -353,7 +353,7 @@ public class Util {
 	 * @param reader reader with input document
 	 * @param writer writer which will be used to write output
 	 * @param parameterMap transformation parameters
-	 * @throws XMLException if transformation error occurs
+	 * @throws XmlException if transformation error occurs
 	 */
 	public static void transform(Templates templates, Schema schema,
 			Reader reader, Writer writer, Map<String, Object> parameterMap) {
@@ -379,7 +379,7 @@ public class Util {
 	 * @param schema XML schema to validate against
 	 * @param reader reader with input document
 	 * @param writer writer which will be used to write output
-	 * @throws XMLException if transformation error occurs
+	 * @throws XmlException if transformation error occurs
 	 */
 	public static void transform(Templates templates, Schema schema,
 			Reader reader, Writer writer) {
@@ -393,7 +393,7 @@ public class Util {
 	 * @param reader reader with input document
 	 * @param writer writer which will be used to write output
 	 * @param parameterMap transformation parameters
-	 * @throws XMLException if transformation error occurs
+	 * @throws XmlException if transformation error occurs
 	 */
 	public static void transform(Templates templates, Reader reader, 
 			Writer writer, Map<String, Object> parameterMap) {
@@ -405,7 +405,7 @@ public class Util {
 	 * @param templates XSLT stylesheet
 	 * @param reader reader with input document
 	 * @param writer writer which will be used to write output
-	 * @throws XMLException if transformation error occurs
+	 * @throws XmlException if transformation error occurs
 	 */
 	public static void transform(Templates templates, Reader reader,
 			Writer writer) {
