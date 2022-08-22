@@ -548,7 +548,7 @@ public class Segment {
 
 		if (algorithm == Algorithm.accurate) {
 			if (text != null) {
-				textIterator = new AccurateSrxTextIterator(document, languageCode, text);
+				textIterator = new AccurateSrxTextIterator(document, languageCode, text, parameterMap);
 			} else {
 				throw new IllegalArgumentException("For accurate algorithm preload option (-r) is mandatory.");
 			}

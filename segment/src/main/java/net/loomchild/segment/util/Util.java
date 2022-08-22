@@ -482,6 +482,13 @@ public class Util {
 		return finitePattern;
 	}
 
+	public static String createLookbehindPattern(String pattern, int maxLenght) {
+		if (pattern.length() == 0) {
+			return pattern;
+		}
+		return "(?<=" + Util.finitize(pattern, maxLenght) + ")";
+	}
+
 	public static Pattern compile(SrxDocument document, String regex) {
 		String key = "PATTERN_" + regex;
 		Pattern pattern = (Pattern)document.getCache().get(key);

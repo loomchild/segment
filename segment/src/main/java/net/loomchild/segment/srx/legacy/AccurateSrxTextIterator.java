@@ -1,17 +1,15 @@
 package net.loomchild.segment.srx.legacy;
 
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import net.loomchild.segment.AbstractTextIterator;
-import net.loomchild.segment.srx.LanguageRule;
-import net.loomchild.segment.srx.RuleMatcher;
-import net.loomchild.segment.srx.SrxDocument;
-import net.loomchild.segment.srx.Rule;
+import net.loomchild.segment.srx.*;
 
 import net.loomchild.segment.util.IORuntimeException;
+import net.loomchild.segment.util.Util;
+
+import static net.loomchild.segment.util.Util.getParameter;
 
 /**
  * Reprezentuje splitter dzielący na podstawie reguł zawartych w pliku srx.
@@ -40,21 +38,31 @@ public class AccurateSrxTextIterator extends AbstractTextIterator {
 	 * @param text
 	 */
 	public AccurateSrxTextIterator(SrxDocument document, String languageCode, 
-			CharSequence text) {
+			CharSequence text, Map<String, Object> parameterMap) {
 		this.languageRuleList = document.getLanguageRuleList(languageCode);
 		this.text = text;
 		this.segment = null;
 		this.startPosition = 0;
 		this.endPosition = 0;
 
+		int maxLookbehindConstructLength = getParameter(parameterMap
+						.get(SrxTextIterator.MAX_LOOKBEHIND_CONSTRUCT_LENGTH_PARAMETER),
+				SrxTextIterator.DEFAULT_MAX_LOOKBEHIND_CONSTRUCT_LENGTH);
+
 		this.ruleMatcherList = new LinkedList<RuleMatcher>();
 		for (LanguageRule languageRule : languageRuleList) {
 			for (Rule rule : languageRule.getRuleList()) {
+				if (!rule.isBreak()) {
+					rule  = new Rule(rule.isBreak(), Util.createLookbehindPattern(rule.getBeforePattern(), maxLookbehindConstructLength), rule.getAfterPattern());
+				}
 				RuleMatcher matcher = new RuleMatcher(document, rule, text);
 				ruleMatcherList.add(matcher);
 			}
 		}
+	}
 
+	public AccurateSrxTextIterator(SrxDocument document, String languageCode, CharSequence text) {
+		this(document, languageCode, text, new HashMap<String, Object>());
 	}
 
 	/**

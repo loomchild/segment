@@ -591,6 +591,34 @@ public abstract class AbstractSrxTextIteratorTest {
 		performTest(SPECIFICATION_EXAMPLE_RESULT, 
 				SPECIFICATION_EXAMPLE_DOCUMENT);
 	}
+
+
+	public static final String[] UKRAINIAN_RULES_RESULT = new String[] {
+		"Алисов Н. В. , Хореев Б. С."
+	};
+
+	public static final SrxDocument UKRAINIAN_RULES_DOCUMENT =
+		createUkrainianRulesDocument();
+
+	public static SrxDocument createUkrainianRulesDocument() {
+		LanguageRule languageRule = new LanguageRule("");
+
+		languageRule.addRule(new Rule(false, "[\\h\\v][А-ЯІЇЄҐ]\\.[\\h\\v]*", "[А-ЯІЇЄҐ]\\.|[\\h\\v]*,"));
+		languageRule.addRule(new Rule(true, "\\.[\\h\\v]+", ""));
+		SrxDocument document = new SrxDocument();
+		document.addLanguageMap(".*", languageRule);
+
+		return document;
+	}
+
+	/**
+	 * Checks if splitter works with exception rules that overlap themselves
+	 * (previous match consumes part of the content necessary for the next match).
+	 */
+	@Test
+	public void testUkrainianRulesSplit() {
+		performTest(UKRAINIAN_RULES_RESULT, UKRAINIAN_RULES_DOCUMENT);
+	}
 	
 	
 	/**
