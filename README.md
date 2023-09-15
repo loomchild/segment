@@ -198,6 +198,10 @@ As this algorithm uses lookbehind extensively but Java does not permit
 infinite regular expressions in lookbehind, so some patterns are finitized. 
 For example a* pattern will be changed to something like a{0,100}.
 
+## Bibliography
+
+Miłkowski, M., & Lipski, J. (2011). Using SRX Standard for Sentence Segmentation. In Z. Vetulani (Ed.), Human Language Technology. Challenges for Computer Science and Linguistics (pp. 172–182). Berlin, Heidelberg: Springer Berlin Heidelberg. doi: [10.1007/978-3-642-20095-3_16](https://doi.org/10.1007/978-3-642-20095-3_16)
+
 ## Authors
 
 * Jarek Lipski - creation of the project, design and programming
