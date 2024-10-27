@@ -72,7 +72,9 @@ public class SrxTextIterator extends AbstractTextIterator {
 	 */
 	public static final String MAX_LOOKBEHIND_CONSTRUCT_LENGTH_PARAMETER = 
 		"maxLookbehindConstructLength";
-	
+
+	public static final String DEFAULT_PATTERN_FLAGS_PARAMETER = "defaultPatternFlags";
+
 	/**
 	 * Default margin size. 
 	 */
@@ -268,6 +270,9 @@ public class SrxTextIterator extends AbstractTextIterator {
 		int maxLookbehindConstructLength = getParameter(parameterMap.get(
 				MAX_LOOKBEHIND_CONSTRUCT_LENGTH_PARAMETER), 
 					DEFAULT_MAX_LOOKBEHIND_CONSTRUCT_LENGTH);
+		int defaultPatternFlags = getParameter(parameterMap.get(DEFAULT_PATTERN_FLAGS_PARAMETER), 0);
+
+		Util.setDefaultPatternFlags(defaultPatternFlags);
 
 		if (textManager.getBufferLength() > 0 &&
 				textManager.getBufferLength() <= margin) {

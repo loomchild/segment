@@ -62,6 +62,8 @@ public class Util {
 	private static final Pattern CAPTURING_GROUP_PATTERN = Pattern
 			.compile("(?<=(?<!\\\\)(?:\\\\\\\\){0,100})\\((?!\\?)");
 
+	private static int defaultPatternFlags = 0;
+
 	/**
 	 * @param inputStream
 	 * @return UTF-8 encoded reader from given input stream
@@ -493,10 +495,19 @@ public class Util {
 		String key = "PATTERN_" + regex;
 		Pattern pattern = (Pattern)document.getCache().get(key);
 		if (pattern == null) {
-			pattern = Pattern.compile(regex);
+			pattern = Pattern.compile(regex, Util.defaultPatternFlags);
 			document.getCache().put(key, pattern);
 		}
 		return pattern;
+	}
+
+	/**
+	 * Set default compilation pattern flags.
+	 *
+	 * @param patternFlags
+	 */
+	public static void setDefaultPatternFlags(int defaultPatternFlags) {
+		Util.defaultPatternFlags = defaultPatternFlags;
 	}
 
 	/**
